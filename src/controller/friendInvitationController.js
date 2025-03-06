@@ -74,13 +74,29 @@ const handleGetFriendInvited = async (req, res) => {
             return res.status(400).json({ error: "Thiếu userId" });
         }
 
-        const friend = await FriendInvitation.find({
+        const invitations = await FriendInvitation.find({
             id_receiver: userId,
             status: status
         }).sort({ createdAt: 1 });
 
+        const sendIds = invitations.map(invite => invite.id_sender);
+
+        const senders = await User.find({ _id: { $in: senderIds } }).select("fullname email")
+
+        const friendInvitations = invitations.map(invite => {
+            const senderInfo = senders.find(user => user._id.toString() === invite.id_sender.toString())
+            return {
+                _id: invite._id,
+                senderId: invite.id_sender,
+                receiverId: invite.id_receiver,
+                status: invite.status,
+                createdAt: invite.createdAt,
+                senderInfo: senderInfo
+            }
+        })
+
         res.status(200).json({
-            friend: friend
+            friendInvitations: friendInvitations
         });
 
 
