@@ -14,7 +14,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
-const port = 9000
+const port = process.env.PORT || 9000;
+
 
 
 import connectDB from "./config/connect.js";

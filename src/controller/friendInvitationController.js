@@ -96,6 +96,8 @@ const handleGetFriendInvited = async (req, res) => {
         })
         console.log(friendInvitations);
 
+
+
         res.status(200).json({
             friend: friendInvitations
         });
