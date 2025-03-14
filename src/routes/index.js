@@ -5,17 +5,18 @@ import authController from "../controller/authController.js";
 import friendInvitationController from "../controller/friendInvitationController.js";
 import messageController from "../controller/messagesController.js";
 import userController from "../controller/userController.js";
+import vocabularyController from "../controller/vocabularyController.js";
+
 const router = express.Router();
 
 const initWebRoutes = (app) => {
-
-    router.get("/test_router", translateController.he)
     router.post("/translate", translateController.handleTranslate)
 
-    router.post("/findVocabulary", translateController.handleFindVocabulary)
-    router.post("/saveVocabulary", translateController.handleSaveVocabulary)
+    router.post("/findVocabulary", vocabularyController.handleFindVocabulary)
+    router.post("/saveVocabulary", vocabularyController.handleSaveVocabulary)
+    router.post("/deleteVocabulary", vocabularyController.handleDeleteVocabulary)
 
-    router.get("/quiz", quizController.handleQuizCreation)
+    router.post("/generate-quiz", quizController.handleQuizCreation)
 
     router.post("/register", authController.handleRegister)
     router.post("/login", authController.handleLogin)
@@ -25,18 +26,25 @@ const initWebRoutes = (app) => {
 
     //gửi lời mời kết bạn
     router.post("/friend-invited", friendInvitationController.handleInvited)
-    router.post("/accept-friend-invited", friendInvitationController.handleInvited)
+    router.post("/accept-friend-invited", friendInvitationController.handleAcceptInvited)
     //lấy list bạn bè
-    router.post("/get-friend/:userId", friendInvitationController.handleGetFriend)
+    router.get("/get-friend/:userId", friendInvitationController.handleGetFriend)
     //lấy list lời mời kết bạn
-    router.post("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)
+    router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)
 
     router.post("/create-chat", messageController.handleCreateChat)
     router.post("/send-message", messageController.handleSendMessage)
     router.get("/get-message/:chatId", messageController.handleGetMessages)
     router.get("/messages/:chatId", messageController.getMessages)
+    router.get("/get-list-chat/:userId", messageController.getListChat)
+    router.post("/delete-chat", messageController.handleDeleteChat)
+    router.post("/check-exist-chat", messageController.checkExistingChat)
 
     router.get("/users/:userId", userController.handleGetUser)
+    router.get("/get-idUser/:userId", userController.handleGetIDUser)
+    router.get("/find-friend", userController.handleFindFriend)
+
+
     return app.use("/", router);
 }
 

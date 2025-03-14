@@ -8,6 +8,7 @@ const messageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true, ref: "chat"
     },
+    translatedContent: { type: String },
     id_sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",

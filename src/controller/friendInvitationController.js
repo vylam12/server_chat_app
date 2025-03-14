@@ -32,7 +32,7 @@ const handleAcceptInvited = async (req, res) => {
         if (!invitedUpdate) {
             return res.status(400).json({ error: "Invitaion not found!" })
         }
-        res.json({ message: "Invited friend created!", invited: invitedUpdate })
+        res.json({ message: "Invited friend updated!", invited: invitedUpdate })
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -45,7 +45,7 @@ const handleGetFriend = async (req, res) => {
             return res.status(400).json({ error: "Thiếu userId" });
         }
 
-        const friend = await FriendInvitation.find({
+        const friends = await FriendInvitation.find({
             $or: [{ id_sender: userId }, { id_receiver: userId }],
             status: status
         }).sort({ createdAt: 1 });
@@ -54,17 +54,16 @@ const handleGetFriend = async (req, res) => {
             friend.id_sender.toString() === userId ? friend.id_receiver : friend.id_sender
         );
 
-        const friendDetails = await User.find({ _id: { $in: friendIds } }).select("name email avatar");
-
+        const friendDetails = await User.find({ _id: { $in: friendIds } }).select("email fullname avatar");
+        console.log("danh sách bạn bè", friendDetails);
         res.status(200).json({
             friend: friendDetails
         });
-
-
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
+
 const handleGetFriendInvited = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -79,12 +78,13 @@ const handleGetFriendInvited = async (req, res) => {
             status: status
         }).sort({ createdAt: 1 });
 
-        const sendIds = invitations.map(invite => invite.id_sender);
+        const senderIds = invitations.map(invite => invite.id_sender);
 
         const senders = await User.find({ _id: { $in: senderIds } }).select("fullname email")
 
         const friendInvitations = invitations.map(invite => {
             const senderInfo = senders.find(user => user._id.toString() === invite.id_sender.toString())
+
             return {
                 _id: invite._id,
                 senderId: invite.id_sender,
@@ -94,9 +94,10 @@ const handleGetFriendInvited = async (req, res) => {
                 senderInfo: senderInfo
             }
         })
+        console.log(friendInvitations);
 
         res.status(200).json({
-            friendInvitations: friendInvitations
+            friend: friendInvitations
         });
 
 
@@ -104,6 +105,21 @@ const handleGetFriendInvited = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+const isFriend = async (userId, friendId) => {
+    if (!userId || !friendId) return false;
+
+    const friendship = await FriendInvitation.findOne({
+        $or: [
+            { id_sender: userId, id_receiver: friendId, status: "accepted" },
+            { id_sender: friendId, id_receiver: userId, status: "accepted" }
+        ]
+    });
+
+    return !!friendship;
+};
+
 export default {
-    handleInvited, handleAcceptInvited, handleGetFriend, handleGetFriendInvited
+    handleInvited, handleAcceptInvited, handleGetFriend, handleGetFriendInvited,
+    isFriend
 };

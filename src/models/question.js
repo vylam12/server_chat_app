@@ -4,15 +4,20 @@ const questionSchema = new mongoose.Schema({
     content: {
         type: String, required: true
     },
-    type: {
-        type: String, required: true,
-        enum: ['en_to_vi', 'vi_to_en']
+    vocabulary: {
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "vocabulary",
+            required: true
+        },
+        meaning: {
+            type: String, required: true
+        }
     },
     correctAnswer: {
-        _idVocabulary: { type: String, required: true },
-        meanVocabulary: { type: String, required: true }
+        type: String, required: true
     },
-    answer: {
+    options: {
         type: [String], required: true
     },
 
