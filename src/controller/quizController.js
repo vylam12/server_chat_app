@@ -143,11 +143,13 @@ const handleGetQuiz = async (req, res) => {
             return res.status(401).json({ error: "quizId available" });
         }
 
-        const listIdQuestion = await Quiz.find({ _id: quizId }).select("_idQuestion");
+        const listIdQuestion = await Quiz.findOne({ _id: quizId }).select("_idQuestion");
+        console.log("listIdQuestion", listIdQuestion)
         if (!listIdQuestion) {
             return res.status(404).json({ error: "Quiz not found" });
         }
         const listQuestion = await Question.find({ _id: { $in: listIdQuestion._idQuestion } });
+        console.log("listQuestion", listQuestion)
         return res.status(200).json({ listQuestion: listQuestion });
     } catch (error) {
         console.error("Error fetching questions:", error);
