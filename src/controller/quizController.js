@@ -114,7 +114,8 @@ const handleQuizCreation = async (req, res) => {
 
         // Lấy danh sách ID của các câu hỏi vừa lưu
         if (newQuizQuestions.length > 0) {
-            await Question.insertMany(newQuizQuestions);
+            const savedQuestions = await Question.insertMany(newQuizQuestions);
+            allQuizQuestions.push(...savedQuestions);
         }
         const questionIds = allQuizQuestions.map(q => q._id);
         console.log("Question IDs:", questionIds);
