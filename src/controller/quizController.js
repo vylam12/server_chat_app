@@ -130,13 +130,32 @@ const handleQuizCreation = async (req, res) => {
 
         await newQuiz.save();
 
-        res.json({ message: "Quiz created successfully", quizId: newQuiz._id, quizQuestions: allQuizQuestions });
+        res.json({ message: "Quiz created successfully", quizId: newQuiz._id });
     } catch (error) {
         console.error("Error creating quiz:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+const handleGetQuiz = async (req, res) => {
+    try {
+        const { quizId } = req.params;
+        if (!quizId) {
+            return res.status(401).json({ error: "quizId available" });
+        }
 
+        const listIdQuestion = await Quiz.find({ _id: quizId }).select("_idQuestion");
+        if (!listIdQuestion) {
+            return res.status(404).json({ error: "Quiz not found" });
+        }
+        const listQuestion = await Question.find({ _id: { $in: listIdQuestion._idQuestion } });
+        return res.status(200).json({ listQuestion: listQuestion });
+    } catch (error) {
+        console.error("Error fetching questions:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+}
 export default {
-    handleQuizCreation
+    handleQuizCreation,
+    handleGetQuiz
 };
