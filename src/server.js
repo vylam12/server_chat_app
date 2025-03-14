@@ -14,8 +14,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
-const port = process.env.PORT || 9000;
-
+const port = process.env.PORT || 4000;
 
 
 import connectDB from "./config/connect.js";
@@ -24,6 +23,10 @@ connectDB()
 initWebRoutes(app);
 
 
-app.listen(port, "0.0.0.0", () => {
-    console.log(`App listening on port http://192.168.1.6:${port}`);
+// app.listen(port, "0.0.0.0", () => {
+//     console.log(`App listening on port http://192.168.1.6:${port}`);
+// })
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
 })
