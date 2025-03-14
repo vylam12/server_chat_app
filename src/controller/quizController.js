@@ -117,7 +117,9 @@ const handleQuizCreation = async (req, res) => {
             const savedQuestions = await Question.insertMany(newQuizQuestions);
             allQuizQuestions.push(...savedQuestions);
         }
-        const questionIds = allQuizQuestions.map(q => q._id);
+        const questionIds = allQuizQuestions
+            .map(q => q._id?.toString())
+            .filter(id => id);
         console.log("Question IDs:", questionIds);
 
         const newQuiz = new Quiz({
