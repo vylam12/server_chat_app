@@ -157,7 +157,45 @@ const handleGetQuiz = async (req, res) => {
     }
 
 }
+
+const handleUpdateResultQuiz = async (req, res) => {
+    try {
+        const { quizId, point, countCorrect, timeTaken, vocabularyResults, userId } = req.body;
+        if (!quizId) {
+            return res.status(401).json({ error: "quizId available" });
+        }
+
+        await Quiz.findByIdAndUpdate(quizId,
+            {
+                $set: {
+                    point: point,
+                    countCorrect: countCorrect,
+                    timeTaken: timeTaken
+                }
+            });
+        if (vocabularyResults && vocabularyResult.length > 0) {
+            for (const vocab of vocabularyResults) {
+                await UserVocabulary.updateOne(
+                    { _idVocabulary: vocab.vocabId, userId: userId },
+                    {
+                        $inc: {
+                            correctAnswers: vocab.correctCount,
+                            wrongAnswers: vocab.wrongCount,
+                            quizAttempts: 1
+                        }
+                    }
+                )
+            }
+
+        }
+
+        return res.status(200).json({ message: "Quiz & Vocabulary updated successfully" });
+    } catch (error) {
+        console.error("Error update quiz:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 export default {
-    handleQuizCreation,
+    handleQuizCreation, handleUpdateResultQuiz,
     handleGetQuiz
 };

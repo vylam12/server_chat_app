@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+
 const VocabularySchema = new mongoose.Schema({
     word: {
         type: String, required: true,
@@ -29,7 +30,7 @@ const VocabularySchema = new mongoose.Schema({
             synonyms: { type: [String], default: null },
             antonyms: { type: [String], default: null },
         }
-    ],
+    ]
 
 },
     { timestamps: true }

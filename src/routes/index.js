@@ -18,6 +18,7 @@ const initWebRoutes = (app) => {
 
     router.post("/generate-quiz", quizController.handleQuizCreation)
     router.get("/get-quiz/:quizId", quizController.handleGetQuiz)
+    router.get("/update-result-quiz", quizController.handleUpdateResultQuiz)
 
     router.post("/register", authController.handleRegister)
     router.post("/login", authController.handleLogin)
