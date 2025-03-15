@@ -164,7 +164,7 @@ const handleUpdateResultQuiz = async (req, res) => {
         if (!quizId) {
             return res.status(401).json({ error: "quizId available" });
         }
-
+        console.log("quizId", quizId, point, countCorrect, timeTaken, vocabularyResults, userId)
         await Quiz.findByIdAndUpdate(quizId,
             {
                 $set: {
@@ -188,7 +188,7 @@ const handleUpdateResultQuiz = async (req, res) => {
             }
 
         }
-
+        console.log("Quiz & Vocabulary updated successfully")
         return res.status(200).json({ message: "Quiz & Vocabulary updated successfully" });
     } catch (error) {
         console.error("Error update quiz:", error);
