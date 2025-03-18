@@ -14,9 +14,6 @@ const QuizSchema = new mongoose.Schema({
     countCorrect: {
         type: Number, default: 0
     },
-    point: {
-        type: Number, default: 0
-    },
     timeTaken: {
         type: Number, default: 0
     }

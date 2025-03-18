@@ -149,7 +149,6 @@ const handleGetQuiz = async (req, res) => {
             return res.status(404).json({ error: "Quiz not found" });
         }
         const listQuestion = await Question.find({ _id: { $in: listIdQuestion._idQuestion } });
-        // console.log("listQuestion", listQuestion)
         return res.status(200).json({ listQuestion: listQuestion });
     } catch (error) {
         console.error("Error fetching questions:", error);
@@ -160,7 +159,7 @@ const handleGetQuiz = async (req, res) => {
 
 const handleUpdateResultQuiz = async (req, res) => {
     try {
-        const { quizId, point, countCorrect, timeTaken, vocabularyResults, userId } = req.body;
+        const { quizId, countCorrect, timeTaken, vocabularyResults, userId } = req.body;
         if (!quizId) {
             return res.status(401).json({ error: "quizId available" });
         }
@@ -169,7 +168,6 @@ const handleUpdateResultQuiz = async (req, res) => {
             quizId,
             {
                 $set: {
-                    point: point,
                     countCorrect: countCorrect,
                     timeTaken: timeTaken
                 }
