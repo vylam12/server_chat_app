@@ -182,7 +182,7 @@ const handleUpdateResultQuiz = async (req, res) => {
         if (vocabularyResults && vocabularyResults.length > 0) {
             for (const vocab of vocabularyResults) {
                 await UserVocabulary.updateOne(
-                    { _idVocabulary: vocab.vocabId, userId: userId },
+                    { _idVocabulary: vocab.vocabId, _idUser: userId },
                     {
                         $inc: {
                             correctAnswers: vocab.correctCount,
@@ -190,8 +190,9 @@ const handleUpdateResultQuiz = async (req, res) => {
                             quizAttempts: 1
                         }
                     },
-                    { upsert: true } // Nếu không tìm thấy, tạo mới
+                    { new: true } // Nếu không tìm thấy, tạo mới
                 );
+                console.log("vocab và vocab id", vocab);
             }
         }
 
