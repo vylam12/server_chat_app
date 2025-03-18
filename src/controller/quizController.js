@@ -163,7 +163,7 @@ const handleUpdateResultQuiz = async (req, res) => {
         if (!quizId) {
             return res.status(401).json({ error: "quizId available" });
         }
-        console.log("quizId", quizId, point, countCorrect, timeTaken, vocabularyResults, userId)
+        console.log("quizId", quizId, countCorrect, timeTaken, vocabularyResults, userId)
         const updatedQuiz = await Quiz.findByIdAndUpdate(
             quizId,
             {
@@ -172,7 +172,7 @@ const handleUpdateResultQuiz = async (req, res) => {
                     timeTaken: timeTaken
                 }
             },
-            { new: true } // Trả về bản ghi sau khi cập nhật
+            { new: true }
         );
         if (!updatedQuiz) {
             return res.status(404).json({ error: "Quiz not found" });
