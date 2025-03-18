@@ -149,7 +149,7 @@ const handleGetQuiz = async (req, res) => {
             return res.status(404).json({ error: "Quiz not found" });
         }
         const listQuestion = await Question.find({ _id: { $in: listIdQuestion._idQuestion } });
-        console.log("listQuestion", listQuestion)
+        // console.log("listQuestion", listQuestion)
         return res.status(200).json({ listQuestion: listQuestion });
     } catch (error) {
         console.error("Error fetching questions:", error);
@@ -165,15 +165,21 @@ const handleUpdateResultQuiz = async (req, res) => {
             return res.status(401).json({ error: "quizId available" });
         }
         console.log("quizId", quizId, point, countCorrect, timeTaken, vocabularyResults, userId)
-        await Quiz.findByIdAndUpdate(quizId,
+        const updatedQuiz = await Quiz.findByIdAndUpdate(
+            quizId,
             {
                 $set: {
                     point: point,
                     countCorrect: countCorrect,
                     timeTaken: timeTaken
                 }
-            });
-        if (vocabularyResults && vocabularyResult.length > 0) {
+            },
+            { new: true } // Trả về bản ghi sau khi cập nhật
+        );
+        if (!updatedQuiz) {
+            return res.status(404).json({ error: "Quiz not found" });
+        }
+        if (vocabularyResults && vocabularyResults.length > 0) {
             for (const vocab of vocabularyResults) {
                 await UserVocabulary.updateOne(
                     { _idVocabulary: vocab.vocabId, userId: userId },
@@ -183,12 +189,13 @@ const handleUpdateResultQuiz = async (req, res) => {
                             wrongAnswers: vocab.wrongCount,
                             quizAttempts: 1
                         }
-                    }
-                )
+                    },
+                    { upsert: true } // Nếu không tìm thấy, tạo mới
+                );
             }
-
         }
-        console.log("Quiz & Vocabulary updated successfully")
+
+        console.log("Quiz & Vocabulary updated successfully");
         return res.status(200).json({ message: "Quiz & Vocabulary updated successfully" });
     } catch (error) {
         console.error("Error update quiz:", error);
