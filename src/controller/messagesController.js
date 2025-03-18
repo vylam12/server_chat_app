@@ -1,8 +1,8 @@
-import { collection, doc, setDoc, addDoc, getDocs, query, where } from "firebase/firestore/lite";
 import { db } from "../config/firebase.js";
 import translateController from "./translateController.js";
 import Chat from "../models/chat.js";
 import admin from "firebase-admin";
+import User from "../models/user.js";
 import Message from "../models/message.js";
 
 const checkExistingChat = async (req, res) => {
@@ -136,6 +136,17 @@ const handleSendMessage = async (req, res) => {
             isRead: false,
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
+
+        const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
+        const receiver = chat.participants.find(user => user._id.toString() !== senderId)
+
+        if (receiver?.fcmToken) {
+            await sendPushNotification(receiver.fcmToken, {
+                title: "New Message from ChatApp",
+                body: content,
+                chatId
+            });
+        }
 
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
@@ -291,6 +302,21 @@ const handleDeleteChat = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
+    }
+}
+
+const saveFCMToken = async (req, res) => {
+    try {
+        const { userId, fcmToken } = req.body;
+        if (!userId || !fcmToken) {
+            return res.status(400).json({ error: "Missing userId or fcmToken" })
+        }
+
+        await User.findByIdAndUpdate(userId, { fcmToken });
+        res.status(200).json({ message: "FCM Token đã được cập nhật" });
+
+    } catch (error) {
+
     }
 }
 export default {

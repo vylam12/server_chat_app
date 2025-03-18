@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     },
     otpExpires: {
         type: Date, default: null
+    },
+    fcmToken: {
+        type: String,
+        default: null
     }
 
 },
