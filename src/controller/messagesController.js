@@ -321,5 +321,5 @@ const saveFCMToken = async (req, res) => {
 }
 export default {
     handleSendMessage, handleCreateChat, handleGetMessages, getMessages,
-    getListChat, checkExistingChat, handleDeleteChat
+    getListChat, checkExistingChat, handleDeleteChat, saveFCMToken
 };
