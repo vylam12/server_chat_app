@@ -4,7 +4,7 @@ import Chat from "../models/chat.js";
 import admin from "firebase-admin";
 import User from "../models/user.js";
 import Message from "../models/message.js";
-import { v4 as uuidv4 } from 'uuid';
+
 const checkExistingChat = async (req, res) => {
     try {
         const { receiverId, senderId } = req.body;
@@ -18,9 +18,7 @@ const checkExistingChat = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
-
 }
-
 
 const handleCreateChat = async (req, res) => {
     try {
@@ -34,32 +32,31 @@ const handleCreateChat = async (req, res) => {
             translatedContent = await translateController.translate(content, "en", "vi");
         }
 
-        // Tạo ID duy nhất cho chat và tin nhắn
-        const chatId = uuidv4();
-
         // Kiểm tra xem cuộc trò chuyện đã tồn tại trong MongoDB
-        let chat = await Chat.findOne({ _id: chatId });
+        let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
+
         if (!chat) {
             // Tạo mới nếu chưa tồn tại
             chat = new Chat({
-                _id: chatId, // Sử dụng chatId vừa tạo
                 participants: [senderId, receiverId]
             });
-            await chat.save();
+            await chat.save(); // MongoDB sẽ tự động tạo _id cho chat
         }
+
+        // Sử dụng _id của chat MongoDB làm chatId
+        const chatId = chat._id.toString(); // Convert _id của MongoDB sang chuỗi nếu cần thiết
 
         // Lưu tin nhắn vào MongoDB với cùng chatId
         const newMessage = new Message({
-            _id: uuidv4(), // Tạo ID duy nhất cho tin nhắn
             content,
             translatedContent,
             id_sender: senderId,
-            chatId: chat._id // Sử dụng ID chat MongoDB
+            chatId: chatId // Sử dụng chatId từ MongoDB
         });
         await newMessage.save();
 
         // Kiểm tra xem Firestore đã có cuộc trò chuyện chưa
-        const chatRef = db.collection("chat").doc(chatId); // Dùng chatId duy nhất cho Firestore
+        const chatRef = db.collection("chat").doc(chatId); // Dùng _id của MongoDB làm chatId cho Firestore
         const chatSnapshot = await chatRef.get();
 
         if (!chatSnapshot.exists) {
@@ -86,6 +83,7 @@ const handleCreateChat = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 };
+
 
 
 const markMessageAsRead = async (req, res) => {
