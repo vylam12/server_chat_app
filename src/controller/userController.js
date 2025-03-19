@@ -52,7 +52,7 @@ const handleFindFriend = async (req, res) => {
         const potentialFriends = await User.find({
             fullname: { $regex: new RegExp(nameFriend, "i") }
         }).limit(10);  // Giới hạn số lượng kết quả
-
+        console.log("potentialFriends", potentialFriends);
         if (!potentialFriends.length) {
             return res.status(404).json({ error: "Không tìm thấy người dùng" });
         }
@@ -63,7 +63,7 @@ const handleFindFriend = async (req, res) => {
                 { id_receiver: userId, status: "accepted" }
             ]
         });
-
+        console.log("friendInvitations", friendInvitations);
         const friendIds = friendInvitations.map(invite =>
             invite.id_sender.toString() === userId ? invite.id_receiver.toString() : invite.id_sender.toString()
         );
