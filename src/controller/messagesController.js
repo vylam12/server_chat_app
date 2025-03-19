@@ -11,8 +11,9 @@ const checkExistingChat = async (req, res) => {
         console.log("checkExistingChat", receiverId, senderId)
 
         const chatRef = admin.firestore().collection('chat');
-        const messagesRef = chatRef.where('users', 'array-contains', senderId).where('users', 'array-contains', receiverId);
-        console.log("messagesRef", messagesRef)
+        const messagesRef = chatRef.where('users', 'array-contains', senderId)
+            .where('users', 'array-contains', receiverId);
+
         const snapshot = await messagesRef.get();
 
         if (snapshot.empty) {
