@@ -50,7 +50,7 @@ const handleFindFriend = async (req, res) => {
             return res.status(400).json({ error: "Thiếu data" });
         }
         const potentialFriends = await User.find({
-            $text: { $search: nameFriend }
+            fullname: { $regex: new RegExp(nameFriend, "i") }
         }).limit(10);  // Giới hạn số lượng kết quả
 
         if (!potentialFriends.length) {
