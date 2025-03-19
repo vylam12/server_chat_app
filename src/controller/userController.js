@@ -50,24 +50,33 @@ const handleFindFriend = async (req, res) => {
             return res.status(400).json({ error: "Thiếu data" });
         }
         const potentialFriends = await User.find({
-            fullname: { $regex: nameFriend, $options: "i" }
-        });
+            $text: { $search: nameFriend }
+        }).limit(10);  // Giới hạn số lượng kết quả
+
         if (!potentialFriends.length) {
             return res.status(404).json({ error: "Không tìm thấy người dùng" });
         }
 
-        const friends = [];
-        for (const friend of potentialFriends) {
-            if (await friendInvitationController.isFriend(userId, friend._id)) {
-                friends.push({ id: friend._id.toString(), fullname: friend.fullname });
-            }
-        }
-        console.log(friends);
+        const friendInvitations = await FriendInvitation.find({
+            $or: [
+                { id_sender: userId, status: "accepted" },
+                { id_receiver: userId, status: "accepted" }
+            ]
+        });
+
+        const friendIds = friendInvitations.map(invite =>
+            invite.id_sender.toString() === userId ? invite.id_receiver.toString() : invite.id_sender.toString()
+        );
+
+        // Lọc ra những người là bạn bè trong danh sách tìm kiếm
+        const friends = potentialFriends.filter(friend => friendIds.includes(friend._id.toString()));
         if (!friends.length) {
             return res.status(403).json({ error: "Không có ai trong danh sách là bạn bè của bạn" });
         }
-
-        return res.status(200).json(friends);
+        return res.status(200).json(friends.map(friend => ({
+            id: friend._id.toString(),
+            fullname: friend.fullname
+        })));
     } catch (error) {
 
     }
