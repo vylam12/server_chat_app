@@ -4,31 +4,24 @@ import Chat from "../models/chat.js";
 import admin from "firebase-admin";
 import User from "../models/user.js";
 import Message from "../models/message.js";
-
+import { v4 as uuidv4 } from 'uuid';
 const checkExistingChat = async (req, res) => {
     try {
         const { receiverId, senderId } = req.body;
         console.log("checkExistingChat", receiverId, senderId)
-
-        const chatRef = admin.firestore().collection('chat');
-        const messagesRef = chatRef.where('users', 'array-contains', senderId)
-            .where('users', 'array-contains', receiverId);
-
-        const snapshot = await messagesRef.get();
-
-        if (snapshot.empty) {
+        let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
+        if (!chat) {
             return res.status(400).json({ error: "Không tồn tại cuộc trò chuyện" });
         }
-        const chatDoc = snapshot.docs[0];
-        const chatId = chatDoc.id;
-        console.log("chatId", chatId)
-        res.status(201).json({ chatId: chatId });
+        res.status(201).json({ chatId: chat._id });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
 
 }
+
+
 const handleCreateChat = async (req, res) => {
     try {
         const { receiverId, senderId, content } = req.body;
@@ -41,25 +34,32 @@ const handleCreateChat = async (req, res) => {
             translatedContent = await translateController.translate(content, "en", "vi");
         }
 
-        // Kiểm tra xem cuộc trò chuyện đã tồn tại chưa
-        let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
+        // Tạo ID duy nhất cho chat và tin nhắn
+        const chatId = uuidv4();
 
+        // Kiểm tra xem cuộc trò chuyện đã tồn tại trong MongoDB
+        let chat = await Chat.findOne({ _id: chatId });
         if (!chat) {
-            chat = new Chat({ participants: [senderId, receiverId] });
+            // Tạo mới nếu chưa tồn tại
+            chat = new Chat({
+                _id: chatId, // Sử dụng chatId vừa tạo
+                participants: [senderId, receiverId]
+            });
             await chat.save();
         }
 
-        // Lưu tin nhắn vào MongoDB
+        // Lưu tin nhắn vào MongoDB với cùng chatId
         const newMessage = new Message({
+            _id: uuidv4(), // Tạo ID duy nhất cho tin nhắn
             content,
             translatedContent,
             id_sender: senderId,
-            chatId: chat._id
+            chatId: chat._id // Sử dụng ID chat MongoDB
         });
         await newMessage.save();
 
         // Kiểm tra xem Firestore đã có cuộc trò chuyện chưa
-        const chatRef = db.collection("chat").doc(chat._id.toString());
+        const chatRef = db.collection("chat").doc(chatId); // Dùng chatId duy nhất cho Firestore
         const chatSnapshot = await chatRef.get();
 
         if (!chatSnapshot.exists) {
@@ -69,9 +69,9 @@ const handleCreateChat = async (req, res) => {
             });
         }
 
-        // Lưu tin nhắn vào Firestore    
-        const messageRef = chatRef.collection("messages");
-        await messageRef.doc(newMessage._id.toString()).set({
+        // Lưu tin nhắn vào Firestore với cùng chatId
+        const messageRef = chatRef.collection("messages").doc(newMessage._id.toString()); // Dùng ID tin nhắn duy nhất
+        await messageRef.set({
             senderId,
             content,
             translatedContent,
@@ -79,7 +79,7 @@ const handleCreateChat = async (req, res) => {
         });
 
         console.log("Tạo tin nhắn thành công");
-        res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chat._id });
+        res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chatId });
 
     } catch (error) {
         console.error(error);
@@ -117,24 +117,17 @@ const handleSendMessage = async (req, res) => {
 
         // Lưu tin nhắn vào MongoDB
         const newMessage = new Message({
-            content,
-            translatedContent,
+            content: content,
+            translatedContent: translatedContent,
             id_sender: senderId,
             chatId,
             isRead: false
         });
-        await newMessage.save();
+        const savedMessage = await newMessage.save();
 
-        // Kiểm tra chat trên Firestore
-        const chatRef = db.collection("chat").doc(chatId);
-        const chatSnapshot = await chatRef.get();
-
-        if (!chatSnapshot.exists) {
-            return res.status(400).json({ error: "Chat không tồn tại trên Firestore" });
-        }
-
-        // Lưu tin nhắn vào Firestore    
-        await chatRef.collection("messages").doc(newMessage._id.toString()).set({
+        let chatRef = db.collection("chat").doc(chatId);
+        await chatRef.collection("messages").add({
+            id: savedMessage._id.toString(),
             senderId,
             content,
             translatedContent,
@@ -142,9 +135,8 @@ const handleSendMessage = async (req, res) => {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        // Gửi thông báo
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
-        const receiver = chat.participants.find(user => user._id.toString() !== senderId);
+        const receiver = chat.participants.find(user => user._id.toString() !== senderId)
 
         if (receiver?.fcmToken) {
             await sendPushNotification(receiver.fcmToken, {
@@ -156,7 +148,7 @@ const handleSendMessage = async (req, res) => {
 
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
-            newMessage: newMessage.toObject(),
+            newMessage: savedMessage.toObject(),
         });
 
     } catch (error) {
@@ -164,7 +156,6 @@ const handleSendMessage = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 };
-
 
 const handleGetMessages = async (req, res) => {
     try {
