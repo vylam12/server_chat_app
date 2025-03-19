@@ -61,7 +61,7 @@ const handleCreateChat = async (req, res) => {
 
         if (!chatSnapshot.exists) {
             await chatRef.set({
-                users: [senderId, receiverId],
+                participants: [senderId, receiverId],
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
             });
         }
