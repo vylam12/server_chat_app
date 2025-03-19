@@ -41,6 +41,8 @@ const initWebRoutes = (app) => {
     router.get("/get-list-chat/:userId", messageController.getListChat)
     router.post("/delete-chat", messageController.handleDeleteChat)
     router.post("/check-exist-chat", messageController.checkExistingChat)
+    router.post("/save-fcm-token", messageController.saveFCMToken)
+
 
     router.get("/users/:userId", userController.handleGetUser)
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
