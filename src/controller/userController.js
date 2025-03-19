@@ -73,6 +73,11 @@ const handleFindFriend = async (req, res) => {
         if (!friends.length) {
             return res.status(403).json({ error: "Không có ai trong danh sách là bạn bè của bạn" });
         }
+
+        console.log("keết quả find friend", friends.map(friend => ({
+            id: friend._id.toString(),
+            fullname: friend.fullname
+        })));
         return res.status(200).json(friends.map(friend => ({
             id: friend._id.toString(),
             fullname: friend.fullname
