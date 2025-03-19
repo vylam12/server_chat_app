@@ -22,6 +22,15 @@ const handleRegister = async (req, res) => {
             fullname: fullname
         });
         await newUser.save();
+
+        const userRef = db.collection("users").doc(userRecord.uid);
+        await userRef.set({
+            id: userRecord.uid,
+            email: userRecord.email,
+            fullname: fullname,
+            avatar: "", // Mặc định chưa có avatar
+            createdAt: new Date()
+        });
         res.json({ message: "User created!", uid: userRecord.uid })
     } catch (error) {
         res.status(500).json({ error: error.message });
