@@ -12,7 +12,7 @@ const handleRegister = async (req, res) => {
 
 
         console.log("Creating user in Firebase Auth...");
-        const userRecord = await auth().createUser({
+        const userRecord = await auth.createUser({
             email: email,
             password: password,
             displayName: fullname
