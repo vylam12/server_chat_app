@@ -10,7 +10,6 @@ const handleRegister = async (req, res) => {
         const password = req.body.password;
         const fullname = req.body.fullname;
 
-
         console.log("Creating user in Firebase Auth...");
         const userRecord = await auth.createUser({
             email: email,
@@ -34,7 +33,7 @@ const handleRegister = async (req, res) => {
             id: userRecord.uid,
             email: userRecord.email,
             fullname: fullname,
-            avatar: "", // Mặc định chưa có avatar
+            avatar: "",
             createdAt: new Date()
         });
         console.log("User saved to Firestore:", userRecord.uid);
