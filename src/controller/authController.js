@@ -10,19 +10,25 @@ const handleRegister = async (req, res) => {
         const password = req.body.password;
         const fullname = req.body.fullname;
 
-        const userRecord = await auth.createUser({
+
+        console.log("Creating user in Firebase Auth...");
+        const userRecord = await auth().createUser({
             email: email,
             password: password,
             displayName: fullname
         });
+        console.log("User created in Firebase Auth:", userRecord.uid);
 
+        console.log("Saving user to MongoDB...");
         const newUser = new User({
             id: userRecord.uid,
             email: userRecord.email,
             fullname: fullname
         });
         await newUser.save();
+        console.log("User saved to MongoDB:", userRecord.uid);
 
+        console.log("Saving user to Firestore...");
         const userRef = db.collection("users").doc(userRecord.uid);
         await userRef.set({
             id: userRecord.uid,
@@ -31,6 +37,8 @@ const handleRegister = async (req, res) => {
             avatar: "", // Mặc định chưa có avatar
             createdAt: new Date()
         });
+        console.log("User saved to Firestore:", userRecord.uid);
+
         res.json({ message: "User created!", uid: userRecord.uid })
     } catch (error) {
         res.status(500).json({ error: error.message });
