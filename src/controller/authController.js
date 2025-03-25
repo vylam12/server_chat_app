@@ -1,4 +1,4 @@
-import { auth } from "../config/firebase.js";
+import { auth, db } from "../config/firebase.js";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
