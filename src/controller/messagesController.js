@@ -308,6 +308,7 @@ const saveFCMToken = async (req, res) => {
         }
 
         await User.findByIdAndUpdate(userId, { fcmToken });
+        console.log("Cập nhật FCM Token")
         res.status(200).json({ message: "FCM Token đã được cập nhật" });
 
     } catch (error) {
