@@ -97,7 +97,8 @@ const handleFriendUser = async (req, res) => {
         }
 
         const potentialFriends = await User.find({
-            fullname: { $regex: new RegExp(nameFriend, "i") }
+            fullname: { $regex: new RegExp(nameFriend, "i") },
+            _id: { $ne: userId }
         }).limit(10);
 
         if (!potentialFriends.length) {
@@ -111,26 +112,29 @@ const handleFriendUser = async (req, res) => {
             ]
         });
 
-        const friendIds = new Set(friendInvitations.map(invite =>
-            invite.id_sender.toString() === userId ? invite.id_receiver.toString() : invite.id_sender.toString()
-        ));
+        const friendIds = new Set();
+        friendInvitations.forEach(invite => {
+            if (invite.id_sender.toString() === userId) {
+                friendIds.add(invite.id_receiver.toString());
+            } else {
+                friendIds.add(invite.id_sender.toString());
+            }
+        });
 
         const friends = [];
         const notFriends = [];
 
-        for (const friend of potentialFriends) {
-            if (friendIds.has(friend._id.toString())) {
-                friends.push({
-                    id: friend._id.toString(),
-                    fullname: friend.fullname
-                });
+        potentialFriends.forEach(user => {
+            const userData = {
+                id: user._id.toString(),
+                fullname: user.fullname
+            };
+            if (friendIds.has(user._id.toString())) {
+                friends.push(userData);
             } else {
-                notFriends.push({
-                    id: friend._id.toString(),
-                    fullname: friend.fullname
-                });
+                notFriends.push(userData);
             }
-        }
+        });
 
         return res.status(200).json({ friends: friends, notFriends: notFriends });
     } catch (error) {

@@ -35,8 +35,6 @@ const initWebRoutes = (app) => {
     router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)
 
 
-
-
     router.post("/create-chat", messageController.handleCreateChat)
     router.post("/send-message", messageController.handleSendMessage)
     router.get("/get-message/:chatId", messageController.handleGetMessages)
