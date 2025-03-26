@@ -49,7 +49,7 @@ const initWebRoutes = (app) => {
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)
 
-    router.get("/find-user/:userId", userController.handleFriendUser)
+    router.get("/find-user", userController.handleFriendUser)
 
     return app.use("/", router);
 }
