@@ -77,7 +77,7 @@ const handleForgotPassword = async (req, res) => {
         }
 
         const otp = crypto.randomInt(10000, 99999).toString();
-        const otpExpires = Date.now() + 2 * 60 * 1000; //hẹn sao 2 phút
+        const otpExpires = Date.now() + 2 * 60 * 1000;
         user.resetOtp = otp;
         user.otpExpires = otpExpires;
         await user.save();
@@ -139,7 +139,6 @@ const hanleResetPasswordWithOTP = async (req, res) => {
 
         const userRecord = await auth.getUserByEmail(email);
         await auth.updateUser(userRecord.uid, { password: newPassword });
-
 
         res.json({ message: "Password reset successful!" })
 

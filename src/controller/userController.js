@@ -92,6 +92,7 @@ const handleFindFriend = async (req, res) => {
 const handleFriendUser = async (req, res) => {
     try {
         const { nameFriend, userId } = req.query;
+        console.log("nameFriend", nameFriend, "userId", userId)
         if (!nameFriend || !userId) {
             return res.status(400).json({ error: "Thiếu data" });
         }
@@ -101,6 +102,7 @@ const handleFriendUser = async (req, res) => {
             _id: { $ne: userId }
         }).limit(10);
 
+        console.log("potentialFriends", potentialFriends)
         if (!potentialFriends.length) {
             return res.status(404).json({ error: "Không tìm thấy người dùng" });
         }
@@ -135,7 +137,7 @@ const handleFriendUser = async (req, res) => {
                 notFriends.push(userData);
             }
         });
-
+        console.log("friends", friends, "notFriends", notFriends)
         return res.status(200).json({ friends: friends, notFriends: notFriends });
     } catch (error) {
         console.error(error);

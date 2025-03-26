@@ -36,7 +36,6 @@ const handleCreateChat = async (req, res) => {
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
 
         if (!chat) {
-            // Tạo mới nếu chưa tồn tại
             chat = new Chat({
                 participants: [senderId, receiverId]
             });
