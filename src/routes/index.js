@@ -34,6 +34,9 @@ const initWebRoutes = (app) => {
     //lấy list lời mời kết bạn
     router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)
 
+
+
+
     router.post("/create-chat", messageController.handleCreateChat)
     router.post("/send-message", messageController.handleSendMessage)
     router.get("/get-message/:chatId", messageController.handleGetMessages)
@@ -48,6 +51,7 @@ const initWebRoutes = (app) => {
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)
 
+    router.get("/find-user/:userId", userController.handleFriendUser)
 
     return app.use("/", router);
 }
