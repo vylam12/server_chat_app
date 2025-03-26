@@ -307,8 +307,8 @@ const saveFCMToken = async (req, res) => {
             return res.status(400).json({ error: "Missing userId or fcmToken" })
         }
 
-        await User.findByIdAndUpdate(userId, { fcmToken });
-        console.log("Cập nhật FCM Token")
+        await User.findByIdAndUpdate({ id: userId }, { fcmToken }, { new: true });
+        console.log("User sau khi cập nhật:", user);
         res.status(200).json({ message: "FCM Token đã được cập nhật" });
 
     } catch (error) {
