@@ -1,7 +1,6 @@
 import FriendInvitation from "../models/friendInvitation.js";
 import User from "../models/user.js";
-
-
+import admin from "firebase-admin";
 //gửi lời mời
 const handleInvited = async (req, res) => {
     try {
@@ -13,6 +12,21 @@ const handleInvited = async (req, res) => {
             status: "pending"
         })
         await newInvited.save();
+
+        const receiver = await User.findById(idReciver);
+        const sender = await User.findById(idSender);
+        if (receiver && receiver.fcmToken) {
+            const message = {
+                notification: {
+                    title: "New friend request",
+                    body: `You have a friend request from ${sender.fullname}`
+                },
+                token: receiver.fcmToken
+            };
+
+            await admin.messaging().send(message);
+            console.log("Notification sent!");
+        }
 
         res.json({ message: "Invited friend created!", newInvited })
     } catch (error) {
