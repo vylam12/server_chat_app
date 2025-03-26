@@ -110,7 +110,6 @@ const verifyOTP = async (req, res) => {
         if (user.resetOtp !== otp || Date.now() > user.otpExpires) {
             return res.status(400).json({ error: "Invalid or expired OTP!" })
         }
-        console.log("JWT Secret:", process.env.JWT_SECRET);
 
         const tempToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "10m" })
 
