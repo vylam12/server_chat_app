@@ -65,61 +65,49 @@ const handleRegister = async (req, res) => {
 //     }
 // }
 
-
 const handleLogin = async (req, res) => {
     try {
         const { idToken } = req.body;
-        console.log("Received ID Token:", idToken);
-
         if (!idToken) {
             return res.status(400).json({ error: "Missing ID Token" });
         }
 
-        // 🔹 Xác thực idToken với Google
-        const ticket = await client.verifyIdToken({
-            idToken,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
+        // 🔹 Xác thực ID Token với Firebase
+        const decodedToken = await auth.verifyIdToken(idToken);
+        if (!decodedToken) {
+            return res.status(400).json({ error: "Invalid Token" });
+        }
 
-        // 🔹 Lấy thông tin user từ token
-        const payload = ticket.getPayload();
-        const { sub: googleId, email, name, picture } = payload;
+        const { uid, email, name, picture } = decodedToken;
 
-        // 🔹 Tìm user theo email trước
-        let userData = await User.findOne({ email });
+        // 🔹 Tìm user trong database
+        let userData = await User.findOne({ id: uid });
 
-        if (userData) {
-            // 🔥 Nếu user đã đăng ký bằng email/password, cập nhật googleId
-            if (!userData.googleId) {
-                userData.googleId = googleId;
-                await userData.save();
-            }
-        } else {
-            // 🔹 Nếu chưa có user, tạo mới
+        if (!userData) {
+            // Nếu user chưa tồn tại, tạo mới
             userData = new User({
-                googleId,
+                id: uid,
                 email,
                 name,
-                avatar: picture,
+                avatar: picture || "",
             });
             await userData.save();
         }
 
-
-
-        // 🔹 Tạo token JWT của riêng bạn
-        const token = jwt.sign({ googleId, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        // 🔹 Tạo token JWT
+        const token = jwt.sign({ uid, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.json({
             message: "Login successful!",
             token,
-            user: userData,
+            user: userData
         });
 
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 
 const handleForgotPassword = async (req, res) => {
