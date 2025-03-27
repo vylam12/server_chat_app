@@ -104,7 +104,7 @@ const handleLogin = async (req, res) => {
         }
 
         // 🔹 Tạo token JWT của riêng bạn
-        const token = jwt.sign({ userId: userData._id, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign({ uid, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.json({
             message: "Login successful!",
