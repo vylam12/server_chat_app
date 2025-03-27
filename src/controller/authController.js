@@ -69,6 +69,8 @@ const handleRegister = async (req, res) => {
 const handleLogin = async (req, res) => {
     try {
         const { idToken } = req.body;
+        console.log("Received ID Token:", idToken);
+
         if (!idToken) {
             return res.status(400).json({ error: "Missing ID Token" });
         }
@@ -103,8 +105,10 @@ const handleLogin = async (req, res) => {
             await userData.save();
         }
 
+
+
         // 🔹 Tạo token JWT của riêng bạn
-        const token = jwt.sign({ uid, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign({ googleId, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.json({
             message: "Login successful!",
