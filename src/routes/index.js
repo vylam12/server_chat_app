@@ -16,9 +16,12 @@ const initWebRoutes = (app) => {
     router.post("/saveVocabulary", vocabularyController.handleSaveVocabulary)
     router.post("/deleteVocabulary", vocabularyController.handleDeleteVocabulary)
 
+
     router.post("/generate-quiz", quizController.handleQuizCreation)
     router.get("/get-quiz/:quizId", quizController.handleGetQuiz)
     router.post("/update-result-quiz", quizController.handleUpdateResultQuiz)
+    router.post("/check-user-vocabulary", quizController.handleCheckUserVocabulary);
+
 
     router.post("/register", authController.handleRegister)
     router.post("/login", authController.handleLogin)
@@ -43,7 +46,6 @@ const initWebRoutes = (app) => {
     router.post("/delete-chat", messageController.handleDeleteChat)
     router.post("/check-exist-chat", messageController.checkExistingChat)
     router.post("/save-fcm-token", messageController.saveFCMToken)
-
 
     router.get("/users/:userId", userController.handleGetUser)
     router.get("/get-idUser/:userId", userController.handleGetIDUser)

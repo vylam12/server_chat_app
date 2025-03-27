@@ -201,7 +201,26 @@ const handleUpdateResultQuiz = async (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
+const handleCheckUserVocabulary = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) {
+            return res.status(400).json({ error: "Missing userId" });
+        }
+
+        const wordCount = await UserVocabulary.countDocuments({ _idUser: userId });
+
+        if (wordCount < 3) {
+            return res.json({ canStartQuiz: false, message: "User must have at least 3 words to start the quiz" });
+        }
+
+        return res.json({ canStartQuiz: true });
+    } catch (error) {
+        return res.status(500).json({ error: "Failed to check vocabulary count", details: error.message });
+    }
+};
+
 export default {
     handleQuizCreation, handleUpdateResultQuiz,
-    handleGetQuiz
+    handleGetQuiz, handleCheckUserVocabulary
 };
