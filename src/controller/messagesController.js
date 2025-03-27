@@ -303,6 +303,7 @@ const handleDeleteChat = async (req, res) => {
 const saveFCMToken = async (req, res) => {
     try {
         const { userId, fcmToken } = req.body;
+        console.log("FCM TOKEN", userId, fcmToken);
         if (!userId || !fcmToken) {
             return res.status(400).json({ error: "Missing userId or fcmToken" })
         }
@@ -312,7 +313,8 @@ const saveFCMToken = async (req, res) => {
         res.status(200).json({ message: "FCM Token đã được cập nhật" });
 
     } catch (error) {
-
+        console.error(error);
+        res.status(500).json({ error: "Lỗi server" });
     }
 }
 export default {
