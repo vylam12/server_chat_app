@@ -1,5 +1,4 @@
 import User from "../models/user.js";
-import friendInvitationController from "../controller/friendInvitationController.js"
 import FriendInvitation from "../models/friendInvitation.js"
 const handleGetUser = async (req, res) => {
     try {
