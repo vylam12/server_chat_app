@@ -99,7 +99,9 @@ const handleLogin = async (req, res) => {
                 avatar: picture || "",
             });
             await userData.save();
+            await db.collection("users").doc(uid).set(userData);
         }
+
 
         // 🔹 Tạo token JWT
         const token = jwt.sign({ uid, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
