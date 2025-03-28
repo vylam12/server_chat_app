@@ -78,6 +78,10 @@ const handleLogin = async (req, res) => {
             return res.status(400).json({ error: "Invalid Token" });
         }
 
+        if (decodedToken.aud !== 'myapplication-66391') {
+            return res.status(400).json({ error: "Invalid audience claim (aud)" });
+        }
+
         const { uid, email, name, picture } = decodedToken;
 
         // 🔹 Tìm user trong database
@@ -104,6 +108,7 @@ const handleLogin = async (req, res) => {
         });
 
     } catch (error) {
+        console.error('Error verifying ID token:', error);
         res.status(500).json({ error: error.message });
     }
 };
