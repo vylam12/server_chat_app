@@ -99,7 +99,8 @@ const handleLogin = async (req, res) => {
                 avatar: picture || "",
             });
             await userData.save();
-            await db.collection("users").doc(uid).set(userData);
+            const userObject = userData.toObject();
+            await db.collection("users").doc(uid).set(userObject);
         }
 
 
