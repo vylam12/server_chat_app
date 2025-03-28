@@ -84,6 +84,9 @@ const handleLogin = async (req, res) => {
 
         const { uid, email, name, picture } = decodedToken;
         console.log("uid, email, name, picture", uid, email, name, picture);
+        const fullname = decodedToken.name || decodedToken.displayName || "Unknown User";
+
+
         // 🔹 Tìm user trong database
         let userData = await User.findOne({ id: uid });
 
@@ -91,8 +94,8 @@ const handleLogin = async (req, res) => {
             // Nếu user chưa tồn tại, tạo mới
             userData = new User({
                 id: uid,
-                email,
-                name,
+                email: email,
+                fullname: fullname,
                 avatar: picture || "",
             });
             await userData.save();
