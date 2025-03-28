@@ -83,7 +83,7 @@ const handleLogin = async (req, res) => {
         }
 
         const { uid, email, name, picture } = decodedToken;
-
+        console.log("uid, email, name, picture", uid, email, name, picture);
         // 🔹 Tìm user trong database
         let userData = await User.findOne({ id: uid });
 
