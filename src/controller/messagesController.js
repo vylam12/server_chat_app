@@ -74,7 +74,17 @@ const handleCreateChat = async (req, res) => {
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
 
+
+
         console.log("Tạo tin nhắn thành công");
+        const receiver = chat.participants.find(user => user._id.toString() !== senderId)
+        if (receiver?.fcmToken) {
+            await sendPushNotification(receiver.fcmToken, {
+                title: "New Message from ChatApp",
+                body: content,
+                chatId
+            });
+        }
         res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chatId });
 
     } catch (error) {
