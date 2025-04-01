@@ -49,10 +49,12 @@ const handleFindFriend = async (req, res) => {
         if (!nameFriend || !userId) {
             return res.status(400).json({ error: "Thiếu data" });
         }
-        const potentialFriends = await User.find(
-            { fullname: { $regex: new RegExp(nameFriend, "i") } },
-            { email: { $regex: new RegExp(nameFriend, "i") } }
-        ).limit(10);
+        const potentialFriends = await User.find({
+            $or: [
+                { fullname: { $regex: new RegExp(nameFriend, "i") } },
+                { email: { $regex: new RegExp(nameFriend, "i") } }
+            ]
+        }).limit(10);
         console.log("potentialFriends", potentialFriends);
         if (!potentialFriends.length) {
             return res.status(404).json({ error: "Không tìm thấy người dùng" });
@@ -86,7 +88,8 @@ const handleFindFriend = async (req, res) => {
             avatar: friend.avatar
         })));
     } catch (error) {
-
+        console.error(error);
+        return res.status(500).json({ error: "Lỗi server" });
     }
 
 }
