@@ -56,7 +56,7 @@ const handleLogin = async (req, res) => {
         const fullname = decodedToken.name || decodedToken.displayName || "Unknown User";
 
         let userData = await User.findOne({ id: uid });
-
+        console.log("User data from DB: ", userData);
         if (!userData) {
             // Nếu user chưa tồn tại, tạo mới
             userData = new User({
@@ -66,12 +66,14 @@ const handleLogin = async (req, res) => {
                 avatar: picture || "",
             });
             await userData.save();
+            console.log("New user created: ", userData);
             await db.collection("users").doc(uid).set({
                 id: uid,
                 email: email,
                 fullname: fullname,
                 avatar: picture || "",
             });
+            console.log("New user firebase ");
         }
 
         // 🔹 Tạo token JWT
