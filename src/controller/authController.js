@@ -2,10 +2,8 @@ import { auth, db } from "../config/firebase.js";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { OAuth2Client } from "google-auth-library"
 import emailService from "../utils/emailService.js";
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const handleRegister = async (req, res) => {
     try {
         const email = req.body.email;
@@ -39,31 +37,6 @@ const handleRegister = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
-// const handleLogin = async (req, res) => {
-//     try {
-//         const { idToken } = req.body;
-//         if (!idToken) {
-//             return res.status(400).json({ error: "Missing ID Token" });
-//         } else {
-//             const decodedToken = await auth.verifyIdToken(idToken);
-//             if (!decodedToken) {
-//                 return res.status(400).json({ error: "Invalid Token" });
-//             }
-//             const { uid, email } = decodedToken;
-//             let userData = await User.findOne({ id: uid })
-//             const token = jwt.sign({ uid, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-//             res.json({
-//                 message: "Login successful!",
-//                 token,
-//                 user: userData
-//             });
-
-//         }
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// }
 
 const handleLogin = async (req, res) => {
     try {
@@ -115,8 +88,6 @@ const handleLogin = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-
 
 const handleForgotPassword = async (req, res) => {
     try {
