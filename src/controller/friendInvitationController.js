@@ -108,7 +108,7 @@ const handleGetFriendInvited = async (req, res) => {
 
         const senderIds = invitations.map(invite => invite.id_sender);
 
-        const senders = await User.find({ _id: { $in: senderIds } }).select("fullname email")
+        const senders = await User.find({ _id: { $in: senderIds } }).select("fullname email avatar")
 
         const friendInvitations = invitations.map(invite => {
             const senderInfo = senders.find(user => user._id.toString() === invite.id_sender.toString())
