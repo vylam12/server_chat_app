@@ -78,16 +78,10 @@ const handleLogin = async (req, res) => {
             return res.status(400).json({ error: "Invalid Token" });
         }
 
-        if (decodedToken.aud !== 'myapplication-66391') {
-            return res.status(400).json({ error: "Invalid audience claim (aud)" });
-        }
-
         const { uid, email, name, picture } = decodedToken;
         console.log("uid, email, name, picture", uid, email, name, picture);
         const fullname = decodedToken.name || decodedToken.displayName || "Unknown User";
 
-
-        // 🔹 Tìm user trong database
         let userData = await User.findOne({ id: uid });
 
         if (!userData) {
@@ -106,7 +100,6 @@ const handleLogin = async (req, res) => {
                 avatar: picture || "",
             });
         }
-
 
         // 🔹 Tạo token JWT
         const token = jwt.sign({ uid, email }, process.env.JWT_SECRET, { expiresIn: "7d" });

@@ -43,9 +43,23 @@ const handleAcceptInvited = async (req, res) => {
             { new: true }
         );
 
-        if (!invitedUpdate) {
-            return res.status(400).json({ error: "Invitaion not found!" })
+        const sender = await User.findById(idSender);
+        const receiver = await User.findById(idReciver);
+        if (sender && sender.fcmToken) {
+            const message = {
+                notification: {
+                    title: "Friend request update",
+                    body: status === "accepted"
+                        ? `${receiver.fullname} accepted your friend request!`
+                        : `${receiver.fullname} declined your friend request.`
+                },
+                token: sender.fcmToken
+            };
+
+            await admin.messaging().send(message);
+            console.log("Notification sent to sender!");
         }
+
         res.json({ message: "Invited friend updated!", invited: invitedUpdate })
     } catch (error) {
         res.status(500).json({ error: error.message });
