@@ -9,7 +9,11 @@ const translate = async (text, target, goal) => {
             source: goal,
             target: target,
             format: 'text'
+        }, {
+            timeout: 5000  // Timeout sau 5 giây nếu không có phản hồi
         });
+
+        console.log("API Response:", response);
 
         if (response.data && response.data.translatedText) {
             const translatedText = response.data.translatedText;
