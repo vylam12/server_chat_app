@@ -29,27 +29,11 @@ const handleCreateChat = async (req, res) => {
 
         let translatedContent = content;
         console.log("📌 Nội dung gốc:", content);
-
-        // Xác định ngôn ngữ
-        let detectedLang = await translateController.detectLanguage(content);
-
-        // Nếu là tiếng Việt, dịch sang tiếng Anh
-        if (detectedLang === "vi") {
-            translatedContent = await translateController.translate(content, "en", "vi");
-            console.log("📌 Đã dịch sang EN:", translatedContent);
-        } else {
-            console.log("📌 Nội dung là tiếng Anh, không dịch.");
+        if (/[\u00C0-\u1EF9]/.test(content)) {
+            translatedContent = await translateController.translate(content, "vi", "en");
         }
+        console.log("Content sau khi dịch:", translatedContent);
 
-
-        // let translatedContent = content;
-        // console.log("Content trước khi dịch:", content);
-        // if (/[\u00C0-\u1EF9]/.test(content)) {
-        //     translatedContent = await translateController.translate(content, "en", "vi");
-        // }
-        // console.log("Content trước khi dịch:", content);
-
-        // Kiểm tra xem cuộc trò chuyện đã tồn tại trong MongoDB
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
 
         if (!chat) {
@@ -114,22 +98,6 @@ const handleCreateChat = async (req, res) => {
 };
 
 
-
-const markMessageAsRead = async (req, res) => {
-    try {
-        const { chatId, userId } = req.body;
-
-        const updatedMessages = await Message.updateMany(
-            { chatId, isRead: false, id_sender: { $ne: userId } }, // Chỉ cập nhật tin nhắn chưa đọc của người khác gửi
-            { isRead: true }
-        );
-
-        res.status(200).json({ message: "Tất cả tin nhắn đã được đọc", updatedCount: updatedMessages.modifiedCount });
-    } catch (error) {
-        res.status(500).json({ message: "Lỗi khi cập nhật tin nhắn", error });
-    }
-}
-
 const handleSendMessage = async (req, res) => {
     try {
         const { chatId, senderId, content } = req.body;
@@ -140,23 +108,12 @@ const handleSendMessage = async (req, res) => {
         let translatedContent = content;
         console.log("📌 Nội dung gốc:", content);
 
-        // Xác định ngôn ngữ
-        let detectedLang = await translateController.detectLanguage(content);
-
-        // Nếu là tiếng Việt, dịch sang tiếng Anh
-        if (detectedLang === "vi") {
-            translatedContent = await translateController.translate(content, "en", "vi");
-            console.log("📌 Đã dịch sang EN:", translatedContent);
-        } else {
-            console.log("📌 Nội dung là tiếng Anh, không dịch.");
+        console.log("Content trước khi dịch:", content);
+        console.log(/[\u00C0-\u1EF9]/.test(content))
+        if (/[\u00C0-\u1EF9]/.test(content)) {
+            translatedContent = await translateController.translate(content, "vi", "en");
         }
-
-        // let translatedContent = content;
-        // console.log("Content trước khi dịch:", content);
-        // if (/[\u00C0-\u1EF9]/.test(content)) {
-        //     translatedContent = await translateController.translate(content, "en", "vi");
-        // }
-        // console.log("Content sau khi dịch:", translatedContent);
+        console.log("Content sau khi dịch:", translatedContent);
 
         // Lưu tin nhắn vào MongoDB
         const newMessage = new Message({
@@ -181,13 +138,6 @@ const handleSendMessage = async (req, res) => {
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
         const receiver = chat.participants.find(user => user._id.toString() !== senderId)
 
-        // if (receiver?.fcmToken) {
-        //     await sendPushNotification(receiver.fcmToken, {
-        //         title: "New Message from ChatApp",
-        //         body: content,
-        //         chatId
-        //     });
-        // }
         if (receiver?.fcmToken) {
             const message = {
                 notification: {
@@ -374,6 +324,23 @@ const saveFCMToken = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 }
+
+
+const markMessageAsRead = async (req, res) => {
+    try {
+        const { chatId, userId } = req.body;
+
+        const updatedMessages = await Message.updateMany(
+            { chatId, isRead: false, id_sender: { $ne: userId } }, // Chỉ cập nhật tin nhắn chưa đọc của người khác gửi
+            { isRead: true }
+        );
+
+        res.status(200).json({ message: "Tất cả tin nhắn đã được đọc", updatedCount: updatedMessages.modifiedCount });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi khi cập nhật tin nhắn", error });
+    }
+}
+
 export default {
     handleSendMessage, handleCreateChat, handleGetMessages, getMessages,
     getListChat, checkExistingChat, handleDeleteChat, saveFCMToken

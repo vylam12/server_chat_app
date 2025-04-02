@@ -15,7 +15,7 @@ const detectLanguage = async (text) => {
     }
 };
 
-const translate = async (text, target, goal) => {
+const translate = async (text, goal, target) => {
     try {
         const response = await axios.get("https://api.mymemory.translated.net/get", {
             params: {
@@ -48,7 +48,7 @@ const translate = async (text, target, goal) => {
         return `Lỗi dịch: ${error.message}`;
     }
 };
-
+// dịch từ en sang vi
 const handleTranslate = async (req, res) => {
     let text = req.body.text;
     const target = "vi";
