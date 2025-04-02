@@ -4,7 +4,7 @@ import Chat from "../models/chat.js";
 import admin from "firebase-admin";
 import User from "../models/user.js";
 import Message from "../models/message.js";
-import { sendPushNotification } from "../utils/notifications.js"
+
 const checkExistingChat = async (req, res) => {
     try {
         const { receiverId, senderId } = req.body;
