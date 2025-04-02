@@ -23,10 +23,6 @@ connectDB()
 initWebRoutes(app);
 
 
-// app.listen(port, "0.0.0.0", () => {
-//     console.log(`App listening on port http://192.168.1.6:${port}`);
-// })
-
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })

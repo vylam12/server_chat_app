@@ -28,11 +28,15 @@ const handleCreateChat = async (req, res) => {
         }
 
         let translatedContent = content;
-        console.log("📌 Nội dung gốc:", content);
+
+        console.log("Content trước khi dịch:", translatedContent);
+        console.log(/[\u00C0-\u1EF9]/.test(content))
         if (/[\u00C0-\u1EF9]/.test(content)) {
             translatedContent = await translateController.translate(content, "vi", "en");
         }
         console.log("Content sau khi dịch:", translatedContent);
+
+
 
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
 
@@ -108,7 +112,7 @@ const handleSendMessage = async (req, res) => {
         let translatedContent = content;
         console.log("📌 Nội dung gốc:", content);
 
-        console.log("Content trước khi dịch:", content);
+        console.log("Content trước khi dịch:", translatedContent);
         console.log(/[\u00C0-\u1EF9]/.test(content))
         if (/[\u00C0-\u1EF9]/.test(content)) {
             translatedContent = await translateController.translate(content, "vi", "en");
