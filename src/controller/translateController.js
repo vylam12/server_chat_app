@@ -1,40 +1,18 @@
 import axios from "axios";
+import fetch from "node-fetch";
+const translate = async (text, target, goal) => {
+    const res = await fetch("https://libretranslate.com/translate", {
+        method: "POST",
+        body: JSON.stringify({
+            q: text,
+            source: goal,
+            target: target,
+        }),
+        headers: { "Content-Type": "application/json" },
+    });
 
-const translate = async (text, target) => {
-    console.log("Text: ", text);
-    const apiKey = process.env.API_KEY;
-    const appId = process.env.APP_ID;
-    const url = 'https://api.xfyun.cn/v1/aiui/translate'; // Kiểm tra URL API chính xác
-
-    try {
-        const response = await axios.post(url, {
-            text: text,
-            target_lang: target,
-            app_id: appId,
-            api_key: apiKey
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-KEY': apiKey  // Thêm key vào headers nếu cần thiết
-            }
-        });
-
-        console.log("Response Data: ", response.data);  // In toàn bộ phản hồi để kiểm tra
-
-        if (response.data && response.data.translation) {
-            console.log('Kết quả dịch:', response.data.translation);
-            return response.data.translation;
-        } else {
-            console.error('Không có kết quả dịch!');
-            return 'Dịch thất bại';
-        }
-    } catch (error) {
-        console.error('Lỗi khi gọi API:', error.message);
-        if (error.response) {
-            console.error('Chi tiết lỗi từ API:', error.response.data);
-        }
-        return 'Dịch thất bại';
-    }
+    const data = await res.json();
+    console.log("Translated Text:", data.translatedText);
 
     // try {
     //     const response = await axios.get("https://api.mymemory.translated.net/get", {
@@ -72,7 +50,7 @@ const translate = async (text, target) => {
 const handleTranslate = async (req, res) => {
     let text = req.body.text;
     const target = "vi";
-    // const goal = "en";
+    const goal = "en";
     try {
         const translation = await translate(text, target, goal);
         res.json({ translation });
