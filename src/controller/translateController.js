@@ -4,17 +4,15 @@ const translate = async (text, target, goal) => {
     console.log("Text: ", text);
 
     try {
-        // Gửi yêu cầu đến MyMemory API
-        const response = await axios.get('https://api.mymemory.translated.net/get', {
-            params: {
-                q: text,
-                langpair: `${goal}|${target}`,
-            },
+        const response = await axios.post('https://libretranslate.de/translate', {
+            q: text,
+            source: goal,
+            target: target,
+            format: 'text'
         });
 
-        // Trả về kết quả dịch
-        if (response.data && response.data.responseData) {
-            const translatedText = response.data.responseData.translatedText;
+        if (response.data && response.data.translatedText) {
+            const translatedText = response.data.translatedText;
             console.log('Kết quả dịch:', translatedText);
             return translatedText;
         } else {
