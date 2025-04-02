@@ -1,24 +1,27 @@
 import axios from "axios";
 
-const translate = async (text, target, goal) => {
+const translate = async (text, target) => {
     console.log("Text: ", text);
 
+    const apiKey = process.env.API_KEY;
+    const appId = process.env.APP_ID;
+    const url = 'https://api.xfyun.cn/v1/aiui/translate';  // Endpoint của API dịch
+
     try {
-        const response = await axios.post('https://libretranslate.de/translate', {
-            q: text,
-            source: goal,
-            target: target,
-            format: 'text'
+        const response = await axios.post(url, {
+            text: text,
+            target_lang: target,  // Ví dụ: 'zh' cho tiếng Trung, 'en' cho tiếng Anh
+            app_id: appId,  // App ID của bạn
+            api_key: apiKey
         }, {
-            timeout: 10000 // Timeout sau 5 giây nếu không có phản hồi
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
 
-        console.log("API Response:", response);
-
-        if (response.data && response.data.translatedText) {
-            const translatedText = response.data.translatedText;
-            console.log('Kết quả dịch:', translatedText);
-            return translatedText;
+        if (response.data && response.data.translation) {
+            console.log('Kết quả dịch:', response.data.translation);
+            return response.data.translation;
         } else {
             console.error('Không có kết quả dịch!');
             return 'Dịch thất bại';
@@ -64,7 +67,7 @@ const translate = async (text, target, goal) => {
 const handleTranslate = async (req, res) => {
     let text = req.body.text;
     const target = "vi";
-    const goal = "en";
+    // const goal = "en";
     try {
         const translation = await translate(text, target, goal);
         res.json({ translation });
