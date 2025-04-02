@@ -33,19 +33,37 @@ const translate = async (text, goal, target) => {
             !(match.translation.toLowerCase() === text.toLowerCase() && match.source === match.target)  // Điều kiện loại bỏ bản dịch giống gốc
         );
 
-        // Nếu có kết quả khớp, chọn bản dịch tốt nhất
         if (matches?.length) {
+            // Tìm max usage count để chuẩn hóa
+            const maxUsageCount = Math.max(...matches.map(match => match["usage-count"]));
+
             const bestMatch = matches.reduce((best, current) => {
-                if (current.quality > best.quality ||
-                    (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
+                const bestScore = calculateTranslationScore(best.match, best.quality, best["usage-count"], maxUsageCount);
+                const currentScore = calculateTranslationScore(current.match, current.quality, current["usage-count"], maxUsageCount);
+
+                if (currentScore > bestScore) {
                     return current;
                 }
                 return best;
-            }, { quality: -1, "usage-count": -1 });
+            }, { match: 0, quality: 0, "usage-count": 0 });
 
             console.log("📌 Kết quả dịch:", bestMatch.translation);
             translatedText = bestMatch.translation || translatedText;
         }
+
+        // Nếu có kết quả khớp, chọn bản dịch tốt nhất
+        // if (matches?.length) {
+        //     const bestMatch = matches.reduce((best, current) => {
+        //         if (current.quality > best.quality ||
+        //             (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
+        //             return current;
+        //         }
+        //         return best;
+        //     }, { quality: -1, "usage-count": -1 });
+
+        //     console.log("📌 Kết quả dịch:", bestMatch.translation);
+        //     translatedText = bestMatch.translation || translatedText;
+        // }
 
         // Kiểm tra nếu bản dịch giống với nội dung gốc, chọn bản dịch khác
         if (translatedText.toLowerCase() === text.toLowerCase()) {
@@ -60,6 +78,15 @@ const translate = async (text, goal, target) => {
     }
 };
 
+const calculateTranslationScore = (match, quality, usageCount, maxUsageCount) => {
+    // Tính toán tỷ lệ % của match, quality và usage-count
+    const matchScore = match * 50;  // match là tỷ lệ từ 0 đến 1, nhân với 50%
+    const qualityScore = quality * 0.3;  // quality là từ 0 đến 100, nhân với 30%
+    const usageScore = (usageCount / maxUsageCount) * 20;  // usage-count là số lần sử dụng, chuẩn hóa với maxUsageCount
+
+    const totalScore = matchScore + qualityScore + usageScore;
+    return totalScore;
+};
 
 // const translate = async (text, goal, target) => {
 //     try {
