@@ -79,11 +79,16 @@ const handleCreateChat = async (req, res) => {
         console.log("Tạo tin nhắn thành công");
         const receiver = chat.participants.find(user => user._id.toString() !== senderId)
         if (receiver?.fcmToken) {
-            await sendPushNotification(receiver.fcmToken, {
-                title: "New Message from ChatApp",
-                body: content,
-                chatId
-            });
+            const message = {
+                notification: {
+                    title: "New Message from ChatApp",
+                    body: content
+                },
+                token: receiver.fcmToken
+            };
+
+            await admin.messaging().send(message);
+            console.log("Notification sent!");
         }
         res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chatId });
 
@@ -147,14 +152,25 @@ const handleSendMessage = async (req, res) => {
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
         const receiver = chat.participants.find(user => user._id.toString() !== senderId)
 
+        // if (receiver?.fcmToken) {
+        //     await sendPushNotification(receiver.fcmToken, {
+        //         title: "New Message from ChatApp",
+        //         body: content,
+        //         chatId
+        //     });
+        // }
         if (receiver?.fcmToken) {
-            await sendPushNotification(receiver.fcmToken, {
-                title: "New Message from ChatApp",
-                body: content,
-                chatId
-            });
-        }
+            const message = {
+                notification: {
+                    title: "New Message from ChatApp",
+                    body: content
+                },
+                token: receiver.fcmToken
+            };
 
+            await admin.messaging().send(message);
+            console.log("Notification sent!");
+        }
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
             newMessage: savedMessage.toObject(),
