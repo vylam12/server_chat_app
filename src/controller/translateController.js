@@ -14,17 +14,16 @@ const detectLanguage = async (text) => {
         return "en"; // Mặc định là tiếng Anh nếu không xác định được
     }
 };
-
 const translate = async (text, goal, target) => {
     try {
         const response = await axios.get("https://api.mymemory.translated.net/get", {
-            params: {
-                q: text,
-                langpair: `${goal}|${target}`,
-            },
+            params: { q: text, langpair: `${goal}|${target}` },
         });
 
         console.log("Tổng hợp:", response.data);
+
+        // Khởi tạo biến translatedText từ response chính
+        let translatedText = response.data.responseData?.translatedText?.trim() || "";
 
         let matches = response.data.matches?.filter(match =>
             match.translation?.trim() && !match.translation.includes("[object")
@@ -41,14 +40,49 @@ const translate = async (text, goal, target) => {
 
             console.log("📌 Kết quả dịch:", bestMatch.translation);
             translatedText = bestMatch.translation || translatedText;
-
         }
 
         return translatedText || "Không có bản dịch phù hợp";
     } catch (error) {
+        console.error("Lỗi dịch:", error);
         return `Lỗi dịch: ${error.message}`;
     }
 };
+
+// const translate = async (text, goal, target) => {
+//     try {
+//         const response = await axios.get("https://api.mymemory.translated.net/get", {
+//             params: {
+//                 q: text,
+//                 langpair: `${goal}|${target}`,
+//             },
+//         });
+
+//         console.log("Tổng hợp:", response.data);
+
+//         let matches = response.data.matches?.filter(match =>
+//             match.translation?.trim() && !match.translation.includes("[object")
+//         );
+
+//         if (matches?.length) {
+//             const bestMatch = matches.reduce((best, current) => {
+//                 if (current.quality > best.quality ||
+//                     (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
+//                     return current;
+//                 }
+//                 return best;
+//             }, { quality: -1, "usage-count": -1 });
+
+//             console.log("📌 Kết quả dịch:", bestMatch.translation);
+//             translatedText = bestMatch.translation || translatedText;
+
+//         }
+
+//         return translatedText || "Không có bản dịch phù hợp";
+//     } catch (error) {
+//         return `Lỗi dịch: ${error.message}`;
+//     }
+// };
 // dịch từ en sang vi
 const handleTranslate = async (req, res) => {
     let text = req.body.text;
@@ -61,7 +95,6 @@ const handleTranslate = async (req, res) => {
         res.status(500).json({ error: "Translate failed", details: error.message });
     }
 };
-
 
 
 export default {
