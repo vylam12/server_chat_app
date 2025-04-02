@@ -35,17 +35,16 @@ const translate = async (text, goal, target) => {
 
         if (matches?.length) {
             const bestMatch = matches.reduce((best, current) => {
-                const bestScore = calculateTranslationScore(best.match, best.quality, best["usage-count"]);
-                const currentScore = calculateTranslationScore(current.match, current.quality, current["usage-count"]);
-
-                if (currentScore > bestScore) {
+                if (current.quality > best.quality ||
+                    (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
                     return current;
                 }
                 return best;
-            }, { match: 0, quality: 0, "usage-count": 0 });
+            }, { quality: -1, "usage-count": -1 });
 
             console.log("📌 Kết quả dịch:", bestMatch.translation);
             translatedText = bestMatch.translation || translatedText;
+
         }
 
         if (translatedText.toLowerCase() === text.toLowerCase()) {
@@ -60,19 +59,6 @@ const translate = async (text, goal, target) => {
     }
 };
 
-const calculateTranslationScore = (match, quality, usageCount) => {
-    // Bạn có thể điều chỉnh các trọng số này nếu cần
-    const matchWeight = 0.5;   // Trọng số cho match
-    const qualityWeight = 0.3; // Trọng số cho quality
-    const usageCountWeight = 0.2; // Trọng số cho usage-count
-
-    // Chuyển quality và match về kiểu số để dễ so sánh
-    const matchValue = match * 100;  // Để so sánh cùng đơn vị phần trăm
-    const qualityValue = parseFloat(quality);  // Quality là kiểu chuỗi, cần chuyển thành số
-    const usageCountValue = usageCount;
-
-    return (matchValue * matchWeight) + (qualityValue * qualityWeight) + (usageCountValue * usageCountWeight);
-};
 const isBothEnglishOrVietnamese = (segment, translation) => {
     const englishRegex = /^[a-zA-Z0-9\s.,!?'-]*$/;
     const vietnameseRegex = /^[\u00C0-\u1EF9\u20AB\u2022\s.,!?'-]*$/; // Bao gồm các ký tự tiếng Việt
@@ -95,19 +81,19 @@ const isBothEnglishOrVietnamese = (segment, translation) => {
 //             match.translation?.trim() && !match.translation.includes("[object")
 //         );
 
-//         if (matches?.length) {
-//             const bestMatch = matches.reduce((best, current) => {
-//                 if (current.quality > best.quality ||
-//                     (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
-//                     return current;
-//                 }
-//                 return best;
-//             }, { quality: -1, "usage-count": -1 });
-
-//             console.log("📌 Kết quả dịch:", bestMatch.translation);
-//             translatedText = bestMatch.translation || translatedText;
-
+// if (matches?.length) {
+//     const bestMatch = matches.reduce((best, current) => {
+//         if (current.quality > best.quality ||
+//             (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
+//             return current;
 //         }
+//         return best;
+//     }, { quality: -1, "usage-count": -1 });
+
+//     console.log("📌 Kết quả dịch:", bestMatch.translation);
+//     translatedText = bestMatch.translation || translatedText;
+
+// }
 
 //         return translatedText || "Không có bản dịch phù hợp";
 //     } catch (error) {
