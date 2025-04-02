@@ -2,6 +2,10 @@ import axios from "axios";
 import fetch from "node-fetch";
 const translate = async (text, target, goal) => {
     try {
+        if (!text || !target || !goal) {
+            throw new Error("Missing required parameters (text, target, or goal).");
+        }
+
         const res = await fetch("https://libretranslate.com/translate", {
             method: "POST",
             body: JSON.stringify({
