@@ -1,22 +1,33 @@
 import axios from "axios";
 import fetch from "node-fetch";
 const translate = async (text, target, goal) => {
-    const res = await fetch("https://libretranslate.com/translate", {
-        method: "POST",
-        body: JSON.stringify({
-            q: text,
-            source: goal,
-            target: target,
-        }),
-        headers: { "Content-Type": "application/json" },
-    });
-    if (!res.ok) {
-        throw new Error(`API Error: ${res.statusText}`);
-    }
-    const data = await res.json();
-    console.log("Full API Response:", data);  // In toàn bộ phản hồi từ API
-    console.log("Translated Text:", data.translatedText);
+    try {
+        const res = await fetch("https://libretranslate.com/translate", {
+            method: "POST",
+            body: JSON.stringify({
+                q: text,
+                source: goal,  // Ngôn ngữ nguồn (ví dụ: 'en' cho tiếng Anh)
+                target: target,  // Ngôn ngữ đích (ví dụ: 'vi' cho tiếng Việt)
+            }),
+            headers: { "Content-Type": "application/json" },
+        });
 
+        // Kiểm tra lỗi trả về từ API
+        if (!res.ok) {
+            throw new Error(`API Error: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        console.log("Full API Response:", data);  // In toàn bộ phản hồi từ API
+        if (data && data.translatedText) {
+            return data.translatedText;
+        } else {
+            throw new Error("No translated text found in response.");
+        }
+    } catch (error) {
+        console.error("Translation Error:", error.message);
+        throw error;
+    }
     // try {
     //     const response = await axios.get("https://api.mymemory.translated.net/get", {
     //         params: {
