@@ -23,7 +23,6 @@ const translate = async (text, goal, target) => {
 
         console.log("Tổng hợp:", response.data);
 
-        // Khởi tạo biến translatedText từ response chính
         let translatedText = response.data.responseData?.translatedText?.trim() || "";
 
         let matches = response.data.matches?.filter(match =>
@@ -35,12 +34,9 @@ const translate = async (text, goal, target) => {
         );
 
         if (matches?.length) {
-            // Tìm max usage count để chuẩn hóa
-            const maxUsageCount = Math.max(...matches.map(match => match["usage-count"]));
-
             const bestMatch = matches.reduce((best, current) => {
-                const bestScore = calculateTranslationScore(best.match, best.quality, best["usage-count"], maxUsageCount);
-                const currentScore = calculateTranslationScore(current.match, current.quality, current["usage-count"], maxUsageCount);
+                const bestScore = calculateTranslationScore(best.match, best.quality, best["usage-count"]);
+                const currentScore = calculateTranslationScore(current.match, current.quality, current["usage-count"]);
 
                 if (currentScore > bestScore) {
                     return current;
@@ -52,21 +48,6 @@ const translate = async (text, goal, target) => {
             translatedText = bestMatch.translation || translatedText;
         }
 
-        // Nếu có kết quả khớp, chọn bản dịch tốt nhất
-        // if (matches?.length) {
-        //     const bestMatch = matches.reduce((best, current) => {
-        //         if (current.quality > best.quality ||
-        //             (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
-        //             return current;
-        //         }
-        //         return best;
-        //     }, { quality: -1, "usage-count": -1 });
-
-        //     console.log("📌 Kết quả dịch:", bestMatch.translation);
-        //     translatedText = bestMatch.translation || translatedText;
-        // }
-
-        // Kiểm tra nếu bản dịch giống với nội dung gốc, chọn bản dịch khác
         if (translatedText.toLowerCase() === text.toLowerCase()) {
             console.log("📌 Nội dung gốc và bản dịch giống nhau. Sử dụng bản dịch khác.");
             translatedText = response.data.responseData?.translatedText || text;  // Lấy bản dịch khác nếu có
@@ -79,13 +60,18 @@ const translate = async (text, goal, target) => {
     }
 };
 
-const calculateTranslationScore = (match, quality, usageCount, maxUsageCount) => {
-    const matchScore = match * 50;
-    const qualityScore = quality * 0.3;
-    const usageScore = (usageCount / maxUsageCount) * 20;
+const calculateTranslationScore = (match, quality, usageCount) => {
+    // Bạn có thể điều chỉnh các trọng số này nếu cần
+    const matchWeight = 0.5;   // Trọng số cho match
+    const qualityWeight = 0.3; // Trọng số cho quality
+    const usageCountWeight = 0.2; // Trọng số cho usage-count
 
-    const totalScore = matchScore + qualityScore + usageScore;
-    return totalScore;
+    // Chuyển quality và match về kiểu số để dễ so sánh
+    const matchValue = match * 100;  // Để so sánh cùng đơn vị phần trăm
+    const qualityValue = parseFloat(quality);  // Quality là kiểu chuỗi, cần chuyển thành số
+    const usageCountValue = usageCount;
+
+    return (matchValue * matchWeight) + (qualityValue * qualityWeight) + (usageCountValue * usageCountWeight);
 };
 const isBothEnglishOrVietnamese = (segment, translation) => {
     const englishRegex = /^[a-zA-Z0-9\s.,!?'-]*$/;
