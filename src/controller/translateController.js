@@ -2,22 +2,24 @@ import axios from "axios";
 
 const translate = async (text, target) => {
     console.log("Text: ", text);
-
     const apiKey = process.env.API_KEY;
     const appId = process.env.APP_ID;
-    const url = 'https://api.xfyun.cn/v1/aiui/translate';  // Endpoint của API dịch
+    const url = 'https://api.xfyun.cn/v1/aiui/translate'; // Kiểm tra URL API chính xác
 
     try {
         const response = await axios.post(url, {
             text: text,
-            target_lang: target,  // Ví dụ: 'zh' cho tiếng Trung, 'en' cho tiếng Anh
-            app_id: appId,  // App ID của bạn
+            target_lang: target,
+            app_id: appId,
             api_key: apiKey
         }, {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-API-KEY': apiKey  // Thêm key vào headers nếu cần thiết
             }
         });
+
+        console.log("Response Data: ", response.data);  // In toàn bộ phản hồi để kiểm tra
 
         if (response.data && response.data.translation) {
             console.log('Kết quả dịch:', response.data.translation);
@@ -28,6 +30,9 @@ const translate = async (text, target) => {
         }
     } catch (error) {
         console.error('Lỗi khi gọi API:', error.message);
+        if (error.response) {
+            console.error('Chi tiết lỗi từ API:', error.response.data);
+        }
         return 'Dịch thất bại';
     }
 

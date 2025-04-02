@@ -22,7 +22,6 @@ const initWebRoutes = (app) => {
     router.post("/update-result-quiz", quizController.handleUpdateResultQuiz)
     router.post("/check-user-vocabulary", quizController.handleCheckUserVocabulary);
 
-
     router.post("/register", authController.handleRegister)
     router.post("/login", authController.handleLogin)
     router.post("/forgot-password-otp", authController.handleForgotPassword)
