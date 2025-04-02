@@ -10,8 +10,11 @@ const translate = async (text, target, goal) => {
         }),
         headers: { "Content-Type": "application/json" },
     });
-
+    if (!res.ok) {
+        throw new Error(`API Error: ${res.statusText}`);
+    }
     const data = await res.json();
+    console.log("Full API Response:", data);  // In toàn bộ phản hồi từ API
     console.log("Translated Text:", data.translatedText);
 
     // try {
