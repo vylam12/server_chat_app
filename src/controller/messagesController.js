@@ -31,7 +31,7 @@ const handleCreateChat = async (req, res) => {
         console.log("📌 Nội dung gốc:", content);
 
         // Xác định ngôn ngữ
-        let detectedLang = await detectLanguage(content);
+        let detectedLang = await translateController.detectLanguage(content);
 
         // Nếu là tiếng Việt, dịch sang tiếng Anh
         if (detectedLang === "vi") {
@@ -141,7 +141,7 @@ const handleSendMessage = async (req, res) => {
         console.log("📌 Nội dung gốc:", content);
 
         // Xác định ngôn ngữ
-        let detectedLang = await detectLanguage(content);
+        let detectedLang = await translateController.detectLanguage(content);
 
         // Nếu là tiếng Việt, dịch sang tiếng Anh
         if (detectedLang === "vi") {
