@@ -29,7 +29,7 @@ const translate = async (text, goal, target) => {
             match.translation?.trim() &&
             !match.translation.includes("[object") &&
             !match.translation.toLowerCase().includes("hôi") &&
-            !(match.translation.toLowerCase() === text.toLowerCase() && goal === target)
+            !(match.translation.toLowerCase() === text.toLowerCase() && match.source === match.target)
         );
 
         if (matches?.length) {
