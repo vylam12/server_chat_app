@@ -26,7 +26,10 @@ const translate = async (text, goal, target) => {
         let translatedText = response.data.responseData?.translatedText?.trim() || "";
 
         let matches = response.data.matches?.filter(match =>
-            match.translation?.trim() && !match.translation.includes("[object")
+            match.translation?.trim() &&
+            !match.translation.includes("[object") &&
+            !match.translation.toLowerCase().includes("hôi") &&
+            !(match.translation.toLowerCase() === text.toLowerCase() && goal === target)
         );
 
         if (matches?.length) {
