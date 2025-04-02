@@ -10,7 +10,7 @@ const translate = async (text, target, goal) => {
             target: target,
             format: 'text'
         }, {
-            timeout: 5000  // Timeout sau 5 giây nếu không có phản hồi
+            timeout: 10000 // Timeout sau 5 giây nếu không có phản hồi
         });
 
         console.log("API Response:", response);
