@@ -30,7 +30,8 @@ const translate = async (text, goal, target) => {
             match.translation?.trim() &&
             !match.translation.includes("[object") &&
             !match.translation.toLowerCase().includes("hôi") &&
-            !(match.translation.toLowerCase() === text.toLowerCase() && match.source === match.target)  // Điều kiện loại bỏ bản dịch giống gốc
+            !(match.translation.toLowerCase() === text.toLowerCase() && match.source === match.target) &&
+            (match.source !== match.target || !isBothEnglishOrVietnamese(match.segment, match.translation))
         );
 
         if (matches?.length) {
@@ -79,15 +80,20 @@ const translate = async (text, goal, target) => {
 };
 
 const calculateTranslationScore = (match, quality, usageCount, maxUsageCount) => {
-    // Tính toán tỷ lệ % của match, quality và usage-count
-    const matchScore = match * 50;  // match là tỷ lệ từ 0 đến 1, nhân với 50%
-    const qualityScore = quality * 0.3;  // quality là từ 0 đến 100, nhân với 30%
-    const usageScore = (usageCount / maxUsageCount) * 20;  // usage-count là số lần sử dụng, chuẩn hóa với maxUsageCount
+    const matchScore = match * 50;
+    const qualityScore = quality * 0.3;
+    const usageScore = (usageCount / maxUsageCount) * 20;
 
     const totalScore = matchScore + qualityScore + usageScore;
     return totalScore;
 };
+const isBothEnglishOrVietnamese = (segment, translation) => {
+    const englishRegex = /^[a-zA-Z0-9\s.,!?'-]*$/;
+    const vietnameseRegex = /^[\u00C0-\u1EF9\u20AB\u2022\s.,!?'-]*$/; // Bao gồm các ký tự tiếng Việt
 
+    return (englishRegex.test(segment) && englishRegex.test(translation)) ||
+        (vietnameseRegex.test(segment) && vietnameseRegex.test(translation));
+};
 // const translate = async (text, goal, target) => {
 //     try {
 //         const response = await axios.get("https://api.mymemory.translated.net/get", {
