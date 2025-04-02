@@ -28,9 +28,11 @@ const handleCreateChat = async (req, res) => {
         }
 
         let translatedContent = content;
+        console.log("Content trước khi dịch:", content);
         if (/[\u00C0-\u1EF9]/.test(content)) {
             translatedContent = await translateController.translate(content, "en", "vi");
         }
+        console.log("Content trước khi dịch:", content);
 
         // Kiểm tra xem cuộc trò chuyện đã tồn tại trong MongoDB
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
@@ -39,23 +41,23 @@ const handleCreateChat = async (req, res) => {
             chat = new Chat({
                 participants: [senderId, receiverId]
             });
-            await chat.save(); // MongoDB sẽ tự động tạo _id cho chat
+            await chat.save();
         }
 
-        // Sử dụng _id của chat MongoDB làm chatId
-        const chatId = chat._id.toString(); // Convert _id của MongoDB sang chuỗi nếu cần thiết
 
-        // Lưu tin nhắn vào MongoDB với cùng chatId
+        const chatId = chat._id.toString();
+
+
         const newMessage = new Message({
             content,
             translatedContent,
             id_sender: senderId,
-            chatId: chatId // Sử dụng chatId từ MongoDB
+            chatId: chatId
         });
         await newMessage.save();
 
-        // Kiểm tra xem Firestore đã có cuộc trò chuyện chưa
-        const chatRef = db.collection("chat").doc(chatId); // Dùng _id của MongoDB làm chatId cho Firestore
+
+        const chatRef = db.collection("chat").doc(chatId);
         const chatSnapshot = await chatRef.get();
 
         if (!chatSnapshot.exists) {
@@ -73,8 +75,6 @@ const handleCreateChat = async (req, res) => {
             translatedContent,
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
-
-
 
         console.log("Tạo tin nhắn thành công");
         const receiver = chat.participants.find(user => user._id.toString() !== senderId)
@@ -118,9 +118,11 @@ const handleSendMessage = async (req, res) => {
         }
 
         let translatedContent = content;
+        console.log("Content trước khi dịch:", content);
         if (/[\u00C0-\u1EF9]/.test(content)) {
             translatedContent = await translateController.translate(content, "en", "vi");
         }
+        console.log("Content sau khi dịch:", translatedContent);
 
         // Lưu tin nhắn vào MongoDB
         const newMessage = new Message({
