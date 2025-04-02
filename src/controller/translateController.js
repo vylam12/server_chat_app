@@ -1,4 +1,20 @@
 import axios from "axios";
+const detectLanguage = async (text) => {
+    try {
+        const response = await axios.get("https://api.mymemory.translated.net/get", {
+            params: { q: text, langpair: "en|vi" },
+        });
+
+        const translatedText = response.data.responseData.translatedText.toLowerCase();
+
+        // Nếu bản dịch giống hệt nội dung gốc, có thể nội dung gốc là tiếng Anh
+        return translatedText === text.toLowerCase() ? "en" : "vi";
+    } catch (error) {
+        console.error("Lỗi xác định ngôn ngữ:", error.message);
+        return "en"; // Mặc định là tiếng Anh nếu không xác định được
+    }
+};
+
 const translate = async (text, target, goal) => {
     try {
         const response = await axios.get("https://api.mymemory.translated.net/get", {
@@ -48,5 +64,5 @@ const handleTranslate = async (req, res) => {
 
 
 export default {
-    handleTranslate, translate
+    handleTranslate, translate, detectLanguage
 };

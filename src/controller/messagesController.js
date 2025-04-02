@@ -28,11 +28,26 @@ const handleCreateChat = async (req, res) => {
         }
 
         let translatedContent = content;
-        console.log("Content trước khi dịch:", content);
-        if (/[\u00C0-\u1EF9]/.test(content)) {
-            translatedContent = await translateController.translate(content, "vi", "en");
+        console.log("📌 Nội dung gốc:", content);
+
+        // Xác định ngôn ngữ
+        let detectedLang = await detectLanguage(content);
+
+        // Nếu là tiếng Việt, dịch sang tiếng Anh
+        if (detectedLang === "vi") {
+            translatedContent = await translateController.translate(content, "en", "vi");
+            console.log("📌 Đã dịch sang EN:", translatedContent);
+        } else {
+            console.log("📌 Nội dung là tiếng Anh, không dịch.");
         }
-        console.log("Content trước khi dịch:", content);
+
+
+        // let translatedContent = content;
+        // console.log("Content trước khi dịch:", content);
+        // if (/[\u00C0-\u1EF9]/.test(content)) {
+        //     translatedContent = await translateController.translate(content, "en", "vi");
+        // }
+        // console.log("Content trước khi dịch:", content);
 
         // Kiểm tra xem cuộc trò chuyện đã tồn tại trong MongoDB
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
@@ -123,11 +138,25 @@ const handleSendMessage = async (req, res) => {
         }
 
         let translatedContent = content;
-        console.log("Content trước khi dịch:", content);
-        if (/[\u00C0-\u1EF9]/.test(content)) {
-            translatedContent = await translateController.translate(content, "vi", "en");
+        console.log("📌 Nội dung gốc:", content);
+
+        // Xác định ngôn ngữ
+        let detectedLang = await detectLanguage(content);
+
+        // Nếu là tiếng Việt, dịch sang tiếng Anh
+        if (detectedLang === "vi") {
+            translatedContent = await translateController.translate(content, "en", "vi");
+            console.log("📌 Đã dịch sang EN:", translatedContent);
+        } else {
+            console.log("📌 Nội dung là tiếng Anh, không dịch.");
         }
-        console.log("Content sau khi dịch:", translatedContent);
+
+        // let translatedContent = content;
+        // console.log("Content trước khi dịch:", content);
+        // if (/[\u00C0-\u1EF9]/.test(content)) {
+        //     translatedContent = await translateController.translate(content, "en", "vi");
+        // }
+        // console.log("Content sau khi dịch:", translatedContent);
 
         // Lưu tin nhắn vào MongoDB
         const newMessage = new Message({
