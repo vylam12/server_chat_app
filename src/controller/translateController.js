@@ -13,20 +13,21 @@ const translate = async (text, target, goal) => {
         console.log("Tổng hợp:", response.data);
 
         let matches = response.data.matches?.filter(match =>
-            match.translation?.trim() && !match.translation.includes("[object") // Loại bỏ bản dịch lỗi
+            match.translation?.trim() && !match.translation.includes("[object")
         );
 
         if (matches?.length) {
             // Tìm bản dịch có quality cao nhất, nếu bằng nhau thì chọn usage-count cao nhất
-            const bestMatch = matches.reduce((best, current) => {
-                if (
-                    current.quality > best.quality ||
-                    (current.quality === best.quality && current["usage-count"] > best["usage-count"])
-                ) {
-                    return current;
-                }
-                return best;
-            }, { quality: -1, "usage-count": -1 });
+            const bestMatch = matches.find(match => match.translation.toLowerCase() !== text.toLowerCase()) ||
+                matches.reduce((best, current) => {
+                    if (
+                        current.quality > best.quality ||
+                        (current.quality === best.quality && current["usage-count"] > best["usage-count"])
+                    ) {
+                        return current;
+                    }
+                    return best;
+                }, { quality: -1, "usage-count": -1 });
 
             console.log("📌 Kết quả dịch:", bestMatch.translation);
             return bestMatch.translation;
