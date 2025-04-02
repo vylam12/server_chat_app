@@ -40,10 +40,11 @@ const translate = async (text, goal, target) => {
             }, { quality: -1, "usage-count": -1 });
 
             console.log("📌 Kết quả dịch:", bestMatch.translation);
-            return bestMatch.translation;
+            translatedText = bestMatch.translation || translatedText;
+
         }
 
-        return "Không có bản dịch phù hợp";
+        return translatedText || "Không có bản dịch phù hợp";
     } catch (error) {
         return `Lỗi dịch: ${error.message}`;
     }
