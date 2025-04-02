@@ -55,7 +55,7 @@ const handleTranslate = async (req, res) => {
     const target = "vi";
     const goal = "en";
     try {
-        const translation = await translate(text, target, goal);
+        const translation = await translate(text, goal, target);
         res.json({ translation });
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
