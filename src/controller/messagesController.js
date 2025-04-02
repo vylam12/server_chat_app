@@ -30,7 +30,7 @@ const handleCreateChat = async (req, res) => {
         let translatedContent = content;
         console.log("Content trước khi dịch:", content);
         if (/[\u00C0-\u1EF9]/.test(content)) {
-            translatedContent = await translateController.translate(content, "en", "vi");
+            translatedContent = await translateController.translate(content, "vi", "en");
         }
         console.log("Content trước khi dịch:", content);
 
@@ -125,7 +125,7 @@ const handleSendMessage = async (req, res) => {
         let translatedContent = content;
         console.log("Content trước khi dịch:", content);
         if (/[\u00C0-\u1EF9]/.test(content)) {
-            translatedContent = await translateController.translate(content, "en", "vi");
+            translatedContent = await translateController.translate(content, "vi", "en");
         }
         console.log("Content sau khi dịch:", translatedContent);
 
