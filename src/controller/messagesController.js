@@ -79,7 +79,7 @@ const handleCreateChat = async (req, res) => {
         });
 
         console.log("Tạo tin nhắn thành công");
-        const receiver = chat.participants.find(user => user.id !== senderId)
+        const receiver = await User.findOne({ id: receiverID });
         console.log("receiver kt fcm", receiver.fcmToken)
         if (receiver?.fcmToken) {
             const message = {
@@ -139,7 +139,8 @@ const handleSendMessage = async (req, res) => {
         });
 
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
-        const receiver = chat.participants.find(user => user.id !== senderId)
+
+        const receiver = await User.findOne({ id: receiverID });
         console.log("receiver kt fcm", receiver)
         if (receiver?.fcmToken) {
             const message = {
