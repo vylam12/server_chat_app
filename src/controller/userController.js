@@ -78,12 +78,12 @@ const handleFindFriend = async (req, res) => {
         }
 
         console.log("keết quả find friend", friends.map(friend => ({
-            id: friend._id.toString(),
+            id: friend.id.toString(),
             fullname: friend.fullname,
             avatar: friend.avatar
         })));
         return res.status(200).json(friends.map(friend => ({
-            id: friend._id.toString(),
+            id: friend.id.toString(),
             fullname: friend.fullname,
             avatar: friend.avatar
         })));

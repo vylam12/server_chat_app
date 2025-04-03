@@ -6,9 +6,7 @@ import emailService from "../utils/emailService.js";
 
 const handleRegister = async (req, res) => {
     try {
-        const email = req.body.email;
-        const password = req.body.password;
-        const fullname = req.body.fullname;
+        const { email, password, fullname } = req.body;
 
         const userRecord = await auth.createUser({
             email: email,
