@@ -119,7 +119,7 @@ const handleSendMessage = async (req, res) => {
         }
         console.log("Content sau khi dịch:", translatedContent);
 
-        // Lưu tin nhắn vào MongoDB
+
         const newMessage = new Message({
             content: content,
             translatedContent: translatedContent,
@@ -137,17 +137,21 @@ const handleSendMessage = async (req, res) => {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             isRead: false
         });
-
+        // Lấy thông tin chat và tham gia (participants)
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
         console.log("chat: ", chat);
+
+        // Tìm người nhận tin nhắn
+        let receiver;
         try {
             const receiverId = chat.participants.find(id => id !== senderId);
             console.log("receiverId: ", receiverId);
 
-            const receiver = await User.findOne({ id: receiverId });
+            // Tìm người nhận theo id
+            receiver = await User.findOne({ id: receiverId });
             console.log("receiver: ", receiver);
         } catch (error) {
-            console.error("Lỗi xảy ra:", error);
+            console.error("Lỗi xảy ra khi tìm receiver:", error);
         }
 
         if (receiver?.fcmToken) {
