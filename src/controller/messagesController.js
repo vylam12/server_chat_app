@@ -37,7 +37,6 @@ const handleCreateChat = async (req, res) => {
         console.log("Content sau khi dịch:", translatedContent);
 
 
-
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
 
         if (!chat) {
@@ -49,7 +48,6 @@ const handleCreateChat = async (req, res) => {
 
 
         const chatId = chat._id.toString();
-
 
         const newMessage = new Message({
             content: content,
@@ -76,7 +74,8 @@ const handleCreateChat = async (req, res) => {
             senderId,
             content,
             translatedContent,
-            timestamp: admin.firestore.FieldValue.serverTimestamp()
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            isRead: false
         });
 
         console.log("Tạo tin nhắn thành công");
@@ -124,8 +123,7 @@ const handleSendMessage = async (req, res) => {
             content: content,
             translatedContent: translatedContent,
             id_sender: senderId,
-            chatId,
-            isRead: false
+            chatId
         });
         const savedMessage = await newMessage.save();
 
@@ -136,7 +134,7 @@ const handleSendMessage = async (req, res) => {
             content,
             translatedContent,
             isRead: false,
-            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
 
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");

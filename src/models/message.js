@@ -13,10 +13,6 @@ const messageSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
         required: true
-    },
-    isRead: {
-        type: Boolean,
-        default: false
     }
 },
     { timestamps: true }
