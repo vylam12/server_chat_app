@@ -139,7 +139,7 @@ const handleSendMessage = async (req, res) => {
         });
 
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
-
+        console.log("chat: ", chat);
         try {
             const receiverId = chat.participants.find(id => id !== senderId);
             console.log("receiverId: ", receiverId);
