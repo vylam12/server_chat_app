@@ -80,7 +80,7 @@ const handleCreateChat = async (req, res) => {
 
         console.log("Tạo tin nhắn thành công");
         const receiver = chat.participants.find(user => user.id !== senderId)
-        console.log("receiver kt fcm", receiver)
+        console.log("receiver kt fcm", receiver.fcmToken)
         if (receiver?.fcmToken) {
             const message = {
                 notification: {
