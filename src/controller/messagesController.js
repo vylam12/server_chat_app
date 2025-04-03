@@ -139,7 +139,9 @@ const handleSendMessage = async (req, res) => {
         });
 
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
+
         const receiverId = chat.participants.find(id => id !== senderId);
+        console.log("receiver kt fcm", receiverId)
         const receiver = await User.findOne({ id: receiverId });
         console.log("receiver kt fcm", receiver)
         if (receiver?.fcmToken) {
