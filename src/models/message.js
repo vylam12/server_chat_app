@@ -10,7 +10,7 @@ const messageSchema = new mongoose.Schema({
     },
     translatedContent: { type: String },
     id_sender: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: "user",
         required: true
     }
