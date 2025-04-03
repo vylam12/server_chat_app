@@ -140,10 +140,16 @@ const handleSendMessage = async (req, res) => {
 
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
 
-        const receiverId = chat.participants.find(id => id !== senderId);
-        console.log("receiver kt fcm", receiverId)
-        const receiver = await User.findOne({ id: receiverId });
-        console.log("receiver kt fcm", receiver)
+        try {
+            const receiverId = chat.participants.find(id => id !== senderId);
+            console.log("receiverId: ", receiverId);
+
+            const receiver = await User.findOne({ id: receiverId });
+            console.log("receiver: ", receiver);
+        } catch (error) {
+            console.error("Lỗi xảy ra:", error);
+        }
+
         if (receiver?.fcmToken) {
             const message = {
                 notification: {
