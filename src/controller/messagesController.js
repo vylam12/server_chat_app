@@ -140,31 +140,31 @@ const handleSendMessage = async (req, res) => {
 
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
 
-        const receiverId = chat.participants.find(id => id !== senderId);
-        console.log("receiver kt fcm", receiverId)
-        const receiver = await User.findOne({ id: receiverId });
-        console.log("receiver kt fcm", receiver)
-        if (receiver?.fcmToken) {
-            const message = {
-                notification: {
-                    title: "New Message from ChatApp",
-                    body: content
-                },
-                token: receiver.fcmToken
-            };
+        const receiverId = chat.participants.find(user.id => user.id !== senderId);
+console.log("receiver kt fcm", receiverId)
+const receiver = await User.findOne({ id: receiverId });
+console.log("receiver kt fcm", receiver)
+if (receiver?.fcmToken) {
+    const message = {
+        notification: {
+            title: "New Message from ChatApp",
+            body: content
+        },
+        token: receiver.fcmToken
+    };
 
-            await admin.messaging().send(message);
-            console.log("Notification sent!");
-        }
-        res.status(201).json({
-            message: "Tin nhắn đã được gửi thành công!",
-            newMessage: savedMessage.toObject(),
-        });
+    await admin.messaging().send(message);
+    console.log("Notification sent!");
+}
+res.status(201).json({
+    message: "Tin nhắn đã được gửi thành công!",
+    newMessage: savedMessage.toObject(),
+});
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Lỗi server" });
-    }
+    console.error(error);
+    res.status(500).json({ error: "Lỗi server" });
+}
 };
 
 const handleGetMessages = async (req, res) => {
