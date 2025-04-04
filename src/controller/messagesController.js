@@ -138,30 +138,31 @@ const handleSendMessage = async (req, res) => {
             isRead: false
         });
         console.log("Luu firebase thanh cong");
-        // const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
-        // console.log("chat: ", chat);
+
+        const chat = await Chat.findById(chatId);
+        console.log("chat: ", chat);
 
 
 
-        // const receiverId = chat.participants.find(id => id !== senderId);
-        // console.log("receiverId: ", receiverId);
+        const receiverId = chat.participants.find(id => id !== senderId);
+        console.log("receiverId: ", receiverId);
 
-        // const receiver = await User.findOne({ id: receiverId });
-        // console.log("receiver: ", receiver);
+        const receiver = await User.findOne({ id: receiverId });
+        console.log("receiver: ", receiver);
 
 
-        // if (receiver?.fcmToken) {
-        //     const message = {
-        //         notification: {
-        //             title: "New Message from ChatApp",
-        //             body: content
-        //         },
-        //         token: receiver.fcmToken
-        //     };
+        if (receiver?.fcmToken) {
+            const message = {
+                notification: {
+                    title: "New Message from ChatApp",
+                    body: content
+                },
+                token: receiver.fcmToken
+            };
 
-        //     await admin.messaging().send(message);
-        //     console.log("Notification sent!");
-        // }
+            await admin.messaging().send(message);
+            console.log("Notification sent!");
+        }
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
             newMessage: newMessage.toObject(),
