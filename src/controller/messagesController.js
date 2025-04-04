@@ -137,35 +137,31 @@ const handleSendMessage = async (req, res) => {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             isRead: false
         });
-        // Lấy thông tin chat và tham gia (participants)
+
         const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
         console.log("chat: ", chat);
 
-        // Tìm người nhận tin nhắn
-        let receiver;
-        try {
-            const receiverId = chat.participants.find(id => id !== senderId);
-            console.log("receiverId: ", receiverId);
 
-            // Tìm người nhận theo id
-            receiver = await User.findOne({ id: receiverId });
-            console.log("receiver: ", receiver);
-        } catch (error) {
-            console.error("Lỗi xảy ra khi tìm receiver:", error);
-        }
 
-        if (receiver?.fcmToken) {
-            const message = {
-                notification: {
-                    title: "New Message from ChatApp",
-                    body: content
-                },
-                token: receiver.fcmToken
-            };
+        // const receiverId = chat.participants.find(id => id !== senderId);
+        // console.log("receiverId: ", receiverId);
 
-            await admin.messaging().send(message);
-            console.log("Notification sent!");
-        }
+        // const receiver = await User.findOne({ id: receiverId });
+        // console.log("receiver: ", receiver);
+
+
+        // if (receiver?.fcmToken) {
+        //     const message = {
+        //         notification: {
+        //             title: "New Message from ChatApp",
+        //             body: content
+        //         },
+        //         token: receiver.fcmToken
+        //     };
+
+        //     await admin.messaging().send(message);
+        //     console.log("Notification sent!");
+        // }
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
             newMessage: savedMessage.toObject(),
