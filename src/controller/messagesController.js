@@ -124,7 +124,7 @@ const handleSendMessage = async (req, res) => {
             content: content,
             translatedContent: translatedContent,
             id_sender: senderId,
-            chatId
+            chatId: chatId
         });
         await newMessage.save();
 
@@ -137,9 +137,9 @@ const handleSendMessage = async (req, res) => {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             isRead: false
         });
-
-        const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
-        console.log("chat: ", chat);
+        console.log("Luu firebase thanh cong");
+        // const chat = await Chat.findById(chatId).populate("participants", "fcmToken");
+        // console.log("chat: ", chat);
 
 
 
@@ -164,7 +164,7 @@ const handleSendMessage = async (req, res) => {
         // }
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
-            newMessage: savedMessage.toObject(),
+            newMessage: newMessage.toObject(),
         });
 
     } catch (error) {
