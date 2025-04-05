@@ -88,6 +88,9 @@ const handleCreateChat = async (req, res) => {
                     title: `${sender.fullname}`,
                     body: translatedContent
                 },
+                data: {
+                    image: sender.avatar
+                },
                 token: receiver.fcmToken
             };
 
@@ -149,6 +152,9 @@ const handleSendMessage = async (req, res) => {
                 notification: {
                     title: `${sender.fullname}`,
                     body: translatedContent
+                },
+                data: {
+                    image: sender.avatar
                 },
                 token: receiver.fcmToken
             };
