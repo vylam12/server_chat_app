@@ -3,6 +3,8 @@ import Vocabulary from "../models/vocabulary.js";
 import UserVocabulary from "../models/userVocabulary.js";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime.js';
+import Quiz from "../models/quiz.js";
+import Question from "../models/question.js";
 dayjs.extend(relativeTime);
 function selectWordsForQuiz(vocabList, count) {
     // Sắp xếp từ ít thành thạo đến nhiều thành thạo
@@ -155,7 +157,6 @@ const handleGetListSaveVocab = async (req, res) => {
             const questions = await Question.find({ "vocabulary._id": vocab._id }).select("_id");
             const questionIds = questions.map(q => q._id.toString());
 
-            let lastReviewTime = null;
 
             if (questionIds.length > 0) {
                 const lastQuiz = await Quiz.findOne({
