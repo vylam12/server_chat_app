@@ -157,7 +157,7 @@ const handleGetListSaveVocab = async (req, res) => {
             const questions = await Question.find({ "vocabulary._id": vocab._id }).select("_id");
             const questionIds = questions.map(q => q._id.toString());
 
-
+            let lastReviewedText = null;
             if (questionIds.length > 0) {
                 const lastQuiz = await Quiz.findOne({
                     _idUser: userId,
@@ -165,8 +165,6 @@ const handleGetListSaveVocab = async (req, res) => {
                 }).sort({ createdAt: -1 });
 
                 if (lastQuiz) {
-                    lastReviewTime = lastQuiz.createdAt;
-                    lastReviewedDaysAgo = dayjs().diff(dayjs(lastQuiz.createdAt), 'day');
                     lastReviewedText = dayjs(lastQuiz.createdAt).fromNow();
                 }
             }
