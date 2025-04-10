@@ -82,9 +82,8 @@ const handleQuizCreation = async (req, res) => {
         const numberOfWords = Math.min(5, vocabularyList.length);
         const selectedWords = vocabularyController.selectWordsForQuiz(vocabularyList, numberOfWords);
 
-        // Tìm các từ đã có câu hỏi trong collection Question
         const existingQuestions = await Question.find({ "vocabulary._id": { $in: selectedWords.map(w => w._id) } });
-        // Nhóm câu hỏi theo từ vựng
+
         const existingQuestionsMap = existingQuestions.reduce((map, question) => {
             const wordId = question.vocabulary._id.toString();
             if (!map[wordId]) map[wordId] = [];

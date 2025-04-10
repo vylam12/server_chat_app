@@ -68,7 +68,6 @@ const handleCreateChat = async (req, res) => {
             });
         }
 
-        // Lưu tin nhắn vào Firestore với cùng chatId
         const messageRef = chatRef.collection("messages").doc(newMessage._id.toString());
         await messageRef.set({
             senderId,

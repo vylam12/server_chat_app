@@ -7,7 +7,9 @@ const handleGetUser = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ error: "Thiếu userId" });
         }
-        const user = await User.find({ userId }).sort({ createdAt: 1 });
+        const user = await User.findOne({ id: userId })
+            .select("id email avatar fullname")
+            .sort({ createdAt: 1 });
         res.status(200).json({
             user: user
         });

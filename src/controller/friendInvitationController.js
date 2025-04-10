@@ -148,8 +148,19 @@ const isFriend = async (userId, friendId) => {
 
     return !!friendship;
 };
+const handleUnfriend = async (req, res) => {
+    const { idUser, idFriend } = req.body;
 
+    await FriendInvitation.findOneAndDelete({
+        $or: [
+            { id_sender: idFriend, id_receiver: idUser, status: "accepted" },
+            { id_sender: idUser, id_receiver: idFriend, status: "accepted" }
+        ]
+    });
+
+    return res.status(200).json({ message: "Unfriended successfully" });
+};
 export default {
     handleInvited, handleAcceptInvited, handleGetFriend, handleGetFriendInvited,
-    isFriend
+    isFriend, handleUnfriend
 };

@@ -131,9 +131,23 @@ const handleDeleteVocabulary = async (req, res) => {
         return res.status(500).json({ error: "Delete vocabulary failed", details: error.message });
     }
 };
+const handleGetListSaveVocab = async (req, res) => {
+    try {
+        const { userId } = req.params;
 
+        if (!userId) {
+            return res.status(400).json({ error: "Missing userId" });
+        }
+        const listVocab = await UserVocabulary.find({ _idUser: userId })
+            .populate('_idVocabulary', 'word meanings')
+
+        return res.json({ data: listVocab });
+    } catch (error) {
+        return res.status(500).json({ error: "Delete vocabulary failed", details: error.message });
+    }
+};
 
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
-    handleDeleteVocabulary
+    handleDeleteVocabulary, handleGetListSaveVocab
 };
