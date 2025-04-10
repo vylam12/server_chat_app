@@ -14,6 +14,7 @@ const initWebRoutes = (app) => {
 
     router.post("/findVocabulary", vocabularyController.handleFindVocabulary)
     router.post("/saveVocabulary", vocabularyController.handleSaveVocabulary)
+    router.get("/get-list-saveVocab/:userId", vocabularyController.handleGetListSaveVocab)
     router.post("/deleteVocabulary", vocabularyController.handleDeleteVocabulary)
 
     router.post("/generate-quiz", quizController.handleQuizCreation)
@@ -30,6 +31,7 @@ const initWebRoutes = (app) => {
     //gửi lời mời kết bạn
     router.post("/friend-invited", friendInvitationController.handleInvited)
     router.post("/accept-friend-invited", friendInvitationController.handleAcceptInvited)
+    router.post("/unfriend", friendInvitationController.handleUnfriend)
     //lấy list bạn bè
     router.get("/get-friend/:userId", friendInvitationController.handleGetFriend)
     //lấy list lời mời kết bạn

@@ -1,6 +1,9 @@
 import axios from "axios";
 import Vocabulary from "../models/vocabulary.js";
 import UserVocabulary from "../models/userVocabulary.js";
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 function selectWordsForQuiz(vocabList, count) {
     // Sắp xếp từ ít thành thạo đến nhiều thành thạo
     const sortedList = vocabList.sort((a, b) => {
@@ -138,12 +141,45 @@ const handleGetListSaveVocab = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ error: "Missing userId" });
         }
-        const listVocab = await UserVocabulary.find({ _idUser: userId })
-            .populate('_idVocabulary', 'word meanings')
 
-        return res.json({ data: listVocab });
+        const listVocab = await UserVocabulary.find({ _idUser: userId })
+            .populate('_idVocabulary', 'word meanings');
+
+        const result = [];
+
+        for (const item of listVocab) {
+            const vocab = item._idVocabulary;
+            if (!vocab) continue;
+
+
+            const questions = await Question.find({ "vocabulary._id": vocab._id }).select("_id");
+            const questionIds = questions.map(q => q._id.toString());
+
+            let lastReviewTime = null;
+
+            if (questionIds.length > 0) {
+                const lastQuiz = await Quiz.findOne({
+                    _idUser: userId,
+                    _idQuestion: { $in: questionIds }
+                }).sort({ createdAt: -1 });
+
+                if (lastQuiz) {
+                    lastReviewTime = lastQuiz.createdAt;
+                    lastReviewedDaysAgo = dayjs().diff(dayjs(lastQuiz.createdAt), 'day');
+                    lastReviewedText = dayjs(lastQuiz.createdAt).fromNow();
+                }
+            }
+
+            result.push({
+                word: vocab.word,
+                meanings: vocab.meanings,
+                timepractice: lastReviewedText,
+            });
+        }
+
+        return res.json({ data: result });
     } catch (error) {
-        return res.status(500).json({ error: "Delete vocabulary failed", details: error.message });
+        return res.status(500).json({ error: "Get saved vocab failed", details: error.message });
     }
 };
 
