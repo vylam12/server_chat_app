@@ -2,7 +2,7 @@ import axios from "axios";
 import Vocabulary from "../models/vocabulary.js";
 import UserVocabulary from "../models/userVocabulary.js";
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import relativeTime from 'dayjs/plugin/relativeTime.js';
 dayjs.extend(relativeTime);
 function selectWordsForQuiz(vocabList, count) {
     // Sắp xếp từ ít thành thạo đến nhiều thành thạo
