@@ -175,9 +175,11 @@ const handleGetListSaveVocab = async (req, res) => {
             }
 
             const { quizAttempts, correctAnswers, wrongAnswers } = item;
+            const totalAnswers = correctAnswers + wrongAnswers;
             let proficiency = 0;
             if (quizAttempts > 0) {
-                proficiency = Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * 100);
+                const weight = Math.min(totalAnswers / 10, 1);
+                proficiency = Math.round(correctAnswers / totalAnswers * weight * 100);
             }
 
             result.push({
