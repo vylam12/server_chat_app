@@ -1,4 +1,5 @@
 import axios from "axios";
+import { translate } from '@vitalets/google-translate-api';
 const detectLanguage = async (text) => {
     try {
         const response = await axios.get("https://api.mymemory.translated.net/get", {
@@ -49,7 +50,7 @@ const translate = async (text, goal, target) => {
 
         if (translatedText.toLowerCase() === text.toLowerCase()) {
             console.log("📌 Nội dung gốc và bản dịch giống nhau. Sử dụng bản dịch khác.");
-            translatedText = response.data.responseData?.translatedText || text;  // Lấy bản dịch khác nếu có
+            translatedText = response.data.responseData?.translatedText || text;
         }
 
         return translatedText || "Không có bản dịch phù hợp";
@@ -69,14 +70,14 @@ const isBothEnglishOrVietnamese = (segment, translation) => {
 
 const handleTranslate = async (req, res) => {
     let text = req.body.text;
-    const target = "vi";
-    const goal = "en";
-    try {
-        const translation = await translate(text, goal, target);
-        res.json({ translation });
-    } catch (error) {
-        res.status(500).json({ error: "Translate failed", details: error.message });
-    }
+    // const target = "vi";
+    // const goal = "en";
+    // try {
+    //     const translation = await translate(text, goal, target);
+    //     res.json({ translation });
+    // } catch (error) {
+    //     res.status(500).json({ error: "Translate failed", details: error.message });
+    // }
 };
 
 
