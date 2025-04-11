@@ -169,10 +169,24 @@ const handleGetListSaveVocab = async (req, res) => {
                 }
             }
 
+            let firstMeaning = "";
+            if (vocab.meanings?.length > 0 && vocab.meanings[0].definitions?.length > 0) {
+                firstMeaning = vocab.meanings[0].definitions[0].definition;
+            }
+
+            const { quizAttempts, correctAnswers } = item;
+            let proficiency = 0;
+            if (quizAttempts > 0) {
+                proficiency = Math.round((correctAnswers / quizAttempts) * 100);
+            }
+
+
+
             result.push({
                 word: vocab.word,
-                meanings: vocab.meanings,
-                timepractice: lastReviewedText,
+                meanings: firstMeaning,
+                timepractice: lastReviewedText || "Never studied",
+                proficiency: proficiency,
             });
         }
 
