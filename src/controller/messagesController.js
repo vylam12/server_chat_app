@@ -30,8 +30,8 @@ const handleCreateChat = async (req, res) => {
 
         let translatedContent = content;
 
-        translatedContent = await translate(content, { to: 'en' });
-
+        const translatedResult = await translate(content, { to: 'en' });
+        translatedContent = translatedResult.text;
         console.log("Content sau khi dịch:", translatedContent);
 
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
@@ -109,8 +109,9 @@ const handleSendMessage = async (req, res) => {
         }
 
         let translatedContent = content;
-        translatedContent = await translate(content, { to: 'en' });
-        console.log("Content sau khi dịch:", translatedContent);
+
+        const translatedResult = await translate(content, { to: 'en' });
+        translatedContent = translatedResult.text;
 
 
         const newMessage = new Message({
