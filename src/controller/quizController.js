@@ -225,9 +225,21 @@ const handleGetHistoryQuiz = async (req, res) => {
             return res.status(400).json({ error: "Missing userId" });
         }
 
-        const listQuiz = await Quiz.countDocuments({ _idUser: userId });
-
-        return res.json({ listQuiz: listQuiz });
+        const listQuiz = await Quiz.countDocuments({ _idUser: userId }).sort({ createdAt: -1 });
+        const formattedQuiz = listQuiz.map(quiz => ({
+            _id: quiz._id,
+            totalQuestion: quiz.totalQuestion,
+            countCorrect: quiz.countCorrect,
+            timeTaken: quiz.timeTaken,
+            createdAt: new Date(quiz.createdAt).toLocaleDateString('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            })
+        }));
+        return res.json({ listQuiz: formattedQuiz });
     } catch (error) {
         return res.status(500).json({ error: "Failed to check vocabulary count", details: error.message });
     }
