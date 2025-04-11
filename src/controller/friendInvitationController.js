@@ -150,7 +150,7 @@ const isFriend = async (userId, friendId) => {
 };
 const handleUnfriend = async (req, res) => {
     const { idUser, idFriend } = req.body;
-
+    console.log("handleUnfriend: ", idUser, "   ", idFriend)
     await FriendInvitation.findOneAndDelete({
         $or: [
             { id_sender: idFriend, id_receiver: idUser, status: "accepted" },
@@ -158,6 +158,12 @@ const handleUnfriend = async (req, res) => {
         ]
     });
 
+    if (!deleted) {
+        console.log("Friendship not found")
+        return res.status(404).json({ message: "Friendship not found" });
+    } else {
+        console.log("Đã xóa thành công:", deleted);
+    }
     return res.status(200).json({ message: "Unfriended successfully" });
 };
 export default {
