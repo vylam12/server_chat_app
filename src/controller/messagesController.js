@@ -2,9 +2,10 @@ import { db } from "../config/firebase.js";
 import translateController from "./translateController.js";
 import Chat from "../models/chat.js";
 import admin from "firebase-admin";
+import translate from '@iamtraction/google-translate';
 import User from "../models/user.js";
 import Message from "../models/message.js";
-
+// KIỂM TRA CUỘC TRÒ CHUYỆN TỒN TẠI
 const checkExistingChat = async (req, res) => {
     try {
         const { receiverId, senderId } = req.body;
@@ -19,7 +20,7 @@ const checkExistingChat = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 }
-
+//TẠO TIN NHẮN
 const handleCreateChat = async (req, res) => {
     try {
         const { receiverId, senderId, content } = req.body;
@@ -29,13 +30,9 @@ const handleCreateChat = async (req, res) => {
 
         let translatedContent = content;
 
-        console.log("Content trước khi dịch:", translatedContent);
-        console.log(/[\u00C0-\u1EF9]/.test(content))
-        if (/[\u00C0-\u1EF9]/.test(content)) {
-            translatedContent = await translateController.translate(content, "vi", "en");
-        }
-        console.log("Content sau khi dịch:", translatedContent);
+        translatedContent = await translate(content, { to: 'en' });
 
+        console.log("Content sau khi dịch:", translatedContent);
 
         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
 
@@ -103,7 +100,7 @@ const handleCreateChat = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 };
-
+//GỬI TIN NHẮN
 const handleSendMessage = async (req, res) => {
     try {
         const { chatId, senderId, content } = req.body;
@@ -112,13 +109,7 @@ const handleSendMessage = async (req, res) => {
         }
 
         let translatedContent = content;
-        console.log("📌 Nội dung gốc:", content);
-
-        console.log("Content trước khi dịch:", translatedContent);
-        console.log(/[\u00C0-\u1EF9]/.test(content))
-        if (/[\u00C0-\u1EF9]/.test(content)) {
-            translatedContent = await translateController.translate(content, "vi", "en");
-        }
+        translatedContent = await translate(content, { to: 'en' });
         console.log("Content sau khi dịch:", translatedContent);
 
 
@@ -289,7 +280,7 @@ const getListChat = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 };
-
+//XÓA TIN NHẮN
 const handleDeleteChat = async (req, res) => {
     try {
         const { chatId } = req.body;
@@ -318,6 +309,7 @@ const handleDeleteChat = async (req, res) => {
     }
 }
 
+//LƯU FCM TOKEN ĐỂ GỬI THÔNG BÁO TIN NHẮN
 const saveFCMToken = async (req, res) => {
     try {
         const { userId, fcmToken } = req.body;
