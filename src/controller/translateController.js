@@ -80,7 +80,7 @@ const handleTranslate = async (req, res) => {
     // }
 
     try {
-        const result = await translate(text, { to: en });
+        const result = await translate(text, { to: 'en' });
         return res.json({ translation: result.text });
     } catch (error) {
         console.error('Translate error:', error);
