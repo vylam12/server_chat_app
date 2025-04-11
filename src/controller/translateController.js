@@ -16,49 +16,49 @@ const detectLanguage = async (text) => {
     }
 };
 
-const translate = async (text, goal, target) => {
-    try {
-        const response = await axios.get("https://api.mymemory.translated.net/get", {
-            params: { q: text, langpair: `${goal}|${target}` },
-        });
+// const translate = async (text, goal, target) => {
+//     try {
+//         const response = await axios.get("https://api.mymemory.translated.net/get", {
+//             params: { q: text, langpair: `${goal}|${target}` },
+//         });
 
-        console.log("Tổng hợp:", response.data);
+//         console.log("Tổng hợp:", response.data);
 
-        let translatedText = response.data.responseData?.translatedText?.trim() || "";
+//         let translatedText = response.data.responseData?.translatedText?.trim() || "";
 
-        let matches = response.data.matches?.filter(match =>
-            match.translation?.trim() &&
-            !match.translation.includes("[object") &&
-            !match.translation.toLowerCase().includes("hôi") &&
-            !(match.translation.toLowerCase() === text.toLowerCase() && match.source === match.target) &&
-            (match.source !== match.target || !isBothEnglishOrVietnamese(match.segment, match.translation))
-        );
+//         let matches = response.data.matches?.filter(match =>
+//             match.translation?.trim() &&
+//             !match.translation.includes("[object") &&
+//             !match.translation.toLowerCase().includes("hôi") &&
+//             !(match.translation.toLowerCase() === text.toLowerCase() && match.source === match.target) &&
+//             (match.source !== match.target || !isBothEnglishOrVietnamese(match.segment, match.translation))
+//         );
 
-        if (matches?.length) {
-            const bestMatch = matches.reduce((best, current) => {
-                if (current.quality > best.quality ||
-                    (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
-                    return current;
-                }
-                return best;
-            }, { quality: -1, "usage-count": -1 });
+//         if (matches?.length) {
+//             const bestMatch = matches.reduce((best, current) => {
+//                 if (current.quality > best.quality ||
+//                     (current.quality === best.quality && current["usage-count"] > best["usage-count"])) {
+//                     return current;
+//                 }
+//                 return best;
+//             }, { quality: -1, "usage-count": -1 });
 
-            console.log("📌 Kết quả dịch:", bestMatch.translation);
-            translatedText = bestMatch.translation || translatedText;
+//             console.log("📌 Kết quả dịch:", bestMatch.translation);
+//             translatedText = bestMatch.translation || translatedText;
 
-        }
+//         }
 
-        if (translatedText.toLowerCase() === text.toLowerCase()) {
-            console.log("📌 Nội dung gốc và bản dịch giống nhau. Sử dụng bản dịch khác.");
-            translatedText = response.data.responseData?.translatedText || text;
-        }
+//         if (translatedText.toLowerCase() === text.toLowerCase()) {
+//             console.log("📌 Nội dung gốc và bản dịch giống nhau. Sử dụng bản dịch khác.");
+//             translatedText = response.data.responseData?.translatedText || text;
+//         }
 
-        return translatedText || "Không có bản dịch phù hợp";
-    } catch (error) {
-        console.error("Lỗi dịch:", error);
-        return `Lỗi dịch: ${error.message}`;
-    }
-};
+//         return translatedText || "Không có bản dịch phù hợp";
+//     } catch (error) {
+//         console.error("Lỗi dịch:", error);
+//         return `Lỗi dịch: ${error.message}`;
+//     }
+// };
 
 const isBothEnglishOrVietnamese = (segment, translation) => {
     const englishRegex = /^[a-zA-Z0-9\s.,!?'-]*$/;
@@ -78,6 +78,14 @@ const handleTranslate = async (req, res) => {
     // } catch (error) {
     //     res.status(500).json({ error: "Translate failed", details: error.message });
     // }
+
+    try {
+        const result = await translate(text, { to: en });
+        return res.json({ translation: result.text });
+    } catch (error) {
+        console.error('Translate error:', error);
+        return null;
+    }
 };
 
 
