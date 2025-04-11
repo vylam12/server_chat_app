@@ -218,8 +218,21 @@ const handleCheckUserVocabulary = async (req, res) => {
         return res.status(500).json({ error: "Failed to check vocabulary count", details: error.message });
     }
 };
+const handleGetHistoryQuiz = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            return res.status(400).json({ error: "Missing userId" });
+        }
 
+        const listQuiz = await Quiz.countDocuments({ _idUser: userId });
+
+        return res.json({ listQuiz: listQuiz });
+    } catch (error) {
+        return res.status(500).json({ error: "Failed to check vocabulary count", details: error.message });
+    }
+};
 export default {
     handleQuizCreation, handleUpdateResultQuiz,
-    handleGetQuiz, handleCheckUserVocabulary
+    handleGetQuiz, handleCheckUserVocabulary, handleGetHistoryQuiz
 };
