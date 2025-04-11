@@ -145,7 +145,7 @@ const handleGetListSaveVocab = async (req, res) => {
         }
 
         const listVocab = await UserVocabulary.find({ _idUser: userId })
-            .populate('_idVocabulary', 'word meanings');
+            .populate('_idVocabulary', '_idVocabulary word meanings');
 
         const result = [];
 
@@ -183,6 +183,7 @@ const handleGetListSaveVocab = async (req, res) => {
 
 
             result.push({
+                id: vocab._idVocabulary,
                 word: vocab.word,
                 meanings: firstMeaning,
                 timepractice: lastReviewedText || "Never studied",
