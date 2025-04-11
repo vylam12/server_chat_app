@@ -145,7 +145,7 @@ const handleGetListSaveVocab = async (req, res) => {
         }
 
         const listVocab = await UserVocabulary.find({ _idUser: userId })
-            .populate('_idVocabulary', '_idVocabulary word meanings');
+            .populate('_idVocabulary', '_idVocabulary word meanings quizAttempts');
 
         const result = [];
 
@@ -180,14 +180,13 @@ const handleGetListSaveVocab = async (req, res) => {
                 proficiency = Math.round((correctAnswers / quizAttempts) * 100);
             }
 
-
-
             result.push({
                 id: vocab._idVocabulary,
                 word: vocab.word,
                 meanings: firstMeaning,
                 timepractice: lastReviewedText || "Never studied",
                 proficiency: proficiency,
+                totalpractice: vocab.quizAttempts
             });
         }
 
