@@ -225,7 +225,7 @@ const handleGetHistoryQuiz = async (req, res) => {
             return res.status(400).json({ error: "Missing userId" });
         }
 
-        const listQuiz = await Quiz.countDocuments({ _idUser: userId }).sort({ createdAt: -1 });
+        const listQuiz = await Quiz.find({ _idUser: userId }).sort({ createdAt: -1 });
         const formattedQuiz = listQuiz.map(quiz => ({
             _id: quiz._id,
             totalQuestion: quiz.totalQuestion,
