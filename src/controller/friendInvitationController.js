@@ -156,7 +156,7 @@ const handleUnfriend = async (req, res) => {
     console.log("handleUnfriend: ", idUser, "   ", idFriend)
 
     const idFr = await User.findOne({ id: idFriend });
-    await FriendInvitation.findOneAndDelete({
+    const deleted = await FriendInvitation.findOneAndDelete({
         $or: [
             { id_sender: idFr, id_receiver: idUser, status: "accepted" },
             { id_sender: idUser, id_receiver: idFr, status: "accepted" }
