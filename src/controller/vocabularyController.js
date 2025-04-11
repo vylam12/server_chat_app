@@ -174,10 +174,10 @@ const handleGetListSaveVocab = async (req, res) => {
                 firstMeaning = vocab.meanings[0].definitions[0].definition;
             }
 
-            const { quizAttempts, correctAnswers } = item;
+            const { quizAttempts, correctAnswers, wrongAnswers } = item;
             let proficiency = 0;
             if (quizAttempts > 0) {
-                proficiency = Math.round((correctAnswers / quizAttempts) * 100);
+                proficiency = Math.round((correctAnswers / (correctAnswers + wrongAnswers)) * 100);
             }
 
             result.push({
