@@ -188,7 +188,7 @@ const handleGetListSaveVocab = async (req, res) => {
                 meanings: firstMeaning,
                 timepractice: lastReviewedText || "Never studied",
                 proficiency: proficiency,
-                totalpractice: vocab.quizAttempts
+                totalpractice: quizAttempts
             });
         }
 
