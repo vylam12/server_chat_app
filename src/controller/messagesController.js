@@ -49,10 +49,10 @@ const handleCreateChat = async (req, res) => {
 
             chatDoc = await newChatRef.get();
         }
-
+        console.log("Translate time:", (Date.now() - start) / 1000, 's');
         const translatedResult = await translatePromise;
         const translatedContent = translatedResult.text;
-        console.log("Translate time:", (Date.now() - start) / 1000, 's');
+        console.log("Translate time:", (Date.now() - end) / 1000, 's');
 
         const chatId = chatDoc.id;
         const messageRef = chatRef.doc(chatId).collection("messages").doc();
