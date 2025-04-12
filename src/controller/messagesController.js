@@ -132,7 +132,9 @@ const handleSendMessage = async (req, res) => {
         });
 
         console.time("⏱ Truy vấn MongoDB + Gửi FCM");
-        const receiverId = chatRef.participants.find(id => id !== senderId);
+        const chatSnapshot = await chatRef.get();
+        const chatData = chatSnapshot.data();
+        const receiverId = chatData.participants.find(id => id !== senderId);
         const [sender, receiver] = await Promise.all([
             User.findOne({ id: senderId }),
             User.findOne({ id: receiverId }),
