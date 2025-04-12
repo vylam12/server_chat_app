@@ -63,38 +63,47 @@ const handleCreateChat = async (req, res) => {
 
         console.timeEnd("chatCreationTime");
 
+        // ✅ Trả kết quả cho client NGAY LẬP TỨC sau khi lưu xong
         res.status(201).json({
             message: "Tin nhắn đã được tạo thành công!",
             chatId,
             translatedContent
         });
 
-        // Gửi notification sau khi response
-        const [sender, receiver] = await Promise.all([
-            User.findOne({ id: senderId }),
-            User.findOne({ id: receiverId }),
-        ]);
+        // 👇 Gửi notification sau, không chặn response
+        (async () => {
+            try {
+                const [sender, receiver] = await Promise.all([
+                    User.findOne({ id: senderId }),
+                    User.findOne({ id: receiverId }),
+                ]);
 
-        if (receiver?.fcmToken) {
-            const message = {
-                notification: {
-                    title: `${sender.fullname}`,
-                    body: translatedContent
-                },
-                data: {
-                    image: sender.avatar
-                },
-                token: receiver.fcmToken
-            };
+                if (receiver?.fcmToken) {
+                    const message = {
+                        notification: {
+                            title: `${sender.fullname}`,
+                            body: translatedContent
+                        },
+                        data: {
+                            image: sender.avatar
+                        },
+                        token: receiver.fcmToken
+                    };
 
-            await admin.messaging().send(message);
-        }
+                    await admin.messaging().send(message);
+                    console.log("Notification sent!");
+                }
+            } catch (notifyError) {
+                console.error("Lỗi khi gửi notification:", notifyError);
+            }
+        })();
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
 };
+
 
 
 //TẠO TIN NHẮN
