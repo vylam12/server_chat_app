@@ -32,6 +32,7 @@ const handleCreateChat = async (req, res) => {
         let translatedContent = content;
 
         const translatedResult = await translate(content, { to: 'en' });
+        console.log("Translate time:", (Date.now() - start) / 1000, 's');
         translatedContent = translatedResult.text;
         console.log("Content sau khi dịch:", translatedContent);
 
@@ -50,7 +51,7 @@ const handleCreateChat = async (req, res) => {
         const chatId = chatDoc.id;
         const messageRef = chatRef.doc(chatId).collection("messages").doc();
 
-        const messagePromise = messageRef.set({
+        await messageRef.set({
             senderId,
             content,
             translatedContent,
@@ -58,10 +59,20 @@ const handleCreateChat = async (req, res) => {
             isRead: false,
         });
 
-        let notificationPromise = Promise.resolve();
-        const sender = await User.findOne({ id: senderId });
-        const receiver = await User.findOne({ id: receiverId });
+        console.timeEnd("chatCreationTime");
+        res.status(201).json({
+            message: "Tin nhắn đã được tạo thành công!",
+            chatId: chatId,
+            translatedContent: translatedContent
+        });
 
+        // let notificationPromise = Promise.resolve();
+        // const sender = await User.findOne({ id: senderId });
+        // const receiver = await User.findOne({ id: receiverId });
+        const [sender, receiver] = await Promise.all([
+            User.findOne({ id: senderId }),
+            User.findOne({ id: receiverId }),
+        ]);
         // Kiểm tra xem receiver có fcmToken không, nếu có thì gửi thông báo
         if (receiver?.fcmToken) {
             const message = {
@@ -76,15 +87,12 @@ const handleCreateChat = async (req, res) => {
             };
 
 
-            notificationPromise = admin.messaging().send(message);
+            await admin.messaging().send(message);
 
         }
-        await Promise.all([messagePromise, notificationPromise]);
 
-        console.timeEnd("chatCreationTime");
-        console.log("Tạo tin nhắn thành công và gửi thông báo thành công");
 
-        res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chatId, translatedContent: translatedContent });
+
 
     } catch (error) {
         console.error(error);
