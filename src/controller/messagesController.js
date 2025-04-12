@@ -46,27 +46,26 @@ const handleCreateChat = async (req, res) => {
             });
         }
 
-        // Tiến hành dịch văn bản trước khi tạo tin nhắn
+        console.time("TranslateTime");
+        // Tiến hành dịch song song với việc tạo tin nhắn
         const translatePromise = translate(content, { to: 'en' });
 
-        console.time("TranslateTime");
-        const translatedResult = await translatePromise;
-        const translatedContent = translatedResult.text;
-        console.timeEnd("TranslateTime");
-
-        // Tạo tin nhắn ngay sau khi có kết quả dịch
+        // Tạo tin nhắn ngay sau khi chat được tạo
         const messageRef = chatRef.collection("messages").doc();
         await messageRef.set({
             senderId,
             content,
-            translatedContent,
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             isRead: false,
         });
 
-        console.timeEnd("chatCreationTime");
+        const translatedResult = await translatePromise;
+        const translatedContent = translatedResult.text;
+
+        console.timeEnd("TranslateTime");
 
         // ✅ Trả kết quả cho client NGAY LẬP TỨC
+        console.timeEnd("chatCreationTime");
         res.status(201).json({
             message: "Tin nhắn đã được tạo thành công!",
             chatId,
@@ -106,6 +105,7 @@ const handleCreateChat = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 };
+
 
 
 //TẠO TIN NHẮN
