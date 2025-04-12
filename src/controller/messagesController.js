@@ -29,12 +29,14 @@ const handleCreateChat = async (req, res) => {
             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
         }
 
-        let translatedContent = content;
+        const translatePromise = translate(content, { to: 'en' });
 
-        const translatedResult = await translate(content, { to: 'en' });
-        console.log("Translate time:", (Date.now() - start) / 1000, 's');
-        translatedContent = translatedResult.text;
-        console.log("Content sau khi dịch:", translatedContent);
+        // let translatedContent = content;
+
+        // const translatedResult = await translate(content, { to: 'en' });
+        // console.log("Translate time:", (Date.now() - start) / 1000, 's');
+        // translatedContent = translatedResult.text;
+        // console.log("Content sau khi dịch:", translatedContent);
 
         const chatRef = admin.firestore().collection('chat');
         let chatDoc = await chatRef.where('participants', 'in', [senderId, receiverId]).get();
@@ -47,6 +49,10 @@ const handleCreateChat = async (req, res) => {
 
             chatDoc = await newChatRef.get();
         }
+
+        const translatedResult = await translatePromise;
+        const translatedContent = translatedResult.text;
+        console.log("Translate time:", (Date.now() - start) / 1000, 's');
 
         const chatId = chatDoc.id;
         const messageRef = chatRef.doc(chatId).collection("messages").doc();
