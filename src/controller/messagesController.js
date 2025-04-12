@@ -21,6 +21,7 @@ const checkExistingChat = async (req, res) => {
     }
 }
 //TẠO TIN NHẮN
+
 const handleCreateChat = async (req, res) => {
     try {
         const { receiverId, senderId, content } = req.body;
@@ -29,7 +30,6 @@ const handleCreateChat = async (req, res) => {
         }
 
         let translatedContent = content;
-
         const translatedResult = await translate(content, { to: 'en' });
         translatedContent = translatedResult.text;
         console.log("Content sau khi dịch:", translatedContent);
@@ -43,30 +43,24 @@ const handleCreateChat = async (req, res) => {
             await chat.save();
         }
 
-
         const chatId = chat._id.toString();
 
+        // Tạo tin nhắn mới
         const newMessage = new Message({
             content: content,
             translatedContent: translatedContent,
             id_sender: senderId,
             chatId: chatId
         });
-        await newMessage.save();
 
+        // Sử dụng batch write để ghi vào Firestore
+        const batch = db.batch();
 
         const chatRef = db.collection("chat").doc(chatId);
-        const chatSnapshot = await chatRef.get();
-
-        if (!chatSnapshot.exists) {
-            await chatRef.set({
-                participants: [senderId, receiverId],
-                createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-        }
-
         const messageRef = chatRef.collection("messages").doc(newMessage._id.toString());
-        await messageRef.set({
+
+        // Thêm tin nhắn vào batch
+        batch.set(messageRef, {
             senderId,
             content,
             translatedContent,
@@ -74,10 +68,19 @@ const handleCreateChat = async (req, res) => {
             isRead: false
         });
 
-        console.log("Tạo tin nhắn thành công");
+        // Nếu chat chưa được tạo trong Firestore, thêm mới
+        const chatSnapshot = await chatRef.get();
+        if (!chatSnapshot.exists) {
+            batch.set(chatRef, {
+                participants: [senderId, receiverId],
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        // Gửi thông báo nếu receiver có FCM token
         const sender = await User.findOne({ id: senderId });
         const receiver = await User.findOne({ id: receiverId });
-        console.log("receiver kt fcm", receiver.fcmToken)
+
         if (receiver?.fcmToken) {
             const message = {
                 notification: {
@@ -93,13 +96,107 @@ const handleCreateChat = async (req, res) => {
             await admin.messaging().send(message);
             console.log("Notification sent!");
         }
-        res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chatId });
+
+        // Commit tất cả thay đổi trong batch
+        await batch.commit();
+
+        console.log("Tạo tin nhắn thành công");
+
+        // Gửi response về việc tạo chat thành công
+        res.status(201).json({
+            message: "Chat và tin nhắn đã được tạo thành công!",
+            chatId: chatId,
+            translatedContent: translatedContent
+        });
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
 };
+
+
+// const handleCreateChat = async (req, res) => {
+//     try {
+//         const { receiverId, senderId, content } = req.body;
+//         if (!receiverId || !senderId || !content) {
+//             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
+//         }
+
+//         let translatedContent = content;
+
+//         const translatedResult = await translate(content, { to: 'en' });
+//         translatedContent = translatedResult.text;
+//         console.log("Content sau khi dịch:", translatedContent);
+
+//         let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
+
+//         if (!chat) {
+//             chat = new Chat({
+//                 participants: [senderId, receiverId]
+//             });
+//             await chat.save();
+//         }
+
+
+//         const chatId = chat._id.toString();
+
+//         const newMessage = new Message({
+//             content: content,
+//             translatedContent: translatedContent,
+//             id_sender: senderId,
+//             chatId: chatId
+//         });
+//         await newMessage.save();
+
+
+//         const chatRef = db.collection("chat").doc(chatId);
+//         const chatSnapshot = await chatRef.get();
+
+//         if (!chatSnapshot.exists) {
+//             await chatRef.set({
+//                 participants: [senderId, receiverId],
+//                 createdAt: admin.firestore.FieldValue.serverTimestamp()
+//             });
+//         }
+
+//         const messageRef = chatRef.collection("messages").doc(newMessage._id.toString());
+//         await messageRef.set({
+//             senderId,
+//             content,
+//             translatedContent,
+//             timestamp: admin.firestore.FieldValue.serverTimestamp(),
+//             isRead: false
+//         });
+
+//         console.log("Tạo tin nhắn thành công");
+//         const sender = await User.findOne({ id: senderId });
+//         const receiver = await User.findOne({ id: receiverId });
+//         console.log("receiver kt fcm", receiver.fcmToken)
+//         if (receiver?.fcmToken) {
+//             const message = {
+//                 notification: {
+//                     title: `${sender.fullname}`,
+//                     body: translatedContent
+//                 },
+//                 data: {
+//                     image: sender.avatar
+//                 },
+//                 token: receiver.fcmToken
+//             };
+
+//             await admin.messaging().send(message);
+//             console.log("Notification sent!");
+//         }
+//         res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chatId, translatedContent: translatedContent });
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: "Lỗi server" });
+//     }
+// };
+
+
 //GỬI TIN NHẮN
 const handleSendMessage = async (req, res) => {
     try {
