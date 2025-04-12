@@ -21,7 +21,6 @@ const checkExistingChat = async (req, res) => {
     }
 }
 //TẠO TIN NHẮN
-
 const handleCreateChat = async (req, res) => {
     try {
         const { receiverId, senderId, content } = req.body;
@@ -30,6 +29,7 @@ const handleCreateChat = async (req, res) => {
         }
 
         let translatedContent = content;
+
         const translatedResult = await translate(content, { to: 'en' });
         translatedContent = translatedResult.text;
         console.log("Content sau khi dịch:", translatedContent);
@@ -45,22 +45,26 @@ const handleCreateChat = async (req, res) => {
 
         const chatId = chat._id.toString();
 
-        // Tạo tin nhắn mới
         const newMessage = new Message({
             content: content,
             translatedContent: translatedContent,
             id_sender: senderId,
             chatId: chatId
         });
-
-        // Sử dụng batch write để ghi vào Firestore
-        const batch = db.batch();
+        await newMessage.save();
 
         const chatRef = db.collection("chat").doc(chatId);
-        const messageRef = chatRef.collection("messages").doc(newMessage._id.toString());
+        const chatSnapshot = await chatRef.get();
 
-        // Thêm tin nhắn vào batch
-        batch.set(messageRef, {
+        if (!chatSnapshot.exists) {
+            await chatRef.set({
+                participants: [senderId, receiverId],
+                createdAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        const messageRef = chatRef.collection("messages").doc(newMessage._id.toString());
+        await messageRef.set({
             senderId,
             content,
             translatedContent,
@@ -68,19 +72,11 @@ const handleCreateChat = async (req, res) => {
             isRead: false
         });
 
-        // Nếu chat chưa được tạo trong Firestore, thêm mới
-        const chatSnapshot = await chatRef.get();
-        if (!chatSnapshot.exists) {
-            batch.set(chatRef, {
-                participants: [senderId, receiverId],
-                createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-        }
-
-        // Gửi thông báo nếu receiver có FCM token
+        console.log("Tạo tin nhắn thành công");
         const sender = await User.findOne({ id: senderId });
         const receiver = await User.findOne({ id: receiverId });
 
+        // Kiểm tra xem receiver có fcmToken không, nếu có thì gửi thông báo
         if (receiver?.fcmToken) {
             const message = {
                 notification: {
@@ -93,27 +89,24 @@ const handleCreateChat = async (req, res) => {
                 token: receiver.fcmToken
             };
 
-            await admin.messaging().send(message);
-            console.log("Notification sent!");
+            try {
+                await admin.messaging().send(message);
+                console.log("Notification sent!");
+            } catch (error) {
+                console.error("Lỗi khi gửi thông báo:", error);
+            }
+        } else {
+            console.log("Receiver không có fcmToken, bỏ qua việc gửi thông báo.");
         }
 
-        // Commit tất cả thay đổi trong batch
-        await batch.commit();
-
-        console.log("Tạo tin nhắn thành công");
-
-        // Gửi response về việc tạo chat thành công
-        res.status(201).json({
-            message: "Chat và tin nhắn đã được tạo thành công!",
-            chatId: chatId,
-            translatedContent: translatedContent
-        });
+        res.status(201).json({ message: "Chat và tin nhắn đã được tạo thành công!", chatId: chatId, translatedContent: translatedContent });
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
 };
+
 
 
 // const handleCreateChat = async (req, res) => {
