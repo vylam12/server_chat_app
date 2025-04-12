@@ -107,72 +107,69 @@ const handleSendMessage = async (req, res) => {
             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
         }
 
-        // Dịch ngay lập tức
-        console.time("translateTime");
+        // Dịch nội dung tin nhắn
         const translatePromise = translate(content, { to: 'en' });
 
-        // Firestore refs
+        // Reference đến chat
         const chatRef = admin.firestore().collection('chat').doc(chatId);
-        const messageRef = chatRef.collection("messages").doc();
 
-        // Chờ dịch xong
+        // Đợi kết quả dịch
         const translatedResult = await translatePromise;
         const translatedContent = translatedResult.text;
-        console.timeEnd("translateTime");
 
-        // Lưu vào Firestore
-        await messageRef.set({
+        // Tạo reference đến tin nhắn mới
+        const messageRef = chatRef.collection("messages").doc();
+
+        // Dữ liệu cần lưu
+        const messageData = {
             senderId,
             content,
             translatedContent,
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             isRead: false,
-        });
+        };
 
-        console.timeLog("sendChat", "✅ Tin nhắn đã được lưu");
-
-        // Gửi phản hồi sớm nhất có thể
-        res.status(201).json({
-            message: "Tin nhắn đã được gửi thành công!",
-            chatId,
-            translatedContent,
-        });
-
-        // Gửi notification sau (không chặn response)
-        (async () => {
-            try {
-                const [sender, receiver] = await Promise.all([
-                    User.findOne({ id: senderId }),
-                    User.findOne({ id: receiverId }),
-                ]);
-
-                if (receiver?.fcmToken) {
-                    const message = {
-                        notification: {
-                            title: `${sender.fullname}`,
-                            body: translatedContent,
-                        },
-                        data: {
-                            image: sender.avatar,
-                        },
-                        token: receiver.fcmToken,
-                    };
-
-                    await admin.messaging().send(message);
-                    console.log("📨 Notification đã gửi thành công");
-                }
-            } catch (notifyError) {
-                console.error("❌ Lỗi khi gửi notification:", notifyError);
-            }
-        })();
+        // Lưu tin nhắn
+        await messageRef.set(messageData);
 
         console.timeEnd("sendChat");
 
+        // Trả về client (lưu ý timestamp chưa có giá trị thực do là serverTimestamp)
+        res.status(201).json({
+            message: "Tin nhắn đã được gửi thành công!",
+            newMessage: {
+                id: messageRef.id,
+                ...messageData
+            }
+        });
+
+        // Gửi thông báo push sau khi gửi thành công
+        const [sender, receiver] = await Promise.all([
+            User.findOne({ id: senderId }),
+            User.findOne({ id: receiverId }),
+        ]);
+
+        if (receiver?.fcmToken) {
+            const message = {
+                notification: {
+                    title: `${sender.fullname}`,
+                    body: translatedContent
+                },
+                data: {
+                    image: sender.avatar || "",
+                },
+                token: receiver.fcmToken
+            };
+
+            await admin.messaging().send(message);
+        }
+
     } catch (error) {
-        console.error("❌ Lỗi khi gửi tin nhắn:", error);
+        console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
 };
+
 
 
 //GỬI TIN NHẮN
