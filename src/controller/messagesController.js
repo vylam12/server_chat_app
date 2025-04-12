@@ -104,36 +104,35 @@ const handleSendMessage = async (req, res) => {
         if (!chatId || !senderId || !content) {
             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
         }
+        const translatePromise = translate(content, { to: 'en' });
 
-        let translatedContent = content;
+        const chatRef = admin.firestore().collection('chat').doc(chatId);
+        const chatSnapshot = await chatRef.get();
 
-        const translatedResult = await translate(content, { to: 'en' });
-        translatedContent = translatedResult.text;
+        const translatedResult = await translatePromise;
+        const translatedContent = translatedResult.text;
 
-
-        const newMessage = new Message({
-            content: content,
-            translatedContent: translatedContent,
-            id_sender: senderId,
-            chatId: chatId
-        });
-        await newMessage.save();
-
-        let chatRef = db.collection("chat").doc(chatId);
-        const messageRef = chatRef.collection("messages").doc(newMessage._id.toString());
+        const messageRef = chatRef.collection("messages").doc();
         await messageRef.set({
             senderId,
             content,
             translatedContent,
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
-            isRead: false
+            isRead: false,
         });
-        console.log("Luu firebase thanh cong");
 
-        const chat = await Chat.findById(chatId);
-        const receiverId = chat.participants.find(id => id !== senderId);
-        const receiver = await User.findOne({ id: receiverId });
-        const sender = await User.findOne({ id: senderId });
+        console.timeEnd("chatCreationTime");
+
+        res.status(201).json({
+            message: "Tin nhắn đã được gửi thành công!",
+            newMessage: newMessage.toObject(),
+        });
+
+
+        const [sender, receiver] = await Promise.all([
+            User.findOne({ id: senderId }),
+            User.findOne({ id: receiverId }),
+        ]);
 
         if (receiver?.fcmToken) {
             const message = {
@@ -148,12 +147,7 @@ const handleSendMessage = async (req, res) => {
             };
 
             await admin.messaging().send(message);
-            console.log("Notification sent!");
         }
-        res.status(201).json({
-            message: "Tin nhắn đã được gửi thành công!",
-            newMessage: newMessage.toObject(),
-        });
 
     } catch (error) {
         console.error(error);
