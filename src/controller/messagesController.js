@@ -35,11 +35,8 @@ const handleCreateChat = async (req, res) => {
         translatedContent = translatedResult.text;
         console.log("Content sau khi dịch:", translatedContent);
 
-        const chatRef = admin.firestore().collection('chats');
-        let chatDoc = await chatRef.where('participants', 'array-contains', senderId)
-            .where('participants', 'array-contains', receiverId)
-            .get();
-
+        const chatRef = admin.firestore().collection('chat');
+        let chatDoc = await chatRef.where('participants', 'in', [senderId, receiverId]).get();
         if (chatDoc.empty) {
             const newChatRef = chatRef.doc();
             await newChatRef.set({
