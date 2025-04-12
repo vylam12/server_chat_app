@@ -97,30 +97,29 @@ const handleCreateChat = async (req, res) => {
     }
 };
 
-
 const handleSendMessage = async (req, res) => {
     try {
-        console.time("sendChat");
+        console.time("⏱ Tổng thời gian sendChat");
 
         const { chatId, senderId, receiverId, content } = req.body;
         if (!chatId || !senderId || !receiverId || !content) {
             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
         }
 
-        // Dịch nội dung tin nhắn
+        // Bắt đầu dịch
+        console.time("⏱ Dịch nội dung");
         const translatePromise = translate(content, { to: 'en' });
 
-        // Reference đến chat
         const chatRef = admin.firestore().collection('chat').doc(chatId);
 
-        // Đợi kết quả dịch
         const translatedResult = await translatePromise;
         const translatedContent = translatedResult.text;
+        console.timeEnd("⏱ Dịch nội dung");
 
-        // Tạo reference đến tin nhắn mới
+        // Bắt đầu lưu Firestore
+        console.time("⏱ Lưu Firestore");
         const messageRef = chatRef.collection("messages").doc();
 
-        // Dữ liệu cần lưu
         const messageData = {
             senderId,
             content,
@@ -129,21 +128,20 @@ const handleSendMessage = async (req, res) => {
             isRead: false,
         };
 
-        // Lưu tin nhắn
         await messageRef.set(messageData);
+        console.timeEnd("⏱ Lưu Firestore");
 
-        console.timeEnd("sendChat");
-
-        // Trả về client (lưu ý timestamp chưa có giá trị thực do là serverTimestamp)
+        // Trả response ngay sau khi lưu thành công
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
             newMessage: {
                 id: messageRef.id,
-                ...messageData
+                ...messageData,
             }
         });
 
-        // Gửi thông báo push sau khi gửi thành công
+        // Gửi push notification sau đó
+        console.time("⏱ Truy vấn MongoDB + Gửi FCM");
         const [sender, receiver] = await Promise.all([
             User.findOne({ id: senderId }),
             User.findOne({ id: receiverId }),
@@ -156,20 +154,22 @@ const handleSendMessage = async (req, res) => {
                     body: translatedContent
                 },
                 data: {
-                    image: sender.avatar || "",
+                    image: sender.avatar || ""
                 },
                 token: receiver.fcmToken
             };
 
             await admin.messaging().send(message);
         }
+        console.timeEnd("⏱ Truy vấn MongoDB + Gửi FCM");
+
+        console.timeEnd("⏱ Tổng thời gian sendChat");
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
 };
-
 
 
 //GỬI TIN NHẮN
