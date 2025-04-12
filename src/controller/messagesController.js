@@ -20,7 +20,6 @@ const checkExistingChat = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 }
-
 const generateChatId = (id1, id2) => {
     return [id1, id2].sort().join('_');
 };
@@ -34,12 +33,12 @@ const handleCreateChat = async (req, res) => {
             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
         }
 
-        const translatePromise = translate(content, { to: 'en' });
         const chatId = generateChatId(senderId, receiverId);
 
         const chatRef = admin.firestore().collection('chat').doc(chatId);
         const chatSnapshot = await chatRef.get();
 
+        // Tạo chat trước nếu không tồn tại
         if (!chatSnapshot.exists) {
             await chatRef.set({
                 participants: [senderId, receiverId],
@@ -48,29 +47,32 @@ const handleCreateChat = async (req, res) => {
         }
 
         console.time("TranslateTime");
-        const translatedResult = await translatePromise;
-        const translatedContent = translatedResult.text;
-        console.timeEnd("TranslateTime");
+        // Tiến hành dịch song song với việc tạo tin nhắn
+        const translatePromise = translate(content, { to: 'en' });
 
+        // Tạo tin nhắn ngay sau khi chat được tạo
         const messageRef = chatRef.collection("messages").doc();
         await messageRef.set({
             senderId,
             content,
-            translatedContent,
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             isRead: false,
         });
 
-        console.timeEnd("chatCreationTime");
+        const translatedResult = await translatePromise;
+        const translatedContent = translatedResult.text;
 
-        // ✅ Trả kết quả cho client NGAY LẬP TỨC sau khi lưu xong
+        console.timeEnd("TranslateTime");
+
+        // ✅ Trả kết quả cho client NGAY LẬP TỨC
+        console.timeEnd("chatCreationTime");
         res.status(201).json({
             message: "Tin nhắn đã được tạo thành công!",
             chatId,
             translatedContent
         });
 
-        // 👇 Gửi notification sau, không chặn response
+        // 👇 Gửi notification sau mà không chặn response
         (async () => {
             try {
                 const [sender, receiver] = await Promise.all([
