@@ -100,6 +100,7 @@ const handleCreateChat = async (req, res) => {
 //GỬI TIN NHẮN
 const handleSendMessage = async (req, res) => {
     try {
+        console.time("sendChat");
         const { chatId, senderId, content } = req.body;
         if (!chatId || !senderId || !content) {
             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
@@ -113,7 +114,7 @@ const handleSendMessage = async (req, res) => {
         const translatedContent = translatedResult.text;
 
         const messageRef = chatRef.collection("messages").doc();
-        await messageRef.set({
+        const newMessage = await messageRef.set({
             senderId,
             content,
             translatedContent,
@@ -121,7 +122,7 @@ const handleSendMessage = async (req, res) => {
             isRead: false,
         });
 
-        console.timeEnd("chatCreationTime");
+        console.timeEnd("sendChat");
 
         res.status(201).json({
             message: "Tin nhắn đã được gửi thành công!",
