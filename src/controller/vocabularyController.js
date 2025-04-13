@@ -281,7 +281,7 @@ const getUserVocabulary = async (req, res) => {
                 word: vocab.word,
                 phonetic: vocab.phonetics[0]?.text || '',
                 audio: vocab.phonetics[0]?.audio || '',
-                meanings: vocab.meanings,
+                meanings: vocab.meanings[0]?.definitions?.definition[0] || '',
             };
         });
 
