@@ -270,7 +270,7 @@ const handleGetListSaveVocab = async (req, res) => {
 // Controller
 const getUserVocabulary = async (req, res) => {
     try {
-        const userId = req.params;
+        const userId = req.params.userId;
         const vocabList = await UserVocabulary.find({ _idUser: userId })
             .populate('_idVocabulary')
             .exec();
