@@ -65,32 +65,90 @@ const handleAcceptInvited = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+// const handleGetFriend = async (req, res) => {
+//     try {
+//         const { userId } = req.params;
+//         const status = "accepted";
+//         if (!userId) {
+//             return res.status(400).json({ error: "Thiếu userId" });
+//         }
+
+//         const friends = await FriendInvitation.find({
+//             $or: [{ id_sender: userId }, { id_receiver: userId }],
+//             status: status
+//         }).sort({ createdAt: 1 });
+
+//         const friendIds = friends.map(friend =>
+//             friend.id_sender.toString() === userId ? friend.id_receiver : friend.id_sender
+//         );
+
+//         const friendDetails = await User.find({ _id: { $in: friendIds } }).select("email fullname avatar");
+//         console.log("danh sách bạn bè", friendDetails);
+//         res.status(200).json({
+//             friend: friendDetails
+//         });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// }
+
+
 const handleGetFriend = async (req, res) => {
     try {
         const { userId } = req.params;
         const status = "accepted";
+
         if (!userId) {
             return res.status(400).json({ error: "Thiếu userId" });
         }
 
-        const friends = await FriendInvitation.find({
-            $or: [{ id_sender: userId }, { id_receiver: userId }],
-            status: status
-        }).sort({ createdAt: 1 });
+        // Sử dụng aggregate để kết hợp 2 truy vấn vào 1
+        const friends = await FriendInvitation.aggregate([
+            {
+                $match: {
+                    $or: [{ id_sender: userId }, { id_receiver: userId }],
+                    status: status
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users', // Tên collection người dùng
+                    let: { sender: "$id_sender", receiver: "$id_receiver" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $or: [
+                                        { $eq: ["$_id", "$$sender"] },
+                                        { $eq: ["$_id", "$$receiver"] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $project: { email: 1, fullname: 1, avatar: 1 }
+                        }
+                    ],
+                    as: 'friendDetails'
+                }
+            },
+            { $unwind: "$friendDetails" }, // Tách mảng friendDetails ra
+            {
+                $project: {
+                    _id: 0,
+                    friend: "$friendDetails"
+                }
+            }
+        ]);
 
-        const friendIds = friends.map(friend =>
-            friend.id_sender.toString() === userId ? friend.id_receiver : friend.id_sender
-        );
+        // Trả về danh sách bạn bè
+        const friendDetails = friends.map(friend => friend.friend);
+        res.status(200).json({ friend: friendDetails });
 
-        const friendDetails = await User.find({ _id: { $in: friendIds } }).select("email fullname avatar");
-        console.log("danh sách bạn bè", friendDetails);
-        res.status(200).json({
-            friend: friendDetails
-        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
 const handleGetFriendInvited = async (req, res) => {
     try {
