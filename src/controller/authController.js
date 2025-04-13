@@ -43,7 +43,6 @@ const handleLogin = async (req, res) => {
             return res.status(400).json({ error: "Missing ID Token" });
         }
 
-        // 🔹 Xác thực ID Token với Firebase
         const decodedToken = await auth.verifyIdToken(idToken);
         if (!decodedToken) {
             return res.status(400).json({ error: "Invalid Token" });
@@ -74,7 +73,6 @@ const handleLogin = async (req, res) => {
             console.log("New user firebase ");
         }
 
-        // 🔹 Tạo token JWT
         const token = jwt.sign({ uid, email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         res.json({

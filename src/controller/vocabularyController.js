@@ -270,9 +270,9 @@ const handleGetListSaveVocab = async (req, res) => {
 // Controller
 const getUserVocabulary = async (req, res) => {
     try {
-        const userId = req.user.id; // hoặc lấy từ token
+        const userId = req.params;
         const vocabList = await UserVocabulary.find({ _idUser: userId })
-            .populate('_idVocabulary') // lấy thông tin từ bảng Vocabulary
+            .populate('_idVocabulary')
             .exec();
 
         const flashcards = vocabList.map((item) => {

@@ -1,5 +1,4 @@
 import { db } from "../config/firebase.js";
-import translateController from "./translateController.js";
 import Chat from "../models/chat.js";
 import admin from "firebase-admin";
 import translate from '@iamtraction/google-translate';
@@ -97,7 +96,6 @@ const handleCreateChat = async (req, res) => {
 };
 
 //GỬI TIN NHẮN
-
 const handleSendMessage = async (req, res) => {
     try {
         console.time("sendChat");
@@ -168,71 +166,6 @@ const handleSendMessage = async (req, res) => {
     }
 };
 
-
-// const handleSendMessage = async (req, res) => {
-//     try {
-//         console.time("sendChat");
-//         const { chatId, senderId, content } = req.body;
-//         if (!chatId || !senderId || !content) {
-//             return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
-//         }
-//         const translatePromise = translate(content, { to: 'en' });
-
-//         const chatRef = admin.firestore().collection('chat').doc(chatId);
-//         console.time("⏱ Dịch nội dung");
-//         const translatedResult = await translatePromise;
-//         const translatedContent = translatedResult.text;
-//         console.timeEnd("⏱ Dịch nội dung");
-
-
-//         console.time("⏱ Lưu Firestore");
-//         const messageRef = chatRef.collection("messages").doc();
-//         const newMessage = await messageRef.set({
-//             senderId,
-//             content,
-//             translatedContent,
-//             timestamp: admin.firestore.FieldValue.serverTimestamp(),
-//             isRead: false,
-//         });
-
-//         console.timeEnd("sendChat");
-//         console.timeEnd("⏱ Lưu Firestore");
-//         res.status(201).json({
-//             message: "Tin nhắn đã được gửi thành công!",
-//             translatedContent,
-//         });
-
-//         console.time("⏱ Truy vấn MongoDB + Gửi FCM");
-//         const chatSnapshot = await chatRef.get();
-//         const chatData = chatSnapshot.data();
-//         const receiverId = chatData.participants.find(id => id !== senderId);
-//         const [sender, receiver] = await Promise.all([
-//             User.findOne({ id: senderId }),
-//             User.findOne({ id: receiverId }),
-//         ]);
-
-//         if (receiver?.fcmToken) {
-//             const message = {
-//                 notification: {
-//                     title: `${sender.fullname}`,
-//                     body: translatedContent
-//                 },
-//                 data: {
-//                     image: sender.avatar
-//                 },
-//                 token: receiver.fcmToken
-//             };
-
-//             await admin.messaging().send(message);
-//             console.timeEnd("⏱ Truy vấn MongoDB + Gửi FCM");
-
-//         }
-
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: "Lỗi server" });
-//     }
-// };
 
 const handleGetMessages = async (req, res) => {
     try {
