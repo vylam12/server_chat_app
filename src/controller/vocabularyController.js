@@ -285,7 +285,7 @@ const getUserVocabulary = async (req, res) => {
             };
         });
 
-        res.json(flashcards);
+        res.json({ data: flashcards });
     } catch (err) {
         res.status(500).json({ message: "Lỗi khi lấy từ vựng", error: err });
     }
