@@ -33,19 +33,66 @@ const handleInvited = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+// const handleAcceptInvited = async (req, res) => {
+//     try {
+//         const { idSender, idReciver, status } = req.body;
+
+//         const invitedUpdate = await FriendInvitation.findOneAndUpdate(
+//             { id_receiver: idReciver, id_sender: idSender },
+//             { status: status },
+//             { new: true }
+//         );
+
+//         const sender = await User.findById(idSender);
+//         const receiver = await User.findById(idReciver);
+//         if (sender && sender.fcmToken) {
+//             const message = {
+//                 notification: {
+//                     title: "Friend request update",
+//                     body: status === "accepted"
+//                         ? `${receiver.fullname} accepted your friend request!`
+//                         : `${receiver.fullname} declined your friend request.`
+//                 },
+//                 token: sender.fcmToken
+//             };
+
+//             await admin.messaging().send(message);
+//             console.log("Notification sent to sender!");
+//         }
+
+//         res.json({ message: "Invited friend updated!", invited: invitedUpdate })
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// }
+
 const handleAcceptInvited = async (req, res) => {
     try {
         const { idSender, idReciver, status } = req.body;
 
+        if (!idSender || !idReciver || !status) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        // Cập nhật lời mời
         const invitedUpdate = await FriendInvitation.findOneAndUpdate(
             { id_receiver: idReciver, id_sender: idSender },
-            { status: status },
+            { status },
             { new: true }
-        );
+        ).lean(); // dùng lean để trả về plain object
 
-        const sender = await User.findById(idSender);
-        const receiver = await User.findById(idReciver);
-        if (sender && sender.fcmToken) {
+        if (!invitedUpdate) {
+            return res.status(404).json({ error: "Invitation not found" });
+        }
+
+        // Lấy thông tin receiver và sender cùng lúc
+        const [sender, receiver] = await Promise.all([
+            User.findById(idSender).lean(),
+            User.findById(idReciver).lean()
+        ]);
+
+        // Gửi thông báo nếu có token
+        if (sender?.fcmToken && receiver) {
             const message = {
                 notification: {
                     title: "Friend request update",
@@ -56,41 +103,22 @@ const handleAcceptInvited = async (req, res) => {
                 token: sender.fcmToken
             };
 
+            // Gửi push notification
             await admin.messaging().send(message);
             console.log("Notification sent to sender!");
         }
 
-        res.json({ message: "Invited friend updated!", invited: invitedUpdate })
+        return res.json({
+            message: "Friend invitation status updated!",
+            invited: invitedUpdate
+        });
+
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Lỗi khi xử lý lời mời:", error);
+        return res.status(500).json({ error: error.message });
     }
-}
-// const handleGetFriend = async (req, res) => {
-//     try {
-//         const { userId } = req.params;
-//         const status = "accepted";
-//         if (!userId) {
-//             return res.status(400).json({ error: "Thiếu userId" });
-//         }
+};
 
-//         const friends = await FriendInvitation.find({
-//             $or: [{ id_sender: userId }, { id_receiver: userId }],
-//             status: status
-//         }).sort({ createdAt: 1 });
-
-//         const friendIds = friends.map(friend =>
-//             friend.id_sender.toString() === userId ? friend.id_receiver : friend.id_sender
-//         );
-
-//         const friendDetails = await User.find({ _id: { $in: friendIds } }).select("email fullname avatar");
-//         console.log("danh sách bạn bè", friendDetails);
-//         res.status(200).json({
-//             friend: friendDetails
-//         });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// }
 
 const handleGetFriend = async (req, res) => {
     try {
