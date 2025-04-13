@@ -92,7 +92,6 @@ const handleAcceptInvited = async (req, res) => {
 //     }
 // }
 
-
 const handleGetFriend = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -102,51 +101,38 @@ const handleGetFriend = async (req, res) => {
             return res.status(400).json({ error: "Thiếu userId" });
         }
 
-        // Sử dụng aggregate để kết hợp 2 truy vấn vào 1
-        const friends = await FriendInvitation.aggregate([
-            {
-                $match: {
-                    $or: [{ id_sender: userId }, { id_receiver: userId }],
-                    status: status
-                }
-            },
-            {
-                $lookup: {
-                    from: 'users', // Tên collection người dùng
-                    let: { sender: "$id_sender", receiver: "$id_receiver" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $or: [
-                                        { $eq: ["$_id", "$$sender"] },
-                                        { $eq: ["$_id", "$$receiver"] }
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            $project: { email: 1, fullname: 1, avatar: 1 }
-                        }
-                    ],
-                    as: 'friendDetails'
-                }
-            },
-            { $unwind: "$friendDetails" }, // Tách mảng friendDetails ra
-            {
-                $project: {
-                    _id: 0,
-                    friend: "$friendDetails"
-                }
-            }
-        ]);
+        // Lấy tất cả các lời mời bạn bè đã accepted
+        const friends = await FriendInvitation.find({
+            $or: [
+                { id_sender: userId },
+                { id_receiver: userId }
+            ],
+            status
+        }).lean(); // dùng lean() để tăng tốc
 
-        // Trả về danh sách bạn bè
-        const friendDetails = friends.map(friend => friend.friend);
-        res.status(200).json({ friend: friendDetails });
+        // Lọc ra ID bạn bè (người còn lại)
+        const friendIds = friends.map(friend =>
+            friend.id_sender.toString() === userId
+                ? friend.id_receiver
+                : friend.id_sender
+        );
+
+        // Nếu không có bạn bè thì trả sớm
+        if (friendIds.length === 0) {
+            return res.status(200).json({ friend: [] });
+        }
+
+        // Lấy thông tin bạn bè
+        const friendDetails = await User.find(
+            { _id: { $in: friendIds } },
+            { email: 1, fullname: 1, avatar: 1 }
+        ).lean();
+
+        return res.status(200).json({ friend: friendDetails });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Lỗi khi lấy danh sách bạn bè:", error);
+        return res.status(500).json({ error: error.message });
     }
 };
 
