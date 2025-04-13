@@ -16,6 +16,7 @@ const initWebRoutes = (app) => {
     router.post("/saveVocabulary", vocabularyController.handleSaveVocabulary)
     router.get("/get-list-saveVocab/:userId", vocabularyController.handleGetListSaveVocab)
     router.post("/deleteVocabulary", vocabularyController.handleDeleteVocabulary)
+    router.get("/getVocab/:userId", vocabularyController.getUserVocabulary)
 
     router.get("/get-history-quiz/:userId", quizController.handleGetHistoryQuiz)
     router.post("/generate-quiz", quizController.handleQuizCreation)

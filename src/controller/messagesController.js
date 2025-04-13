@@ -116,7 +116,7 @@ const handleSendMessage = async (req, res) => {
 
         console.time("⏱ Lưu Firestore");
         const messageRef = chatRef.collection("messages").doc();
-        const newMessage = await messageRef.set({
+        await messageRef.set({
             senderId,
             content,
             translatedContent,

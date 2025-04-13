@@ -28,7 +28,6 @@ const handleSaveVocabulary = async (req, res) => {
         let { word, phonetics, meanings } = vocabulary
         let existingVocabulary = await Vocabulary.findOne({ word: word });
         if (!existingVocabulary) {
-            // Nếu từ vựng chưa tồn tại, thì thêm vào bảng Vocabulary
             existingVocabulary = new Vocabulary({
                 word,
                 phonetics,
@@ -136,6 +135,7 @@ const handleDeleteVocabulary = async (req, res) => {
         return res.status(500).json({ error: "Delete vocabulary failed", details: error.message });
     }
 };
+
 const handleGetListSaveVocab = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -147,15 +147,21 @@ const handleGetListSaveVocab = async (req, res) => {
         const listVocab = await UserVocabulary.find({ _idUser: userId })
             .populate('_idVocabulary', 'word meanings quizAttempts');
 
-        const result = [];
+        const vocabIds = listVocab.map(item => item._idVocabulary._id);
+        const questions = await Question.find({ "vocabulary._id": { $in: vocabIds } })
+            .select("_id vocabulary._id");
 
-        for (const item of listVocab) {
+        const questionMap = questions.reduce((acc, q) => {
+            if (!acc[q.vocabulary._id]) acc[q.vocabulary._id] = [];
+            acc[q.vocabulary._id].push(q._id.toString());
+            return acc;
+        }, {});
+
+        const result = await Promise.all(listVocab.map(async (item) => {
             const vocab = item._idVocabulary;
-            if (!vocab) continue;
+            if (!vocab) return null;
 
-
-            const questions = await Question.find({ "vocabulary._id": vocab._id }).select("_id");
-            const questionIds = questions.map(q => q._id.toString());
+            const questionIds = questionMap[vocab._id] || [];
 
             let lastReviewedText = null;
             if (questionIds.length > 0) {
@@ -182,23 +188,110 @@ const handleGetListSaveVocab = async (req, res) => {
                 proficiency = Math.round(correctAnswers / totalAnswers * weight * 100);
             }
 
-            result.push({
+            return {
                 id: vocab._id,
                 word: vocab.word,
                 meanings: firstMeaning,
                 timepractice: lastReviewedText || "Never studied",
                 proficiency: proficiency,
                 totalpractice: quizAttempts
-            });
-        }
+            };
+        }));
 
-        return res.json({ data: result });
+        // Lọc null (nếu có) và trả về kết quả
+        return res.json({ data: result.filter(item => item !== null) });
     } catch (error) {
         return res.status(500).json({ error: "Get saved vocab failed", details: error.message });
     }
 };
 
+
+// const handleGetListSaveVocab = async (req, res) => {
+//     try {
+//         const { userId } = req.params;
+
+//         if (!userId) {
+//             return res.status(400).json({ error: "Missing userId" });
+//         }
+
+//         const listVocab = await UserVocabulary.find({ _idUser: userId })
+//             .populate('_idVocabulary', 'word meanings quizAttempts');
+
+//         const result = [];
+
+//         for (const item of listVocab) {
+//             const vocab = item._idVocabulary;
+//             if (!vocab) continue;
+
+
+//             const questions = await Question.find({ "vocabulary._id": vocab._id }).select("_id");
+//             const questionIds = questions.map(q => q._id.toString());
+
+//             let lastReviewedText = null;
+//             if (questionIds.length > 0) {
+//                 const lastQuiz = await Quiz.findOne({
+//                     _idUser: userId,
+//                     _idQuestion: { $in: questionIds }
+//                 }).sort({ createdAt: -1 });
+
+//                 if (lastQuiz) {
+//                     lastReviewedText = dayjs(lastQuiz.createdAt).fromNow();
+//                 }
+//             }
+
+//             let firstMeaning = "";
+//             if (vocab.meanings?.length > 0 && vocab.meanings[0].definitions?.length > 0) {
+//                 firstMeaning = vocab.meanings[0].definitions[0].definition;
+//             }
+
+//             const { quizAttempts, correctAnswers, wrongAnswers } = item;
+//             const totalAnswers = correctAnswers + wrongAnswers;
+//             let proficiency = 0;
+//             if (quizAttempts > 0) {
+//                 const weight = Math.min(totalAnswers / 10, 1);
+//                 proficiency = Math.round(correctAnswers / totalAnswers * weight * 100);
+//             }
+
+//             result.push({
+//                 id: vocab._id,
+//                 word: vocab.word,
+//                 meanings: firstMeaning,
+//                 timepractice: lastReviewedText || "Never studied",
+//                 proficiency: proficiency,
+//                 totalpractice: quizAttempts
+//             });
+//         }
+
+//         return res.json({ data: result });
+//     } catch (error) {
+//         return res.status(500).json({ error: "Get saved vocab failed", details: error.message });
+//     }
+// };
+// Controller
+const getUserVocabulary = async (req, res) => {
+    try {
+        const userId = req.user.id; // hoặc lấy từ token
+        const vocabList = await UserVocabulary.find({ _idUser: userId })
+            .populate('_idVocabulary') // lấy thông tin từ bảng Vocabulary
+            .exec();
+
+        const flashcards = vocabList.map((item) => {
+            const vocab = item._idVocabulary;
+            return {
+                word: vocab.word,
+                phonetic: vocab.phonetics[0]?.text || '',
+                audio: vocab.phonetics[0]?.audio || '',
+                meanings: vocab.meanings,
+            };
+        });
+
+        res.json(flashcards);
+    } catch (err) {
+        res.status(500).json({ message: "Lỗi khi lấy từ vựng", error: err });
+    }
+};
+
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
-    handleDeleteVocabulary, handleGetListSaveVocab
+    handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary
 };
