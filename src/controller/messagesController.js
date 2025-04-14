@@ -11,14 +11,16 @@ const checkExistingChat = async (req, res) => {
         console.log("checkExistingChat", receiverId, senderId)
         const chat = await admin.firestore().collection('chat')
             .where('participants', 'array-contains', senderId)
-            .where('participants', 'array-contains', receiverId)
             .get();
+
+        // Kiểm tra nếu có cuộc trò chuyện với senderId
+        const existingChats = chat.docs.filter(doc => doc.data().participants.includes(receiverId));
 
 
         if (!chat) {
             return res.status(400).json({ error: "Không tồn tại cuộc trò chuyện" });
         }
-        const chatId = chat.docs[0].id;
+        const chatId = existingChats[0].id;
         res.status(201).json({ chatId: chatId });
     } catch (error) {
         console.error(error);
