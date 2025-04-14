@@ -9,11 +9,17 @@ const checkExistingChat = async (req, res) => {
     try {
         const { receiverId, senderId } = req.body;
         console.log("checkExistingChat", receiverId, senderId)
-        let chat = await Chat.findOne({ participants: { $all: [senderId, receiverId] } });
+        const chat = await admin.firestore().collection('chat')
+            .where('participants', 'array-contains', senderId)
+            .where('participants', 'array-contains', receiverId)
+            .get();
+
+
         if (!chat) {
             return res.status(400).json({ error: "Không tồn tại cuộc trò chuyện" });
         }
-        res.status(201).json({ chatId: chat._id });
+        const chatId = chat.docs[0].id;
+        res.status(201).json({ chatId: chatId });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
