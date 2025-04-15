@@ -52,7 +52,7 @@ const initWebRoutes = (app) => {
     router.post("/save-fcm-token", messageController.saveFCMToken)
 
     router.get("/users/:userId", userController.handleGetUser)
-    router.post("/change-password/:userId", userController.handleChangePassword)
+    // router.post("/change-password/:userId", userController.handleChangePassword)
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)
 
