@@ -130,6 +130,7 @@ const handleFindVocabulary = async (req, res) => {
         })
         console.log("newWord", newWord);
 
+        return res.json({ newWord: newWord });
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
     }
