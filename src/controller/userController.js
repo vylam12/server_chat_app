@@ -212,11 +212,13 @@ const hanldeUpdateUser = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
+
         if (avatarUrl) {
-            await auth.updateUser(userId, {
-                photoURL: avatarUrl,
+            await db.collection('users').doc(userId).update({
+                avatar: avatarUrl
             });
         }
+
 
         res.json({
             message: 'User profile updated successfully',
