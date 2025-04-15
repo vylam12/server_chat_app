@@ -1,5 +1,7 @@
 import User from "../models/user.js";
 import FriendInvitation from "../models/friendInvitation.js"
+import { cloudinary } from "../config/cloudinary.js";
+
 const handleGetUser = async (req, res) => {
     try {
         const { userId } = req.params;
