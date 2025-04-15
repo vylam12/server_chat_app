@@ -83,6 +83,7 @@ const handleFindVocabulary = async (req, res) => {
     if (!word) {
         return res.status(400).json({ error: "Missing 'word' language" })
     }
+    word = word.toLowerCase();
     try {
         let existingVocabulary = await Vocabulary.findOne({ word });
         let userSaved = false;
@@ -130,7 +131,7 @@ const handleFindVocabulary = async (req, res) => {
         })
         console.log("newWord", newWord);
 
-        return res.json({ newWord: newWord });
+        return res.json({ newWord: newWord, userSaved: null });
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
     }
