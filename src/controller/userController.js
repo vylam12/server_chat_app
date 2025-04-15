@@ -188,37 +188,51 @@ const hanldeUpdateUser = async (req, res) => {
     try {
         const { userId, gender, birthDay } = req.body;
         const updateData = {};
+
         if (gender) updateData.gender = gender;
         if (birthDay) updateData.birthDay = new Date(birthDay);
-        // Xử lý upload avatar nếu có
+
         let avatarUrl = null;
+        let avatarUploadPromise = null;
+
+        // Nếu có file avatar, bắt đầu upload nhưng không chờ liền
         if (req.file) {
-            avatarUrl = await uploadAvatarToCloudinary(req.file.path);
-            // Xoá file tạm sau khi upload
-            fs.unlinkSync(req.file.path);
+            avatarUploadPromise = uploadAvatarToCloudinary(req.file.path)
+                .then(url => {
+                    avatarUrl = url;
+                    fs.unlink(req.file.path, () => { }); // không block, xoá file tạm
+                    return url;
+                });
         }
 
-        // Thêm avatar vào updateData nếu có
-        if (avatarUrl) updateData.avatar = avatarUrl;
-
-        // Cập nhật thông tin người dùng
-        const updatedUser = await User.findOneAndUpdate(
+        // Cập nhật MongoDB trước (chưa có avatar nếu đang upload)
+        const mongoUpdatePromise = User.findOneAndUpdate(
             { id: userId },
             { $set: updateData },
             { new: true }
         );
 
+        // Chờ upload ảnh nếu có
+        if (avatarUploadPromise) {
+            avatarUrl = await avatarUploadPromise;
+            updateData.avatar = avatarUrl;
+        }
+
+        // Sau khi có avatarUrl (nếu có), cập nhật Firestore và MongoDB avatar
+        const [updatedUser] = await Promise.all([
+            mongoUpdatePromise,
+            avatarUrl
+                ? db.collection('users').doc(userId).update({
+                    avatar: avatarUrl,
+                    ...(gender && { gender }),
+                    ...(birthDay && { birthDay: updateData.birthDay })
+                })
+                : Promise.resolve()
+        ]);
+
         if (!updatedUser) {
             return res.status(404).json({ error: 'User not found' });
         }
-
-
-        if (avatarUrl) {
-            await db.collection('users').doc(userId).update({
-                avatar: avatarUrl
-            });
-        }
-
 
         res.json({
             message: 'User profile updated successfully',
@@ -230,6 +244,7 @@ const hanldeUpdateUser = async (req, res) => {
         res.status(500).json({ error: 'Failed to update profile' });
     }
 };
+
 const uploadAvatarToCloudinary = async (filePath) => {
     const uploadResult = await cloudinary.uploader.upload(filePath, {
         folder: 'avatars',
