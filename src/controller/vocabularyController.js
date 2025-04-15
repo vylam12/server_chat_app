@@ -85,43 +85,40 @@ const handleFindVocabulary = async (req, res) => {
     }
     word = word.toLowerCase();
     try {
-        let existingVocabulary = await Vocabulary.findOne({ word });
-        let userSaved = false;
-        if (existingVocabulary && userId) {
-            userSaved = await UserVocabulary.exists({ userId, word });
-        }
+
+
+        const [existingVocabulary, userSaved] = await Promise.all([
+            Vocabulary.findOne({ word }),
+            userId ? UserVocabulary.exists({ userId, word }) : null
+        ]);
+
         if (existingVocabulary) {
             console.log("Từ đã tồn tại trong database:", existingVocabulary);
             console.log("userSaved", userSaved);
-            if (userSaved) {
-                return res.json({ newWord: existingVocabulary, userSaved: userSaved._id.toString() });
-            } else {
-                return res.json({ newWord: existingVocabulary, userSaved: null });
-            }
+            return res.json({
+                newWord: existingVocabulary,
+                userSaved: userSaved ? userSaved._id.toString() : null
+            });
         }
 
         const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = response.data[0];
-        const rawPhonetics = data.phonetics
-            .filter(p => p.license?.name?.includes("BY-SA") || p.license?.name?.includes("US"))
-            .map(p => ({
-                text: p.text || "Không có",
-                audio: p.audio || "Không có",
-                type: p.license?.name?.includes("BY-SA") ? "SA" : "US",
-                license: {
-                    name: p.license?.name || "Không có",
-                    url: p.license?.url || "Không có"
-                }
-            }));
 
         const seenTypes = new Set();
-        const phoneticsList = rawPhonetics.filter(p => {
-            if (!seenTypes.has(p.type)) {
-                seenTypes.add(p.type);
-                return true;
-            }
-            return false;
-        });
+        const phoneticsList = data.phonetics
+            .filter(p => (p.license?.name?.includes("BY-SA") || p.license?.name?.includes("US")) && !seenTypes.has(p.license?.name))
+            .map(p => {
+                seenTypes.add(p.license?.name);  // Thêm loại phonetic vào Set để tránh trùng
+                return {
+                    text: p.text || "Không có",
+                    audio: p.audio || "Không có",
+                    type: p.license?.name?.includes("BY-SA") ? "SA" : "US",
+                    license: {
+                        name: p.license?.name || "Không có",
+                        url: p.license?.url || "Không có"
+                    }
+                };
+            });
 
         const meanings = data.meanings.map(meaning => ({
             type: meaning.partOfSpeech || "Không có",
