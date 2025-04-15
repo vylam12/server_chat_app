@@ -108,7 +108,7 @@ const handleFindVocabulary = async (req, res) => {
         const phoneticsList = data.phonetics
             .filter(p => (p.license?.name?.includes("BY-SA") || p.license?.name?.includes("US")) && !seenTypes.has(p.license?.name))
             .map(p => {
-                seenTypes.add(p.license?.name);  // Thêm loại phonetic vào Set để tránh trùng
+                seenTypes.add(p.license?.name);
                 return {
                     text: p.text || "Không có",
                     audio: p.audio || "Không có",

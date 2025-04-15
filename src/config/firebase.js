@@ -1,5 +1,4 @@
 import admin from "firebase-admin";
-// import serviceAccount from "./firebase-key.json" with  { type: "json" };
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
 if (!admin.apps.length) {
@@ -11,5 +10,4 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 const auth = admin.auth();
-
 export { db, auth };

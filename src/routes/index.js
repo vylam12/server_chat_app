@@ -1,4 +1,5 @@
 import express from "express";
+import multer from 'multer';
 import translateController from "../controller/translateController.js";
 import quizController from "../controller/quizController.js";
 import authController from "../controller/authController.js";
@@ -7,6 +8,8 @@ import messageController from "../controller/messagesController.js";
 import userController from "../controller/userController.js";
 import vocabularyController from "../controller/vocabularyController.js";
 
+
+const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
 
 const initWebRoutes = (app) => {
@@ -17,8 +20,6 @@ const initWebRoutes = (app) => {
     router.get("/get-list-saveVocab/:userId", vocabularyController.handleGetListSaveVocab)
     router.post("/deleteVocabulary", vocabularyController.handleDeleteVocabulary)
     router.get("/getVocab/:userId", vocabularyController.getUserVocabulary)
-
-
 
     router.get("/get-history-quiz/:userId", quizController.handleGetHistoryQuiz)
     router.post("/generate-quiz", quizController.handleQuizCreation)
@@ -41,7 +42,6 @@ const initWebRoutes = (app) => {
     //lấy list lời mời kết bạn
     router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)
 
-
     router.post("/create-chat", messageController.handleCreateChat)
     router.post("/send-message", messageController.handleSendMessage)
     router.get("/get-message/:chatId", messageController.handleGetMessages)
@@ -52,6 +52,7 @@ const initWebRoutes = (app) => {
     router.post("/save-fcm-token", messageController.saveFCMToken)
 
     router.get("/users/:userId", userController.handleGetUser)
+    router.post("/update-user", upload.single('avatar'), userController.hanldeUpdateUser)
     // router.post("/change-password/:userId", userController.handleChangePassword)
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)

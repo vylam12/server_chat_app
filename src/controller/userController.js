@@ -155,22 +155,84 @@ const handleFriendUser = async (req, res) => {
 
 const handleChangePassword = async (req, res) => {
     try {
-        const { oldPassword, newPassword, userId } = req.body;
+        const { idToken, newPassword } = req.body;
 
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Mật khẩu cũ không đúng" });
+        if (!idToken || !newPassword) {
+            return res.status(400).json({ error: "Thiếu token hoặc mật khẩu mới" });
         }
+
+        const decodedToken = await auth.verifyIdToken(idToken);
+        const uid = decodedToken.uid;
+
+        const user = await User.findOne({ id: uid });
+        if (!user) {
+            return res.status(404).json({ error: "Người dùng không tồn tại" });
+        }
+
+        if (user.provider !== 'password') {
+            return res.status(400).json({ error: "Tài khoản Google không thể đổi mật khẩu" });
+        }
+
+        await auth.updateUser(uid, { password: newPassword });
+
+        res.json({ message: "Đổi mật khẩu thành công" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Lỗi server" });
     }
 };
+const hanldeUpdateUser = async (req, res) => {
+    try {
+        const { userId, gender, birthDay } = req.body;
+        const updateData = {};
+        if (gender) updateData.gender = gender;
+        if (birthDay) updateData.birthDay = new Date(birthDay);
+        // Xử lý upload avatar nếu có
+        let avatarUrl = null;
+        if (req.file) {
+            avatarUrl = await uploadAvatarToCloudinary(req.file.path);
+            // Xoá file tạm sau khi upload
+            fs.unlinkSync(req.file.path);
+        }
 
+        // Thêm avatar vào updateData nếu có
+        if (avatarUrl) updateData.avatar = avatarUrl;
+
+        // Cập nhật thông tin người dùng
+        const updatedUser = await User.findOneAndUpdate(
+            { id: userId },
+            { $set: updateData },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (avatarUrl) {
+            await admin.auth().updateUser(userId, {
+                photoURL: avatarUrl,
+            });
+        }
+
+        res.json({
+            message: 'User profile updated successfully',
+            user: updatedUser,
+        });
+
+    } catch (error) {
+        console.error('Update user profile error:', error);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
+};
+const uploadAvatarToCloudinary = async (filePath) => {
+    const uploadResult = await cloudinary.uploader.upload(filePath, {
+        folder: 'avatars',
+    });
+    return uploadResult.secure_url;
+};
 export default {
     handleGetUser, handleFindFriend, handleFriendUser,
-    handleGetIDUser
+    handleGetIDUser, handleChangePassword, hanldeUpdateUser
+
 };
