@@ -2,7 +2,7 @@ import User from "../models/user.js";
 import FriendInvitation from "../models/friendInvitation.js"
 import { cloudinary } from "../config/cloudinary.js";
 import fs from 'fs';
-
+import { auth } from "../config/firebase.js"
 const handleGetUser = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -213,7 +213,7 @@ const hanldeUpdateUser = async (req, res) => {
         }
 
         if (avatarUrl) {
-            await admin.auth().updateUser(userId, {
+            await auth.updateUser(userId, {
                 photoURL: avatarUrl,
             });
         }
