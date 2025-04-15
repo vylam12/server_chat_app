@@ -102,17 +102,26 @@ const handleFindVocabulary = async (req, res) => {
 
         const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = response.data[0];
-        const phoneticsList = data.phonetics
-            .filter(p => p.license?.name.includes("BY-SA") || p.license?.name.includes("US"))
+        const rawPhonetics = data.phonetics
+            .filter(p => p.license?.name?.includes("BY-SA") || p.license?.name?.includes("US"))
             .map(p => ({
                 text: p.text || "Không có",
                 audio: p.audio || "Không có",
-                type: p.license?.name.includes("BY-SA") ? "SA" : "US",
+                type: p.license?.name?.includes("BY-SA") ? "SA" : "US",
                 license: {
                     name: p.license?.name || "Không có",
                     url: p.license?.url || "Không có"
                 }
             }));
+
+        const seenTypes = new Set();
+        const phoneticsList = rawPhonetics.filter(p => {
+            if (!seenTypes.has(p.type)) {
+                seenTypes.add(p.type);
+                return true;
+            }
+            return false;
+        });
 
         const meanings = data.meanings.map(meaning => ({
             type: meaning.partOfSpeech || "Không có",
@@ -122,16 +131,18 @@ const handleFindVocabulary = async (req, res) => {
             })),
             synonyms: meaning.synonyms.length > 0 ? meaning.synonyms : ["Không có"],
             antonyms: meaning.antonyms.length > 0 ? meaning.antonyms : ["Không có"]
-        }))
+        }));
 
         const newWord = new Vocabulary({
             word: word,
             phonetics: phoneticsList.length > 0 ? phoneticsList : ["Không có"],
             meanings: meanings
-        })
+        });
+
         console.log("newWord", newWord);
 
         return res.json({ newWord: newWord, userSaved: null });
+
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
     }
