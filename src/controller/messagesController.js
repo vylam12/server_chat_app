@@ -13,7 +13,6 @@ const checkExistingChat = async (req, res) => {
             .where('participants', 'array-contains', senderId)
             .get();
 
-        // Kiểm tra nếu có cuộc trò chuyện với senderId
         const existingChats = chat.docs.filter(doc => doc.data().participants.includes(receiverId));
 
 

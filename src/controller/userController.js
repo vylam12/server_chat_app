@@ -152,6 +152,24 @@ const handleFriendUser = async (req, res) => {
     }
 };
 
+
+const handleChangePassword = async (req, res) => {
+    try {
+        const { oldPassword, newPassword, userId } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Mật khẩu cũ không đúng" });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Lỗi server" });
+    }
+};
+
 export default {
     handleGetUser, handleFindFriend, handleFriendUser,
     handleGetIDUser

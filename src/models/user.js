@@ -16,6 +16,14 @@ const userSchema = new mongoose.Schema({
     fullname: {
         type: String, required: true,
     },
+    gender: {
+        type: String,
+        default: null
+    },
+    birthDay: {
+        type: Date,
+        default: null
+    },
     resetOtp: {
         type: String, default: null
     },

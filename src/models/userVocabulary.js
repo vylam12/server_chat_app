@@ -18,6 +18,10 @@ const userVocabularySchema = new mongoose.Schema({
     wrongAnswers: {
         type: Number, default: 0
     },
+    isKnown: {
+        type: Boolean,
+        default: false
+    }
 },
     { timestamps: true }
 );

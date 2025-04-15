@@ -18,6 +18,8 @@ const initWebRoutes = (app) => {
     router.post("/deleteVocabulary", vocabularyController.handleDeleteVocabulary)
     router.get("/getVocab/:userId", vocabularyController.getUserVocabulary)
 
+
+
     router.get("/get-history-quiz/:userId", quizController.handleGetHistoryQuiz)
     router.post("/generate-quiz", quizController.handleQuizCreation)
     router.get("/get-quiz/:quizId", quizController.handleGetQuiz)
@@ -50,6 +52,7 @@ const initWebRoutes = (app) => {
     router.post("/save-fcm-token", messageController.saveFCMToken)
 
     router.get("/users/:userId", userController.handleGetUser)
+    router.post("/change-password/:userId", userController.handleChangePassword)
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)
 

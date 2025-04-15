@@ -1,10 +1,12 @@
 import axios from "axios";
 import Vocabulary from "../models/vocabulary.js";
 import UserVocabulary from "../models/userVocabulary.js";
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime.js';
 import Quiz from "../models/quiz.js";
 import Question from "../models/question.js";
+import quizController from "./quizController.js";
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime.js';
+
 dayjs.extend(relativeTime);
 function selectWordsForQuiz(vocabList, count) {
     // Sắp xếp từ ít thành thạo đến nhiều thành thạo
@@ -48,7 +50,22 @@ const handleSaveVocabulary = async (req, res) => {
             _idVocabulary: existingVocabulary._id
         });
         await newUserVocabulary.save();
+        const quizQuestions = await quizController.generateQuizQuestions(existingVocabulary);
+        const savedQuestions = [];
+        for (const q of quizQuestions) {
+            const newQuestion = new Question({
+                content: q.content,
+                options: q.options,
+                correctAnswer: q.correctAnswer,
+                vocabulary: {
+                    _id: q.vocabulary._id,
+                    meaning: q.vocabulary.meaning
+                }
+            });
 
+            await newQuestion.save();
+            savedQuestions.push(newQuestion);
+        }
         res.json({
             message: "Save vocabulary successfully",
             vocabulary: existingVocabulary,
@@ -206,68 +223,6 @@ const handleGetListSaveVocab = async (req, res) => {
 };
 
 
-// const handleGetListSaveVocab = async (req, res) => {
-//     try {
-//         const { userId } = req.params;
-
-//         if (!userId) {
-//             return res.status(400).json({ error: "Missing userId" });
-//         }
-
-//         const listVocab = await UserVocabulary.find({ _idUser: userId })
-//             .populate('_idVocabulary', 'word meanings quizAttempts');
-
-//         const result = [];
-
-//         for (const item of listVocab) {
-//             const vocab = item._idVocabulary;
-//             if (!vocab) continue;
-
-
-//             const questions = await Question.find({ "vocabulary._id": vocab._id }).select("_id");
-//             const questionIds = questions.map(q => q._id.toString());
-
-//             let lastReviewedText = null;
-//             if (questionIds.length > 0) {
-//                 const lastQuiz = await Quiz.findOne({
-//                     _idUser: userId,
-//                     _idQuestion: { $in: questionIds }
-//                 }).sort({ createdAt: -1 });
-
-//                 if (lastQuiz) {
-//                     lastReviewedText = dayjs(lastQuiz.createdAt).fromNow();
-//                 }
-//             }
-
-//             let firstMeaning = "";
-//             if (vocab.meanings?.length > 0 && vocab.meanings[0].definitions?.length > 0) {
-//                 firstMeaning = vocab.meanings[0].definitions[0].definition;
-//             }
-
-//             const { quizAttempts, correctAnswers, wrongAnswers } = item;
-//             const totalAnswers = correctAnswers + wrongAnswers;
-//             let proficiency = 0;
-//             if (quizAttempts > 0) {
-//                 const weight = Math.min(totalAnswers / 10, 1);
-//                 proficiency = Math.round(correctAnswers / totalAnswers * weight * 100);
-//             }
-
-//             result.push({
-//                 id: vocab._id,
-//                 word: vocab.word,
-//                 meanings: firstMeaning,
-//                 timepractice: lastReviewedText || "Never studied",
-//                 proficiency: proficiency,
-//                 totalpractice: quizAttempts
-//             });
-//         }
-
-//         return res.json({ data: result });
-//     } catch (error) {
-//         return res.status(500).json({ error: "Get saved vocab failed", details: error.message });
-//     }
-// };
-// Controller
 const getUserVocabulary = async (req, res) => {
     try {
         const userId = req.params.userId;

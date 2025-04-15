@@ -3,6 +3,7 @@ import Question from "../models/question.js";
 import UserVocabulary from "../models/userVocabulary.js";
 import Quiz from "../models/quiz.js";
 
+//Tạo câu hỏi
 const generateQuizQuestions = async (newWord) => {
     const questions = [];
 
@@ -65,6 +66,7 @@ const generateQuizQuestions = async (newWord) => {
     return finalQuestions;
 };
 
+//Tạo quiz
 const handleQuizCreation = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -91,16 +93,12 @@ const handleQuizCreation = async (req, res) => {
             return map;
         }, {});
 
-
-        // Phân loại từ đã có câu hỏi và từ chưa có
         const existingWords = Object.keys(existingQuestionsMap);
         const newWords = selectedWords.filter(word => !existingWords.includes(word._id.toString()));
 
 
-        // Tạo câu hỏi mới cho các từ chưa có
         const newQuizQuestions = (await Promise.all(newWords.map(generateQuizQuestions))).flat();
 
-        // Kết hợp câu hỏi cũ và mới
         const allQuizQuestions = [
             ...existingWords.flatMap(wordId => existingQuestionsMap[wordId]),
             ...newQuizQuestions
@@ -111,7 +109,6 @@ const handleQuizCreation = async (req, res) => {
         }
         console.log("Generated Quiz Questions:", allQuizQuestions);
 
-        // Lấy danh sách ID của các câu hỏi vừa lưu
         if (newQuizQuestions.length > 0) {
             const savedQuestions = await Question.insertMany(newQuizQuestions);
             allQuizQuestions.push(...savedQuestions);
@@ -246,5 +243,5 @@ const handleGetHistoryQuiz = async (req, res) => {
 };
 export default {
     handleQuizCreation, handleUpdateResultQuiz,
-    handleGetQuiz, handleCheckUserVocabulary, handleGetHistoryQuiz
+    handleGetQuiz, handleCheckUserVocabulary, handleGetHistoryQuiz, generateQuizQuestions
 };
