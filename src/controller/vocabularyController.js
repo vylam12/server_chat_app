@@ -99,7 +99,6 @@ const handleFindVocabulary = async (req, res) => {
             }
         }
 
-
         const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = response.data[0];
         const phoneticsList = data.phonetics
@@ -107,7 +106,7 @@ const handleFindVocabulary = async (req, res) => {
             .map(p => ({
                 text: p.text || "Không có",
                 audio: p.audio || "Không có",
-                type: p.license?.name.includes("BY-SA") ? "SA" : "US",  // Phân loại type
+                type: p.license?.name.includes("BY-SA") ? "SA" : "US",
                 license: {
                     name: p.license?.name || "Không có",
                     url: p.license?.url || "Không có"
@@ -131,7 +130,6 @@ const handleFindVocabulary = async (req, res) => {
         })
         console.log("newWord", newWord);
 
-        return res.json({ newWord: newWord });
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
     }
