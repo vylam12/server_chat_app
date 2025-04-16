@@ -187,6 +187,7 @@ const handleChangePassword = async (req, res) => {
 const hanldeUpdateUser = async (req, res) => {
     try {
         const { userId, gender, birthDay } = req.body;
+        console.log("gender :", gender, "birthday", birthDay)
         const updateData = {};
 
         if (gender) updateData.gender = gender;
@@ -196,6 +197,7 @@ const hanldeUpdateUser = async (req, res) => {
         let avatarUploadPromise = null;
 
         if (req.file) {
+            console.log("req.file :", req.file)
             avatarUploadPromise = uploadAvatarToCloudinary(req.file.path)
                 .then(url => {
                     avatarUrl = url;
