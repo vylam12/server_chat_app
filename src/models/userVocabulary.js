@@ -25,10 +25,6 @@ const userVocabularySchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    level: {
-        type: Number,
-        default: 0
-    },
     lastReviewedAt: {
         type: Date,
         default: Date.now

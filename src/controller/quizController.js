@@ -131,54 +131,71 @@ const handleGetQuiz = async (req, res) => {
     }
 
 }
-
 const handleUpdateResultQuiz = async (req, res) => {
     try {
         const { quizId, countCorrect, timeTaken, vocabularyResults, userId } = req.body;
         if (!quizId) {
             return res.status(401).json({ error: "quizId available" });
         }
-        console.log("quizId", quizId, countCorrect, timeTaken, vocabularyResults, userId)
+
         const updatedQuiz = await Quiz.findByIdAndUpdate(
             quizId,
             {
                 $set: {
-                    countCorrect: countCorrect,
-                    timeTaken: timeTaken
+                    countCorrect,
+                    timeTaken
                 }
             },
             { new: true }
         );
+
         if (!updatedQuiz) {
             return res.status(404).json({ error: "Quiz not found" });
         }
+
+        const now = new Date();
+
         if (vocabularyResults && vocabularyResults.length > 0) {
             for (const vocab of vocabularyResults) {
+                const existing = await UserVocabulary.findOne({
+                    _idVocabulary: vocab.vocabId,
+                    _idUser: userId
+                });
+
+                const updatePayload = {
+                    $inc: {
+                        correctAnswers: vocab.correctCount || 0,
+                        wrongAnswers: vocab.wrongCount || 0,
+                        quizAttempts: 1
+                    },
+                    $set: {
+                        lastReviewedAt: now
+                    }
+                };
+
+                const totalCorrect = (existing?.correctAnswers || 0) + (vocab.correctCount || 0);
+                const totalQuiz = (existing?.quizAttempts || 0) + 1;
+                const flashcardViews = existing?.flashcardViews || 0;
+
+                if (flashcardViews >= 2 && totalQuiz >= 1 && totalCorrect >= 2) {
+                    updatePayload.$set.isKnown = true;
+                }
+
                 await UserVocabulary.findOneAndUpdate(
                     { _idVocabulary: vocab.vocabId, _idUser: userId },
-                    {
-                        $inc: {
-                            correctAnswers: vocab.correctCount || 0,
-                            wrongAnswers: vocab.wrongCount || 0,
-                            quizAttempts: 1
-                        },
-                        $set: {
-                            lastReviewedAt: now
-                        }
-                    },
+                    updatePayload,
                     { upsert: true, new: true }
                 );
-                console.log("vocab và vocab id", vocab);
             }
         }
 
-        console.log("Quiz & Vocabulary updated successfully");
         return res.status(200).json({ message: "Quiz & Vocabulary updated successfully" });
     } catch (error) {
         console.error("Error update quiz:", error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
 const handleCheckUserVocabulary = async (req, res) => {
     try {
         const { userId } = req.body;

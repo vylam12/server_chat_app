@@ -234,22 +234,47 @@ const handleGetListSaveVocab = async (req, res) => {
 const getUserVocabulary = async (req, res) => {
     try {
         const userId = req.params.userId;
-        const vocabList = await UserVocabulary.find({ _idUser: userId })
-            .populate('_idVocabulary')
-            .exec();
 
-        const flashcards = vocabList.map((item) => {
-            const vocab = item._idVocabulary;
-            return {
-                word: vocab.word,
-                phonetic: vocab.phonetics[0]?.text || '',
-                audio: vocab.phonetics[0]?.audio || '',
-                meanings: vocab.meanings[0]?.definitions[0]?.definition || '',
-            };
-        });
+        const vocabList = await UserVocabulary.aggregate([
+            {
+                $match: {
+                    _idUser: new mongoose.Types.ObjectId(userId),
+                    flashcardViews: 0,
+                    isKnown: false
+                }
+            },
+            {
+                $sample: { size: 7 }
+            },
+            {
+                $lookup: {
+                    from: "vocabularies",
+                    localField: "_idVocabulary",
+                    foreignField: "_id",
+                    as: "vocabInfo"
+                }
+            },
+            {
+                $unwind: "$vocabInfo"
+            },
+            {
+                $project: {
+                    word: "$vocabInfo.word",
+                    phonetic: { $arrayElemAt: ["$vocabInfo.phonetics.text", 0] },
+                    audio: { $arrayElemAt: ["$vocabInfo.phonetics.audio", 0] },
+                    meanings: { $arrayElemAt: ["$vocabInfo.meanings.definitions.definition", 0] }
+                }
+            }
+        ]);
 
-        res.json({ data: flashcards });
+        if (vocabList.length < 5) {
+            return res.json({ canMakeFlashcard: false, data: [] });
+        }
+
+        return res.json({ canMakeFlashcard: true, data: vocabList });
+
     } catch (err) {
+        console.error("Error get flashcards:", err);
         res.status(500).json({ message: "Lỗi khi lấy từ vựng", error: err });
     }
 };
@@ -296,7 +321,6 @@ const getFlashcardReviewQuestions = async (req, res) => {
     const { userId } = req.params;
 
     try {
-        // 1. Tìm các từ vựng đã học qua flashcard ít nhất 1 lần và chưa được đánh dấu là đã thuộc
         const learnedVocabularies = await UserVocabulary.find({
             _idUser: userId,
             flashcardViews: { $gte: 1 },

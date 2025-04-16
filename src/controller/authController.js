@@ -55,7 +55,6 @@ const handleLogin = async (req, res) => {
         let userData = await User.findOne({ id: uid });
         console.log("User data from DB: ", userData);
         if (!userData) {
-            // Nếu user chưa tồn tại, tạo mới
             userData = new User({
                 id: uid,
                 email: email,
