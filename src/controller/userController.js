@@ -183,48 +183,43 @@ const handleChangePassword = async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: "Lỗi server" });
     }
-};
-const hanldeUpdateUser = async (req, res) => {
+}; const hanldeUpdateUser = async (req, res) => {
     try {
         const { userId, gender, birthDay } = req.body;
-        console.log("gender :", gender, "birthday", birthDay)
+        console.log("gender :", gender, "birthday", birthDay);
         const updateData = {};
 
         if (gender) updateData.gender = gender;
         if (birthDay) updateData.birthDay = new Date(birthDay);
 
         let avatarUrl = null;
-        let avatarUploadPromise = null;
 
+        // Nếu có file ảnh thì upload trước
         if (req.file) {
-            console.log("req.file :", req.file)
-            avatarUploadPromise = uploadAvatarToCloudinary(req.file.path)
-                .then(url => {
-                    console.log("url :", url)
-                    avatarUrl = url;
-                    fs.unlink(req.file.path, () => { });
-                    return url;
-                });
+            console.log("req.file :", req.file);
+            avatarUrl = await uploadAvatarToCloudinary(req.file.path);
+            console.log("url :", avatarUrl);
+            fs.unlink(req.file.path, () => { });
+            updateData.avatar = avatarUrl; // Thêm avatar vào updateData luôn ở đây
         }
 
+        // Bây giờ mới update MongoDB (sau khi updateData đầy đủ)
         const mongoUpdatePromise = User.findOneAndUpdate(
             { id: userId },
             { $set: updateData },
             { new: true }
         );
 
-        if (avatarUploadPromise) {
-            avatarUrl = await avatarUploadPromise;
-            updateData.avatar = avatarUrl;
-        }
+        // Đồng thời update Firestore nếu có avatar mới
+        const firestoreUpdatePromise = avatarUrl
+            ? db.collection('users').doc(userId).update({
+                avatar: avatarUrl
+            })
+            : Promise.resolve();
 
         const [updatedUser] = await Promise.all([
             mongoUpdatePromise,
-            avatarUrl
-                ? db.collection('users').doc(userId).update({
-                    avatar: avatarUrl
-                })
-                : Promise.resolve()
+            firestoreUpdatePromise
         ]);
 
         if (!updatedUser) {
