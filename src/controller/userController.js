@@ -22,7 +22,23 @@ const handleGetUser = async (req, res) => {
     }
 }
 
+const handleGetIFUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
 
+        if (!userId) {
+            return res.status(400).json({ error: "Thiếu userId" });
+        }
+        const user = await User.findOne({ id: userId })
+            .sort({ createdAt: 1 });
+        res.status(200).json({
+            user: user
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Lỗi server" });
+    }
+}
 const handleGetIDUser = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -245,6 +261,6 @@ const uploadAvatarToCloudinary = async (filePath) => {
 };
 export default {
     handleGetUser, handleFindFriend, handleFriendUser,
-    handleGetIDUser, handleChangePassword, hanldeUpdateUser
+    handleGetIDUser, handleChangePassword, hanldeUpdateUser, handleGetIFUser
 
 };

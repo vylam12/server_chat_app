@@ -58,6 +58,7 @@ const initWebRoutes = (app) => {
     router.post("/save-fcm-token", messageController.saveFCMToken)
 
     router.get("/users/:userId", userController.handleGetUser)
+    router.get("/get-infor-user/:userId", userController.handleGetIFUser)
     router.post("/update-user", upload.single('avatar'), userController.hanldeUpdateUser)
     // router.post("/change-password/:userId", userController.handleChangePassword)
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
