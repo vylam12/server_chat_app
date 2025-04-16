@@ -200,6 +200,7 @@ const hanldeUpdateUser = async (req, res) => {
             console.log("req.file :", req.file)
             avatarUploadPromise = uploadAvatarToCloudinary(req.file.path)
                 .then(url => {
+                    console.log("url :", url)
                     avatarUrl = url;
                     fs.unlink(req.file.path, () => { });
                     return url;
