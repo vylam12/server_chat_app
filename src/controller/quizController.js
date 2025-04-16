@@ -74,50 +74,29 @@ const handleQuizCreation = async (req, res) => {
             return res.status(401).json({ error: "User available" });
         }
 
-        const userWords = await UserVocabulary.find({ _idUser: userId }).populate('_idVocabulary');
-        if (!userWords.length) {
-            return res.status(400).json({ error: "User has no saved vocabulary" });
+        const learnedVocabularies = await UserVocabulary.find({
+            _idUser: userId,
+            flashcardViews: { $gte: 1 }
+        });
+
+        const vocabularyIds = learnedVocabularies.map(item => item._idVocabulary);
+
+        if (vocabularyIds.length === 0) {
+            return res.status(200).json({
+                message: "Người dùng chưa học flashcard từ nào.",
+                data: []
+            });
         }
-        const vocabularyList = userWords.map(entry => entry._idVocabulary);
-        if (vocabularyList.length === 0) return res.status(400).json({ error: "No words available" });
+        const questions = await Question.aggregate([
+            { $match: { "vocabulary._id": { $in: vocabularyIds } } },
+            { $sample: { size: 5 } }
+        ]);
 
-        const numberOfWords = Math.min(5, vocabularyList.length);
-        const selectedWords = vocabularyController.selectWordsForQuiz(vocabularyList, numberOfWords);
-
-        const existingQuestions = await Question.find({ "vocabulary._id": { $in: selectedWords.map(w => w._id) } });
-
-        const existingQuestionsMap = existingQuestions.reduce((map, question) => {
-            const wordId = question.vocabulary._id.toString();
-            if (!map[wordId]) map[wordId] = [];
-            map[wordId].push(question);
-            return map;
-        }, {});
-
-        const existingWords = Object.keys(existingQuestionsMap);
-        const newWords = selectedWords.filter(word => !existingWords.includes(word._id.toString()));
-
-
-        const newQuizQuestions = (await Promise.all(newWords.map(generateQuizQuestions))).flat();
-
-        const allQuizQuestions = [
-            ...existingWords.flatMap(wordId => existingQuestionsMap[wordId]),
-            ...newQuizQuestions
-        ];
-
-        if (allQuizQuestions.length === 0) {
-            return res.status(400).json({ error: "No questions generated" });
+        if (questions.length === 0) {
+            return res.status(200).json({ message: "Không có câu hỏi phù hợp." });
         }
-        console.log("Generated Quiz Questions:", allQuizQuestions);
 
-        if (newQuizQuestions.length > 0) {
-            const savedQuestions = await Question.insertMany(newQuizQuestions);
-            allQuizQuestions.push(...savedQuestions);
-        }
-        const questionIds = allQuizQuestions
-            .map(q => q._id?.toString())
-            .filter(id => id);
-        console.log("Question IDs:", questionIds);
-
+        const questionIds = questions.map(q => q._id);
         const newQuiz = new Quiz({
             _idQuestion: questionIds,
             _idUser: userId,
@@ -175,16 +154,19 @@ const handleUpdateResultQuiz = async (req, res) => {
         }
         if (vocabularyResults && vocabularyResults.length > 0) {
             for (const vocab of vocabularyResults) {
-                await UserVocabulary.updateOne(
+                await UserVocabulary.findOneAndUpdate(
                     { _idVocabulary: vocab.vocabId, _idUser: userId },
                     {
                         $inc: {
-                            correctAnswers: vocab.correctCount,
-                            wrongAnswers: vocab.wrongCount,
+                            correctAnswers: vocab.correctCount || 0,
+                            wrongAnswers: vocab.wrongCount || 0,
                             quizAttempts: 1
+                        },
+                        $set: {
+                            lastReviewedAt: now
                         }
                     },
-                    { new: true } // Nếu không tìm thấy, tạo mới
+                    { upsert: true, new: true }
                 );
                 console.log("vocab và vocab id", vocab);
             }

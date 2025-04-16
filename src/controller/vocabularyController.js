@@ -230,7 +230,7 @@ const handleGetListSaveVocab = async (req, res) => {
     }
 };
 
-
+//làm flash card
 const getUserVocabulary = async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -254,7 +254,76 @@ const getUserVocabulary = async (req, res) => {
     }
 };
 
+const updateAfterFlashcard = async (req, res) => {
+    const { userId, vocabList } = req.body;
+
+    if (!userId || !Array.isArray(vocabList)) {
+        return res.status(400).json({ message: "Invalid data format." });
+    }
+
+    try {
+        const updatePromises = vocabList.map(async (item) => {
+            const { vocabularyId, isKnown } = item;
+
+            const userVocab = await UserVocabulary.findOneAndUpdate(
+                { _idUser: userId, _idVocabulary: vocabularyId },
+                {
+                    $inc: { flashcardViews: 1 },
+                    $set: {
+                        lastReviewedAt: now,
+                        ...(isKnown ? { isKnown: true, level: 4 } : {})
+                    }
+                },
+                { upsert: true, new: true }
+            );
+
+            return userVocab;
+        });
+
+        const updatedVocabularies = await Promise.all(updatePromises);
+
+        res.status(200).json({
+            message: "Cập nhật từ vựng sau khi học flashcard thành công.",
+            data: updatedVocabularies
+        });
+    } catch (error) {
+        console.error("Lỗi cập nhật flashcard:", error);
+        res.status(500).json({ message: "Lỗi server khi cập nhật flashcard." });
+    }
+};
+
+const getFlashcardReviewQuestions = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        // 1. Tìm các từ vựng đã học qua flashcard ít nhất 1 lần và chưa được đánh dấu là đã thuộc
+        const learnedVocabularies = await UserVocabulary.find({
+            _idUser: userId,
+            flashcardViews: { $gte: 1 },
+            isKnown: false
+        });
+
+        const vocabularyIds = learnedVocabularies.map(item => item._idVocabulary);
+
+        if (vocabularyIds.length === 0) {
+            return res.status(200).json({ message: "Không có từ nào cần ôn tập.", data: [] });
+        }
+
+        const questions = await Question.find({
+            "vocabulary._id": { $in: vocabularyIds }
+        });
+
+        res.status(200).json({
+            message: "Lấy câu hỏi ôn tập thành công.",
+            data: questions
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy câu hỏi ôn tập:", error);
+        res.status(500).json({ message: "Lỗi server khi lấy câu hỏi ôn tập." });
+    }
+};
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
-    handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary
+    handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,
+    getFlashcardReviewQuestions
 };

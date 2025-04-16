@@ -9,6 +9,9 @@ const userVocabularySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'vocabulary', required: true
     },
+    flashcardViews: {
+        type: Number, default: 0
+    },
     quizAttempts: {
         type: Number, default: 0
     },
@@ -21,6 +24,14 @@ const userVocabularySchema = new mongoose.Schema({
     isKnown: {
         type: Boolean,
         default: false
+    },
+    level: {
+        type: Number,
+        default: 0
+    },
+    lastReviewedAt: {
+        type: Date,
+        default: Date.now
     }
 },
     { timestamps: true }

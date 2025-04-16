@@ -16,6 +16,9 @@ const QuizSchema = new mongoose.Schema({
     },
     timeTaken: {
         type: Number, default: 0
+    },
+    isCompleted: {
+        type: Boolean, default: false
     }
 
 },
