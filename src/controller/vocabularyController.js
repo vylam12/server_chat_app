@@ -6,6 +6,7 @@ import Question from "../models/question.js";
 import quizController from "./quizController.js";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime.js';
+import mongoose from 'mongoose';
 
 dayjs.extend(relativeTime);
 function selectWordsForQuiz(vocabList, count) {
