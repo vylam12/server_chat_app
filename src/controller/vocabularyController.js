@@ -278,10 +278,10 @@ const updateAfterFlashcard = async (req, res) => {
 
     try {
         const updatePromises = vocabList.map(async (item) => {
-            const { id } = item;
+            const { vocabularyId } = item;
 
             const userVocab = await UserVocabulary.findOneAndUpdate(
-                { _idUser: userId, _idVocabulary: id },
+                { _idUser: userId, _idVocabulary: vocabularyId },
                 {
                     $inc: { flashcardViews: 1 },
                     $set: {
