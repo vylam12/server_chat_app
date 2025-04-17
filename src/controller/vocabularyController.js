@@ -235,39 +235,45 @@ const handleGetListSaveVocab = async (req, res) => {
 const getUserVocabulary = async (req, res) => {
     try {
         const userId = req.params.userId;
+        const vocabList = await UserVocabulary.find({
+            _idUser: userId,
+            flashcardViews: 0,
+            isKnown: false
+        });
+        console.log("DEBUG 1: vocabListRaw =", vocabList);
 
-        const vocabList = await UserVocabulary.aggregate([
-            {
-                $match: {
-                    _idUser: userId,
-                    flashcardViews: 0,
-                    isKnown: false
-                }
-            },
-            {
-                $sample: { size: 7 }
-            },
-            {
-                $lookup: {
-                    from: "vocabularies",
-                    localField: "_idVocabulary",
-                    foreignField: "_id",
-                    as: "vocabInfo"
-                }
-            },
-            {
-                $unwind: "$vocabInfo"
-            },
-            {
-                $project: {
-                    word: "$vocabInfo.word",
-                    phonetic: { $arrayElemAt: ["$vocabInfo.phonetics.text", 0] },
-                    audio: { $arrayElemAt: ["$vocabInfo.phonetics.audio", 0] },
-                    meanings: { $arrayElemAt: ["$vocabInfo.meanings.definitions.definition", 0] }
-                }
-            }
-        ]);
-        console.log("vocabList", vocabList)
+        // const vocabList = await UserVocabulary.aggregate([
+        //     {
+        //         $match: {
+        //             _idUser: userId,
+        //             flashcardViews: 0,
+        //             isKnown: false
+        //         }
+        //     },
+        //     {
+        //         $sample: { size: 7 }
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: "vocabularies",
+        //             localField: "_idVocabulary",
+        //             foreignField: "_id",
+        //             as: "vocabInfo"
+        //         }
+        //     },
+        //     {
+        //         $unwind: "$vocabInfo"
+        //     },
+        //     {
+        //         $project: {
+        //             word: "$vocabInfo.word",
+        //             phonetic: { $arrayElemAt: ["$vocabInfo.phonetics.text", 0] },
+        //             audio: { $arrayElemAt: ["$vocabInfo.phonetics.audio", 0] },
+        //             meanings: { $arrayElemAt: ["$vocabInfo.meanings.definitions.definition", 0] }
+        //         }
+        //     }
+        // ]);
+        // console.log("vocabList", vocabList)
         if (vocabList.length < 5) {
             return res.json({ canMakeFlashcard: false, data: [] });
         }
