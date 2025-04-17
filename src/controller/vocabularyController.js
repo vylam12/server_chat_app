@@ -278,7 +278,7 @@ const updateAfterFlashcard = async (req, res) => {
 
     try {
         const updatePromises = vocabList.map(async (item) => {
-            const { vocabularyId, isKnown } = item;
+            const { vocabularyId } = item;
 
             const userVocab = await UserVocabulary.findOneAndUpdate(
                 { _idUser: userId, _idVocabulary: vocabularyId },
@@ -286,7 +286,7 @@ const updateAfterFlashcard = async (req, res) => {
                     $inc: { flashcardViews: 1 },
                     $set: {
                         lastReviewedAt: now,
-                        ...(isKnown ? { isKnown: true, level: 4 } : {})
+                        isKnown: true
                     }
                 },
                 { upsert: true, new: true }
