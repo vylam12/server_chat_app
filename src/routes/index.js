@@ -24,7 +24,7 @@ const initWebRoutes = (app) => {
     router.post("/update-after-flashcard", vocabularyController.updateAfterFlashcard)
     //làm flashcard ôn 
     router.get("/flashcard-review/:userId", vocabularyController.getFlashcardReviewQuestions);
-
+    router.get("/progress/:userId", vocabularyController.getProgress);
 
 
     router.get("/get-history-quiz/:userId", quizController.handleGetHistoryQuiz)
