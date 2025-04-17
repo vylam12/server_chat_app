@@ -239,7 +239,7 @@ const getUserVocabulary = async (req, res) => {
         const vocabList = await UserVocabulary.aggregate([
             {
                 $match: {
-                    _idUser: new mongoose.Types.ObjectId(userId),
+                    _idUser: userId,
                     flashcardViews: 0,
                     isKnown: false
                 }
