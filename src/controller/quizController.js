@@ -69,46 +69,68 @@ const generateQuizQuestions = async (newWord) => {
 //Tạo quiz
 const handleQuizCreation = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
         if (!userId) {
-            return res.status(401).json({ error: "User available" });
+            return res.status(401).json({ error: "User ID is required" });
+        }
+
+        // Kiểm tra xem người dùng có quiz chưa hoàn thành không
+        const existingQuiz = await Quiz.findOne({
+            _idUser: userId,
+            isCompleted: false // Giả sử bạn có trường isCompleted để đánh dấu quiz đã hoàn thành
+        });
+
+        if (existingQuiz) {
+            return res.status(200).json({
+                canStartQuiz: true,
+                quizId: existingQuiz._id,
+                totalQuestion: existingQuiz.totalQuestion
+            });
         }
 
         const learnedVocabularies = await UserVocabulary.find({
             _idUser: userId,
-            flashcardViews: { $gte: 1 }
+            flashcardViews: { $gte: 2 }
         });
 
         const vocabularyIds = learnedVocabularies.map(item => item._idVocabulary);
 
         if (vocabularyIds.length === 0) {
             return res.status(200).json({
-                message: "Người dùng chưa học flashcard từ nào.",
+                canStartQuiz: false,
                 data: []
             });
         }
+
         const questions = await Question.aggregate([
             { $match: { "vocabulary._id": { $in: vocabularyIds } } },
             { $sample: { size: 5 } }
         ]);
 
         if (questions.length === 0) {
-            return res.status(200).json({ message: "Không có câu hỏi phù hợp." });
+            return res.status(200).json({
+                canStartQuiz: false,
+                data: []
+            });
         }
+
 
         const questionIds = questions.map(q => q._id);
         const newQuiz = new Quiz({
             _idQuestion: questionIds,
             _idUser: userId,
-            totalQuestion: questionIds.length
+            totalQuestion: questionIds.length,
+            isCompleted: false
         });
 
         await newQuiz.save();
-
-        res.json({ message: "Quiz created successfully", quizId: newQuiz._id });
+        return res.status(200).json({
+            canStartQuiz: true,
+            quizId: newQuiz._id
+        });
     } catch (error) {
         console.error("Error creating quiz:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 };
 const handleGetQuiz = async (req, res) => {
