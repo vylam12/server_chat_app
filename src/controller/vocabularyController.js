@@ -314,14 +314,13 @@ const getFlashcardReviewQuestions = async (req, res) => {
     try {
         const learnedVocabularies = await UserVocabulary.find({
             _idUser: userId,
-            flashcardViews: { $gte: 1 },
-            isKnown: false
+            flashcardViews: { $gte: 1 }
         });
 
         const vocabularyIds = learnedVocabularies.map(item => item._idVocabulary);
 
         if (vocabularyIds.length === 0) {
-            return res.status(200).json({ message: "Không có từ nào cần ôn tập.", data: [] });
+            return res.status(200).json({ canMakeFlashcard: false, data: [] });
         }
 
         const questions = await Question.find({
@@ -329,7 +328,7 @@ const getFlashcardReviewQuestions = async (req, res) => {
         });
 
         res.status(200).json({
-            message: "Lấy câu hỏi ôn tập thành công.",
+            canMakeFlashcard: true,
             data: questions
         });
     } catch (error) {
