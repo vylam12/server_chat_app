@@ -267,33 +267,35 @@ const getUserVocabulary = async (req, res) => {
         res.status(500).json({ message: "Lỗi khi lấy từ vựng", error: err });
     }
 };
-
 const updateAfterFlashcard = async (req, res) => {
     const { userId, vocabList } = req.body;
 
-    console.log("userId", userId, "vocabList", vocabList);
     if (!userId || !Array.isArray(vocabList)) {
         return res.status(400).json({ message: "Invalid data format." });
     }
 
     try {
-        const updatePromises = vocabList.map(async (item) => {
-            const { vocabularyId } = item;
-            const now = new Date();
+        const now = new Date();
 
-            const userVocab = await UserVocabulary.findOneAndUpdate(
+        const updatePromises = vocabList.map(async (item) => {
+            const { vocabularyId, isKnown } = item;
+
+            const updateData = {
+                $inc: { flashcardViews: 1 },
+                $set: {
+                    lastReviewedAt: now
+                }
+            };
+
+            if (typeof isKnown === 'boolean') {
+                updateData.$set.isKnown = isKnown;
+            }
+
+            return await UserVocabulary.findOneAndUpdate(
                 { _idUser: userId, _idVocabulary: vocabularyId },
-                {
-                    $inc: { flashcardViews: 1 },
-                    $set: {
-                        lastReviewedAt: now,
-                        ...(item.isKnown ? { isKnown: true } : {})
-                    }
-                },
+                updateData,
                 { upsert: true, new: true }
             );
-
-            return userVocab;
         });
 
         const updatedVocabularies = await Promise.all(updatePromises);
