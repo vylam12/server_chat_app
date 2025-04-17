@@ -51,21 +51,27 @@ const handleSaveVocabulary = async (req, res) => {
             _idVocabulary: existingVocabulary._id
         });
         await newUserVocabulary.save();
-        const quizQuestions = await quizController.generateQuizQuestions(existingVocabulary);
-        const savedQuestions = [];
-        for (const q of quizQuestions) {
-            const newQuestion = new Question({
-                content: q.content,
-                options: q.options,
-                correctAnswer: q.correctAnswer,
-                vocabulary: {
-                    _id: q.vocabulary._id,
-                    meaning: q.vocabulary.meaning
-                }
-            });
 
-            await newQuestion.save();
-            savedQuestions.push(newQuestion);
+        const existingQuestions = await Question.find({ "vocabulary._id": existingVocabulary._id });
+
+        if (existingQuestions.length === 0) {
+            const quizQuestions = await quizController.generateQuizQuestions(existingVocabulary);
+            const savedQuestions = [];
+
+            for (const q of quizQuestions) {
+                const newQuestion = new Question({
+                    content: q.content,
+                    options: q.options,
+                    correctAnswer: q.correctAnswer,
+                    vocabulary: {
+                        _id: q.vocabulary._id,
+                        meaning: q.vocabulary.meaning
+                    }
+                });
+
+                await newQuestion.save();
+                savedQuestions.push(newQuestion);
+            }
         }
         res.json({
             message: "Save vocabulary successfully",
@@ -171,7 +177,7 @@ const handleGetListSaveVocab = async (req, res) => {
         }
 
         const listVocab = await UserVocabulary.find({ _idUser: userId })
-            .populate('_idVocabulary', 'word meanings quizAttempts');
+            .populate('_idVocabulary', 'word meanings');
 
         const vocabIds = listVocab.map(item => item._idVocabulary._id);
         const questions = await Question.find({ "vocabulary._id": { $in: vocabIds } })
@@ -205,26 +211,14 @@ const handleGetListSaveVocab = async (req, res) => {
             if (vocab.meanings?.length > 0 && vocab.meanings[0].definitions?.length > 0) {
                 firstMeaning = vocab.meanings[0].definitions[0].definition;
             }
-
-            const { quizAttempts, correctAnswers, wrongAnswers } = item;
-            const totalAnswers = correctAnswers + wrongAnswers;
-            let proficiency = 0;
-            if (quizAttempts > 0) {
-                const weight = Math.min(totalAnswers / 10, 1);
-                proficiency = Math.round(correctAnswers / totalAnswers * weight * 100);
-            }
-
             return {
                 id: vocab._id,
                 word: vocab.word,
                 meanings: firstMeaning,
                 timepractice: lastReviewedText || "Never studied",
-                proficiency: proficiency,
-                totalpractice: quizAttempts
             };
         }));
 
-        // Lọc null (nếu có) và trả về kết quả
         return res.json({ data: result.filter(item => item !== null) });
     } catch (error) {
         return res.status(500).json({ error: "Get saved vocab failed", details: error.message });
@@ -407,6 +401,33 @@ const getProgress = async (req, res) => {
         res.status(500).json({ message: "Lỗi server khi lấy tiến độ học." });
     }
 };
+
+const handleGetVocabToReview = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const vocabToReview = await UserVocabulary.find({
+            _idUser: userId,
+            isKnown: false,
+            lastReviewedAt: { $lt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) }
+        }).populate('_idVocabulary');
+
+        const response = vocabToReview.map(item => ({
+
+            id: vocab._id,
+            word: vocab.word,
+            phonetic: vocab.phonetics?.[0]?.text || "",
+            audio: vocab.phonetics?.[0]?.audio || "",
+            meaning: vocab.meanings?.[0].definitions?.[0].definition || null
+        }));
+
+        return res.status(200).json(response);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
     handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,

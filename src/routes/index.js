@@ -25,6 +25,8 @@ const initWebRoutes = (app) => {
     //làm flashcard ôn 
     router.get("/flashcard-review/:userId", vocabularyController.getFlashcardReviewQuestions);
     router.get("/progress/:userId", vocabularyController.getProgress);
+    //dùng lấy để ôn nhắc nhở
+    router.get("/review-vocab/:userId", handleGetVocabToReview);
 
 
     router.get("/get-history-quiz/:userId", quizController.handleGetHistoryQuiz)

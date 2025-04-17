@@ -171,35 +171,7 @@ const handleFriendUser = async (req, res) => {
     }
 };
 
-
-const handleChangePassword = async (req, res) => {
-    try {
-        const { idToken, newPassword } = req.body;
-
-        if (!idToken || !newPassword) {
-            return res.status(400).json({ error: "Thiếu token hoặc mật khẩu mới" });
-        }
-
-        const decodedToken = await auth.verifyIdToken(idToken);
-        const uid = decodedToken.uid;
-
-        const user = await User.findOne({ id: uid });
-        if (!user) {
-            return res.status(404).json({ error: "Người dùng không tồn tại" });
-        }
-
-        if (user.provider !== 'password') {
-            return res.status(400).json({ error: "Tài khoản Google không thể đổi mật khẩu" });
-        }
-
-        await auth.updateUser(uid, { password: newPassword });
-
-        res.json({ message: "Đổi mật khẩu thành công" });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Lỗi server" });
-    }
-}; const hanldeUpdateUser = async (req, res) => {
+const hanldeUpdateUser = async (req, res) => {
     try {
         const { userId, gender, birthDay } = req.body;
         console.log("gender :", gender, "birthday", birthDay);
@@ -261,6 +233,6 @@ const uploadAvatarToCloudinary = async (filePath) => {
 };
 export default {
     handleGetUser, handleFindFriend, handleFriendUser,
-    handleGetIDUser, handleChangePassword, hanldeUpdateUser, handleGetIFUser
+    handleGetIDUser, hanldeUpdateUser, handleGetIFUser
 
 };
