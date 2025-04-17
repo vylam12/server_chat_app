@@ -251,7 +251,7 @@ const getUserVocabulary = async (req, res) => {
                 word: vocab.word,
                 phonetic: vocab.phonetics?.[0]?.text || "Không có",
                 audio: vocab.phonetics?.[0]?.audio || "Không có",
-                meaning: vocab.meanings?.[0] || null
+                meaning: vocab.meanings?.[0].definitions?.[0].definition || null
             };
         });
 
