@@ -244,7 +244,7 @@ const getUserVocabulary = async (req, res) => {
                 path: '_idVocabulary',
                 select: 'word phonetics meanings',
             });
-        console.log("userVocabDocs", userVocabDocs);
+
         const formatted = userVocabDocs.map(doc => {
             const vocab = doc._idVocabulary;
             return {
@@ -256,7 +256,6 @@ const getUserVocabulary = async (req, res) => {
             };
         });
 
-        console.log("formatted", formatted);
         if (formatted.length < 5) {
             return res.json({ canMakeFlashcard: false, data: [] });
         }
@@ -272,6 +271,7 @@ const getUserVocabulary = async (req, res) => {
 const updateAfterFlashcard = async (req, res) => {
     const { userId, vocabList } = req.body;
 
+    console.log("userId", userId, "vocabList", vocabList);
     if (!userId || !Array.isArray(vocabList)) {
         return res.status(400).json({ message: "Invalid data format." });
     }
