@@ -235,62 +235,32 @@ const handleGetListSaveVocab = async (req, res) => {
 const getUserVocabulary = async (req, res) => {
     try {
         const userId = req.params.userId;
-        // const vocabList = await UserVocabulary.find({
-        //     _idUser: userId,
-        //     flashcardViews: 0,
-        //     isKnown: false
-        // });
-        // console.log("DEBUG 1: vocabListRaw =", vocabList);
+        const userVocabDocs = await UserVocabulary.find({
+            _idUser: userId,
+            flashcardViews: 0,
+            isKnown: false
+        }).limit(7)
+            .populate({
+                path: '_idVocabulary',
+                select: 'word phonetics meanings',
+            });
+        console.log("userVocabDocs", userVocabDocs);
+        const formatted = userVocabDocs.map(doc => {
+            const vocab = doc._idVocabulary;
+            return {
+                word: vocab.word,
+                phonetic: vocab.phonetics?.[0]?.text || "Không có",
+                audio: vocab.phonetics?.[0]?.audio || "Không có",
+                meaning: vocab.meanings?.[0] || null
+            };
+        });
 
-
-        const vocabList = await UserVocabulary.aggregate([
-            {
-                $match: {
-                    _idUser: userId,
-                    flashcardViews: 0,
-                    isKnown: false
-                }
-            },
-            { $sample: { size: 7 } },
-            {
-                $lookup: {
-                    from: "vocabularies",
-                    localField: "_idVocabulary",
-                    foreignField: "_id",
-                    as: "vocabInfo"
-                }
-            },
-            { $unwind: "$vocabInfo" },
-            {
-                // Tách meanings[0]
-                $addFields: {
-                    firstMeaning: { $arrayElemAt: ["$vocabInfo.meanings", 0] },
-                    firstPhonetic: { $arrayElemAt: ["$vocabInfo.phonetics", 0] }
-                }
-            },
-            {
-                // Tách definitions[0] từ meanings[0]
-                $addFields: {
-                    firstDefinition: {
-                        $arrayElemAt: ["$firstMeaning.definitions", 0]
-                    }
-                }
-            },
-            {
-                $project: {
-                    word: "$vocabInfo.word",
-                    phonetic: "$firstPhonetic.text",
-                    audio: "$firstPhonetic.audio",
-                    meaning: "$firstDefinition.definition"
-                }
-            }
-        ]);
-        console.log("DEBUG 1: vocabListRaw =", vocabList);
-        if (vocabList.length < 5) {
+        console.log("formatted", formatted);
+        if (formatted.length < 5) {
             return res.json({ canMakeFlashcard: false, data: [] });
         }
 
-        return res.json({ canMakeFlashcard: true, data: vocabList });
+        return res.json({ canMakeFlashcard: true, data: formatted });
 
     } catch (err) {
         console.error("Error get flashcards:", err);
