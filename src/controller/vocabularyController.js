@@ -6,7 +6,7 @@ import Question from "../models/question.js";
 import quizController from "./quizController.js";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime.js';
-import mongoose from 'mongoose';
+import moment from "moment";
 
 dayjs.extend(relativeTime);
 function selectWordsForQuiz(vocabList, count) {
@@ -338,16 +338,72 @@ const getFlashcardReviewQuestions = async (req, res) => {
     }
 };
 
-
 const getProgress = async (req, res) => {
     const { userId } = req.params;
 
     try {
+        // 1. Đếm số từ đã học
+        const learnedWordsCount = await UserVocabulary.countDocuments({
+            _idUser: userId,
+            $or: [
+                { flashcardViews: { $gt: 0 } },
+                { isKnown: true }
+            ]
+        });
 
+        // 2. Lấy ngày học gần nhất
+        const latestReview = await UserVocabulary.findOne({ _idUser: userId })
+            .sort({ lastReviewedAt: -1 })
+            .select("lastReviewedAt");
 
+        // 3. Lấy tất cả các ngày học (unique theo ngày)
+        const allReviews = await UserVocabulary.find(
+            { _idUser: userId },
+            "lastReviewedAt"
+        );
+
+        // Lọc ra danh sách ngày dạng yyyy-MM-DD, loại trùng
+        const dateSet = new Set(
+            allReviews.map(r => moment(r.lastReviewedAt).format("YYYY-MM-DD"))
+        );
+        const sortedDates = Array.from(dateSet)
+            .map(d => moment(d, "YYYY-MM-DD"))
+            .sort((a, b) => b.diff(a)); // sắp giảm dần
+
+        // 4. Tính streak
+        let streak = 0;
+        let today = moment().startOf("day");
+
+        for (let i = 0; i < sortedDates.length; i++) {
+            const day = sortedDates[i];
+            if (i === 0) {
+                // Ngày gần nhất phải là hôm nay hoặc hôm qua mới tính chuỗi
+                if (day.isSame(today, "day") || day.isSame(today.clone().subtract(1, 'day'), "day")) {
+                    streak = 1;
+                } else {
+                    break;
+                }
+            } else {
+                const prevDay = sortedDates[i - 1];
+                if (day.diff(prevDay, "days") === -1) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        res.status(200).json({
+            message: "Lấy tiến độ học thành công.",
+            data: {
+                learnedWords: learnedWordsCount,
+                lastReviewedAt: latestReview?.lastReviewedAt || null,
+                streak: streak
+            }
+        });
     } catch (error) {
         console.error("Lỗi:", error);
-        res.status(500).json({ message: "Lỗi server " });
+        res.status(500).json({ message: "Lỗi server khi lấy tiến độ học." });
     }
 };
 export default {
