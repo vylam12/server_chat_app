@@ -267,7 +267,7 @@ const getUserVocabulary = async (req, res) => {
                 }
             }
         ]);
-        console.log("vocabList")
+        console.log("vocabList", vocabList)
         if (vocabList.length < 5) {
             return res.json({ canMakeFlashcard: false, data: [] });
         }
