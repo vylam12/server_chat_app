@@ -74,10 +74,9 @@ const handleQuizCreation = async (req, res) => {
             return res.status(401).json({ error: "User ID is required" });
         }
 
-        // Kiểm tra xem người dùng có quiz chưa hoàn thành không
         const existingQuiz = await Quiz.findOne({
             _idUser: userId,
-            isCompleted: false // Giả sử bạn có trường isCompleted để đánh dấu quiz đã hoàn thành
+            isCompleted: false
         });
 
         if (existingQuiz) {
@@ -165,7 +164,7 @@ const handleUpdateResultQuiz = async (req, res) => {
             {
                 $set: {
                     countCorrect,
-                    timeTaken
+                    timeTaken, isCompleted: true
                 }
             },
             { new: true }
