@@ -279,6 +279,7 @@ const updateAfterFlashcard = async (req, res) => {
     try {
         const updatePromises = vocabList.map(async (item) => {
             const { vocabularyId } = item;
+            const now = new Date();
 
             const userVocab = await UserVocabulary.findOneAndUpdate(
                 { _idUser: userId, _idVocabulary: vocabularyId },
@@ -336,8 +337,21 @@ const getFlashcardReviewQuestions = async (req, res) => {
         res.status(500).json({ message: "Lỗi server khi lấy câu hỏi ôn tập." });
     }
 };
+
+
+const getProgress = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+
+
+    } catch (error) {
+        console.error("Lỗi:", error);
+        res.status(500).json({ message: "Lỗi server " });
+    }
+};
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
     handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,
-    getFlashcardReviewQuestions
+    getFlashcardReviewQuestions, getProgress
 };
