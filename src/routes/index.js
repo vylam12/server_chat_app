@@ -28,7 +28,7 @@ const initWebRoutes = (app) => {
 
 
     router.get("/get-history-quiz/:userId", quizController.handleGetHistoryQuiz)
-    router.post("/generate-quiz", quizController.handleQuizCreation)
+    router.get("/generate-quiz/:userId", quizController.handleQuizCreation)
     router.get("/get-quiz/:quizId", quizController.handleGetQuiz)
     router.post("/update-result-quiz", quizController.handleUpdateResultQuiz)
     router.post("/check-user-vocabulary", quizController.handleCheckUserVocabulary);
