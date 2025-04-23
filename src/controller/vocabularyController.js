@@ -92,8 +92,6 @@ const handleFindVocabulary = async (req, res) => {
     }
     word = word.toLowerCase();
     try {
-
-
         const [existingVocabulary, userSaved] = await Promise.all([
             Vocabulary.findOne({ word }),
             userId ? UserVocabulary.exists({ userId, word }) : null
@@ -431,5 +429,5 @@ const handleGetVocabToReview = async (req, res) => {
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
     handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,
-    getFlashcardReviewQuestions, getProgress
+    getFlashcardReviewQuestions, getProgress, handleGetVocabToReview
 };

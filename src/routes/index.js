@@ -26,8 +26,7 @@ const initWebRoutes = (app) => {
     router.get("/flashcard-review/:userId", vocabularyController.getFlashcardReviewQuestions);
     router.get("/progress/:userId", vocabularyController.getProgress);
     //dùng lấy để ôn nhắc nhở
-    router.get("/review-vocab/:userId", handleGetVocabToReview);
-
+    router.get("/review-vocab/:userId", vocabularyController.handleGetVocabToReview);
 
     router.get("/get-history-quiz/:userId", quizController.handleGetHistoryQuiz)
     router.get("/generate-quiz/:userId", quizController.handleQuizCreation)
@@ -62,7 +61,7 @@ const initWebRoutes = (app) => {
     router.get("/users/:userId", userController.handleGetUser)
     router.get("/get-infor-user/:userId", userController.handleGetIFUser)
     router.post("/update-user", upload.single('avatar'), userController.hanldeUpdateUser)
-    // router.post("/change-password/:userId", userController.handleChangePassword)
+
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)
 
