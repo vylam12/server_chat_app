@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import Vocabulary from "../models/vocabulary.js";
 import fs from "fs";
 
+const path = '../assets/json/vocab.json';
 
-const vocabList = JSON.parse(fs.readFileSync("vocab.json", "utf8"));
+const vocabList = JSON.parse(fs.readFile(path, "utf8"));
 const connect = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI)
