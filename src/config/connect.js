@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Vocabulary from "../models/vocabulary.js";
 import fs from "fs";
 
-const path = '../assets/json/vocab.json';
+const path = '../assets/json/';
 
 const vocabList = JSON.parse(fs.readFileSync(path, "utf8"));
 const connect = async () => {
