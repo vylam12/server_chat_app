@@ -155,7 +155,8 @@ const handleFriendUser = async (req, res) => {
         potentialFriends.forEach(user => {
             const userData = {
                 id: user._id.toString(),
-                fullname: user.fullname
+                fullname: user.fullname,
+                avatar: user.avatar
             };
             if (friendIds.has(user._id.toString())) {
                 friends.push(userData);
