@@ -1,0 +1,1488 @@
+[
+    {
+        "word": "accomplish",
+        "phonetics": [
+            {
+                "text": "əˈkɑːmplɪʃ",
+                "audio": "https://example.com/audio/accomplish.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to succeed in doing something",
+                        "example": "She accomplished all her goals for the day."
+                    }
+                ],
+                "synonyms": [
+                    "achieve",
+                    "complete",
+                    "finish"
+                ],
+                "antonyms": [
+                    "fail"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "advertisement",
+        "phonetics": [
+            {
+                "text": "ædˈvɜːtɪzmənt",
+                "audio": "https://example.com/audio/advertisement.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a notice or announcement in a public medium promoting a product, service, or event.",
+                        "example": "The advertisement for the new phone appeared in the magazine."
+                    }
+                ],
+                "synonyms": [
+                    "ad",
+                    "commercial",
+                    "promotion"
+                ],
+                "antonyms": [
+                    "silence"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "approve",
+        "phonetics": [
+            {
+                "text": "əˈpruːv",
+                "audio": "https://example.com/audio/approve.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to officially agree to or accept something",
+                        "example": "The committee approved the new budget proposal."
+                    }
+                ],
+                "synonyms": [
+                    "authorize",
+                    "endorse",
+                    "accept"
+                ],
+                "antonyms": [
+                    "reject",
+                    "disapprove"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "benefit",
+        "phonetics": [
+            {
+                "text": "ˈbɛnɪfɪt",
+                "audio": "https://example.com/audio/benefit.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "an advantage or profit gained from something",
+                        "example": "One of the benefits of exercise is better health."
+                    }
+                ],
+                "synonyms": [
+                    "advantage",
+                    "gain",
+                    "profit"
+                ],
+                "antonyms": [
+                    "disadvantage"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "candidate",
+        "phonetics": [
+            {
+                "text": "ˈkændɪˌdeɪt",
+                "audio": "https://example.com/audio/candidate.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a person who applies for a job or is nominated for election",
+                        "example": "She is a strong candidate for the job."
+                    }
+                ],
+                "synonyms": [
+                    "applicant",
+                    "nominee",
+                    "contestant"
+                ],
+                "antonyms": [
+                    "employer"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "collaborate",
+        "phonetics": [
+            {
+                "text": "kəˈlæbəreɪt",
+                "audio": "https://example.com/audio/collaborate.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to work together with others to achieve a common goal",
+                        "example": "The teams collaborated on the project to meet the deadline."
+                    }
+                ],
+                "synonyms": [
+                    "cooperate",
+                    "work together",
+                    "team up"
+                ],
+                "antonyms": [
+                    "oppose"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "competitor",
+        "phonetics": [
+            {
+                "text": "kəmˈpɛtɪtə",
+                "audio": "https://example.com/audio/competitor.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a person, team, or organization that competes against others",
+                        "example": "Our company is a major competitor in the tech industry."
+                    }
+                ],
+                "synonyms": [
+                    "rival",
+                    "contender",
+                    "opponent"
+                ],
+                "antonyms": [
+                    "ally"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "conference",
+        "phonetics": [
+            {
+                "text": "ˈkɒnfərəns",
+                "audio": "https://example.com/audio/conference.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a formal meeting for discussion or exchange of ideas",
+                        "example": "She attended the international business conference last week."
+                    }
+                ],
+                "synonyms": [
+                    "meeting",
+                    "symposium",
+                    "seminar"
+                ],
+                "antonyms": [
+                    "silence"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "decrease",
+        "phonetics": [
+            {
+                "text": "dɪˈkriːs",
+                "audio": "https://example.com/audio/decrease.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to reduce or make smaller in amount, size, or degree",
+                        "example": "The company decreased its prices to attract more customers."
+                    }
+                ],
+                "synonyms": [
+                    "reduce",
+                    "diminish",
+                    "lower"
+                ],
+                "antonyms": [
+                    "increase"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "deliver",
+        "phonetics": [
+            {
+                "text": "dɪˈlɪvə",
+                "audio": "https://example.com/audio/deliver.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to bring or transport something to a destination",
+                        "example": "The courier will deliver the package to your office."
+                    }
+                ],
+                "synonyms": [
+                    "bring",
+                    "send",
+                    "distribute"
+                ],
+                "antonyms": [
+                    "withhold"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "efficient",
+        "phonetics": [
+            {
+                "text": "ɪˈfɪʃənt",
+                "audio": "https://example.com/audio/efficient.mp3",
+                "type": "adjective",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "adjective",
+                "definitions": [
+                    {
+                        "definition": "achieving maximum productivity with minimum wasted effort or expense",
+                        "example": "The new machine is more efficient than the old one."
+                    }
+                ],
+                "synonyms": [
+                    "effective",
+                    "productive",
+                    "capable"
+                ],
+                "antonyms": [
+                    "inefficient"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "evaluate",
+        "phonetics": [
+            {
+                "text": "ɪˈvæljʊeɪt",
+                "audio": "https://example.com/audio/evaluate.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to assess or judge the quality, importance, or value of something",
+                        "example": "We need to evaluate the performance of the new product."
+                    }
+                ],
+                "synonyms": [
+                    "assess",
+                    "appraise",
+                    "judge"
+                ],
+                "antonyms": [
+                    "ignore"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "expand",
+        "phonetics": [
+            {
+                "text": "ɪkˈspænd",
+                "audio": "https://example.com/audio/expand.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to increase in size, number, or importance",
+                        "example": "The company plans to expand its operations in Europe."
+                    }
+                ],
+                "synonyms": [
+                    "increase",
+                    "grow",
+                    "enlarge"
+                ],
+                "antonyms": [
+                    "shrink"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "forecast",
+        "phonetics": [
+            {
+                "text": "ˈfɔːkɑːst",
+                "audio": "https://example.com/audio/forecast.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a prediction or estimate of future events or conditions",
+                        "example": "The weather forecast predicts rain for the weekend."
+                    }
+                ],
+                "synonyms": [
+                    "prediction",
+                    "projection",
+                    "estimate"
+                ],
+                "antonyms": [
+                    "retrospective"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "generate",
+        "phonetics": [
+            {
+                "text": "ˈdʒɛnəreɪt",
+                "audio": "https://example.com/audio/generate.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to produce or create something",
+                        "example": "The new initiative will generate more sales for the company."
+                    }
+                ],
+                "synonyms": [
+                    "create",
+                    "produce",
+                    "make"
+                ],
+                "antonyms": [
+                    "destroy"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "improve",
+        "phonetics": [
+            {
+                "text": "ɪmˈpruːv",
+                "audio": "https://example.com/audio/improve.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to make or become better",
+                        "example": "The manager suggested some strategies to improve efficiency."
+                    }
+                ],
+                "synonyms": [
+                    "enhance",
+                    "upgrade",
+                    "better"
+                ],
+                "antonyms": [
+                    "worsen"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "market",
+        "phonetics": [
+            {
+                "text": "ˈmɑːrkɪt",
+                "audio": "https://example.com/audio/market.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a place or system where goods and services are bought and sold",
+                        "example": "The company has expanded its presence in the international market."
+                    }
+                ],
+                "synonyms": [
+                    "trade",
+                    "commerce",
+                    "bazaar"
+                ],
+                "antonyms": [
+                    "monopoly"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "negotiate",
+        "phonetics": [
+            {
+                "text": "nɪˈɡəʊʃieɪt",
+                "audio": "https://example.com/audio/negotiate.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to discuss something formally in order to reach an agreement",
+                        "example": "They negotiated a deal that benefits both parties."
+                    }
+                ],
+                "synonyms": [
+                    "bargain",
+                    "discuss",
+                    "mediate"
+                ],
+                "antonyms": [
+                    "refuse"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "organize",
+        "phonetics": [
+            {
+                "text": "ˈɔːɡənaɪz",
+                "audio": "https://example.com/audio/organize.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to arrange or structure something in a systematic way",
+                        "example": "The team worked hard to organize the event."
+                    }
+                ],
+                "synonyms": [
+                    "arrange",
+                    "coordinate",
+                    "structure"
+                ],
+                "antonyms": [
+                    "disorganize"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "purchase",
+        "phonetics": [
+            {
+                "text": "ˈpɜːtʃəs",
+                "audio": "https://example.com/audio/purchase.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to buy something",
+                        "example": "The company plans to purchase new equipment next month."
+                    }
+                ],
+                "synonyms": [
+                    "buy",
+                    "acquire",
+                    "obtain"
+                ],
+                "antonyms": [
+                    "sell"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "reduce",
+        "phonetics": [
+            {
+                "text": "rɪˈdjuːs",
+                "audio": "https://example.com/audio/reduce.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to make something smaller or less in amount",
+                        "example": "The company aims to reduce costs by 20%."
+                    }
+                ],
+                "synonyms": [
+                    "lower",
+                    "cut",
+                    "decrease"
+                ],
+                "antonyms": [
+                    "increase"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "strategy",
+        "phonetics": [
+            {
+                "text": "ˈstrætədʒi",
+                "audio": "https://example.com/audio/strategy.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a plan of action designed to achieve a long-term or overall aim",
+                        "example": "The company developed a new strategy to enter foreign markets."
+                    }
+                ],
+                "synonyms": [
+                    "plan",
+                    "tactic",
+                    "approach"
+                ],
+                "antonyms": [
+                    "improvisation"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "supply",
+        "phonetics": [
+            {
+                "text": "səˈplaɪ",
+                "audio": "https://example.com/audio/supply.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "the amount of a resource available to meet demand",
+                        "example": "The company faced a shortage in the supply of raw materials."
+                    }
+                ],
+                "synonyms": [
+                    "stock",
+                    "inventory",
+                    "provision"
+                ],
+                "antonyms": [
+                    "demand"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "trend",
+        "phonetics": [
+            {
+                "text": "trɛnd",
+                "audio": "https://example.com/audio/trend.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a general direction in which something is developing or changing",
+                        "example": "There is a growing trend towards remote working in the tech industry."
+                    }
+                ],
+                "synonyms": [
+                    "movement",
+                    "direction",
+                    "tendency"
+                ],
+                "antonyms": [
+                    "stagnation"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "update",
+        "phonetics": [
+            {
+                "text": "ʌpˈdeɪt",
+                "audio": "https://example.com/audio/update.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to bring something up to date by making it more current or accurate",
+                        "example": "The system needs to be updated with the latest security patches."
+                    }
+                ],
+                "synonyms": [
+                    "revise",
+                    "refresh",
+                    "improve"
+                ],
+                "antonyms": [
+                    "neglect"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "vendor",
+        "phonetics": [
+            {
+                "text": "ˈvɛndɔː",
+                "audio": "https://example.com/audio/vendor.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a person or company that sells something",
+                        "example": "The vendor at the trade show is offering discounts on software."
+                    }
+                ],
+                "synonyms": [
+                    "supplier",
+                    "dealer",
+                    "seller"
+                ],
+                "antonyms": [
+                    "customer"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "warranty",
+        "phonetics": [
+            {
+                "text": "ˈwɒrənti",
+                "audio": "https://example.com/audio/warranty.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a written guarantee, typically given to a purchaser, promising to repair or replace a product if necessary within a specified period",
+                        "example": "The product comes with a one-year warranty."
+                    }
+                ],
+                "synonyms": [
+                    "guarantee",
+                    "assurance",
+                    "pledge"
+                ],
+                "antonyms": [
+                    "exclusion"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "valuable",
+        "phonetics": [
+            {
+                "text": "ˈvæljʊəbl",
+                "audio": "https://example.com/audio/valuable.mp3",
+                "type": "adjective",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "adjective",
+                "definitions": [
+                    {
+                        "definition": "having a high worth or value",
+                        "example": "This rare book is very valuable."
+                    }
+                ],
+                "synonyms": [
+                    "precious",
+                    "invaluable",
+                    "worthwhile"
+                ],
+                "antonyms": [
+                    "worthless"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "survey",
+        "phonetics": [
+            {
+                "text": "ˈsɜːveɪ",
+                "audio": "https://example.com/audio/survey.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a method of gathering information from a sample of people, often used to understand opinions or behaviors",
+                        "example": "The company conducted a survey to understand customer satisfaction."
+                    }
+                ],
+                "synonyms": [
+                    "poll",
+                    "questionnaire",
+                    "study"
+                ],
+                "antonyms": [
+                    "random selection"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "accomplish",
+        "phonetics": [
+            {
+                "text": "əˈkəmplɪʃ",
+                "audio": "https://example.com/audio/accomplish.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to complete something successfully",
+                        "example": "She accomplished all her goals for the year."
+                    }
+                ],
+                "synonyms": [
+                    "achieve",
+                    "complete",
+                    "succeed"
+                ],
+                "antonyms": [
+                    "fail"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "appointment",
+        "phonetics": [
+            {
+                "text": "əˈpɔɪntmənt",
+                "audio": "https://example.com/audio/appointment.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "an arrangement to meet someone at a particular time",
+                        "example": "I have an appointment with the doctor at 3 PM."
+                    }
+                ],
+                "synonyms": [
+                    "meeting",
+                    "engagement",
+                    "schedule"
+                ],
+                "antonyms": [
+                    "cancellation"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "collaborate",
+        "phonetics": [
+            {
+                "text": "kəˈlæbəreɪt",
+                "audio": "https://example.com/audio/collaborate.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to work together with someone to achieve a common goal",
+                        "example": "The two companies decided to collaborate on the new project."
+                    }
+                ],
+                "synonyms": [
+                    "cooperate",
+                    "work together",
+                    "join forces"
+                ],
+                "antonyms": [
+                    "compete"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "budget",
+        "phonetics": [
+            {
+                "text": "ˈbʌdʒɪt",
+                "audio": "https://example.com/audio/budget.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "an estimate of income and expenditure for a set period of time",
+                        "example": "The company has a budget of $500,000 for marketing this year."
+                    }
+                ],
+                "synonyms": [
+                    "financial plan",
+                    "allocation",
+                    "funds"
+                ],
+                "antonyms": [
+                    "overspending"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "motivate",
+        "phonetics": [
+            {
+                "text": "ˈmoʊtɪˌveɪt",
+                "audio": "https://example.com/audio/motivate.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to provide someone with a reason or incentive to do something",
+                        "example": "The coach motivated the team to perform at their best."
+                    }
+                ],
+                "synonyms": [
+                    "encourage",
+                    "inspire",
+                    "stimulate"
+                ],
+                "antonyms": [
+                    "discourage"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "expand",
+        "phonetics": [
+            {
+                "text": "ɪksˈpænd",
+                "audio": "https://example.com/audio/expand.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to increase in size, number, or importance",
+                        "example": "The company plans to expand into new markets next year."
+                    }
+                ],
+                "synonyms": [
+                    "increase",
+                    "grow",
+                    "extend"
+                ],
+                "antonyms": [
+                    "shrink"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "sector",
+        "phonetics": [
+            {
+                "text": "ˈsɛktər",
+                "audio": "https://example.com/audio/sector.mp3",
+                "type": "noun",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "noun",
+                "definitions": [
+                    {
+                        "definition": "a distinct part or branch of an economy or society",
+                        "example": "The tech sector has seen rapid growth in recent years."
+                    }
+                ],
+                "synonyms": [
+                    "division",
+                    "section",
+                    "area"
+                ],
+                "antonyms": [
+                    "whole"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "organize",
+        "phonetics": [
+            {
+                "text": "ˈɔːɡənaɪz",
+                "audio": "https://example.com/audio/organize.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to arrange or systematize something in a particular way",
+                        "example": "She organized the meeting and ensured everything was in place."
+                    }
+                ],
+                "synonyms": [
+                    "arrange",
+                    "coordinate",
+                    "systematize"
+                ],
+                "antonyms": [
+                    "disorganize"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "interpret",
+        "phonetics": [
+            {
+                "text": "ɪnˈtɜːrprɪt",
+                "audio": "https://example.com/audio/interpret.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to explain the meaning of something",
+                        "example": "The professor interpreted the data for the students."
+                    }
+                ],
+                "synonyms": [
+                    "explain",
+                    "clarify",
+                    "translate"
+                ],
+                "antonyms": [
+                    "misunderstand"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "verify",
+        "phonetics": [
+            {
+                "text": "ˈvɛrɪfaɪ",
+                "audio": "https://example.com/audio/verify.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to check or confirm the truth or accuracy of something",
+                        "example": "The technician verified the results of the experiment."
+                    }
+                ],
+                "synonyms": [
+                    "check",
+                    "confirm",
+                    "validate"
+                ],
+                "antonyms": [
+                    "deny"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "enhance",
+        "phonetics": [
+            {
+                "text": "ɪnˈhæns",
+                "audio": "https://example.com/audio/enhance.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to improve the quality, value, or extent of something",
+                        "example": "The new software will enhance the company's productivity."
+                    }
+                ],
+                "synonyms": [
+                    "improve",
+                    "boost",
+                    "augment"
+                ],
+                "antonyms": [
+                    "diminish"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "negotiate",
+        "phonetics": [
+            {
+                "text": "nɪˈɡoʊʃieɪt",
+                "audio": "https://example.com/audio/negotiate.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to discuss something in order to reach an agreement",
+                        "example": "They negotiated a deal that benefited both companies."
+                    }
+                ],
+                "synonyms": [
+                    "bargain",
+                    "discuss",
+                    "settle"
+                ],
+                "antonyms": [
+                    "disagree"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "surpass",
+        "phonetics": [
+            {
+                "text": "sərˈpæs",
+                "audio": "https://example.com/audio/surpass.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to exceed or go beyond",
+                        "example": "Her performance surpassed all expectations."
+                    }
+                ],
+                "synonyms": [
+                    "exceed",
+                    "outdo",
+                    "better"
+                ],
+                "antonyms": [
+                    "fail"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "recognize",
+        "phonetics": [
+            {
+                "text": "ˈrɛkəɡnaɪz",
+                "audio": "https://example.com/audio/recognize.mp3",
+                "type": "verb",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "verb",
+                "definitions": [
+                    {
+                        "definition": "to identify something or someone as having been previously seen or known",
+                        "example": "She recognized him from the previous meeting."
+                    }
+                ],
+                "synonyms": [
+                    "identify",
+                    "acknowledge",
+                    "remember"
+                ],
+                "antonyms": [
+                    "ignore"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "significant",
+        "phonetics": [
+            {
+                "text": "sɪɡˈnɪfɪkənt",
+                "audio": "https://example.com/audio/significant.mp3",
+                "type": "adjective",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "adjective",
+                "definitions": [
+                    {
+                        "definition": "having an important effect or meaning",
+                        "example": "This discovery is significant for future research."
+                    }
+                ],
+                "synonyms": [
+                    "important",
+                    "noteworthy",
+                    "meaningful"
+                ],
+                "antonyms": [
+                    "insignificant"
+                ]
+            }
+        ]
+    },
+    {
+        "word": "precise",
+        "phonetics": [
+            {
+                "text": "prɪˈsaɪs",
+                "audio": "https://example.com/audio/precise.mp3",
+                "type": "adjective",
+                "license": {
+                    "name": "Public Domain",
+                    "url": "https://example.com/license"
+                }
+            }
+        ],
+        "meanings": [
+            {
+                "type": "adjective",
+                "definitions": [
+                    {
+                        "definition": "exact or accurate in every detail",
+                        "example": "He gave a precise explanation of the problem."
+                    }
+                ],
+                "synonyms": [
+                    "exact",
+                    "accurate",
+                    "specific"
+                ],
+                "antonyms": [
+                    "imprecise"
+                ]
+            }
+        ]
+    }
+]
