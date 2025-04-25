@@ -61,7 +61,7 @@ const handleGetIDUser = async (req, res) => {
     }
 }
 
-
+// tìm trong tin nhắn
 const handleFindFriend = async (req, res) => {
     try {
         const { nameFriend, userId } = req.query;
@@ -114,7 +114,7 @@ const handleFindFriend = async (req, res) => {
     }
 
 }
-
+//tìm chỗ khung bạn bè
 const handleFriendUser = async (req, res) => {
     try {
         const { nameFriend, userId } = req.query;
@@ -124,7 +124,10 @@ const handleFriendUser = async (req, res) => {
         }
 
         const potentialFriends = await User.find({
-            fullname: { $regex: new RegExp(nameFriend, "i") },
+            $or: [
+                { fullname: { $regex: new RegExp(nameFriend, "i") } },
+                { email: { $regex: new RegExp(nameFriend, "i") } }
+            ],
             _id: { $ne: userId }
         }).limit(10);
 
