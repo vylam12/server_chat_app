@@ -143,7 +143,7 @@ const handleFindVocabulary = async (req, res) => {
 
         console.log("newWord", newWord);
 
-        return res.json({ newWord: newWord, userSaved: null });
+        return res.json({ newWord: newWord, userSaved: userSaved ? userSaved._id.toString() : null });
 
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
@@ -433,7 +433,6 @@ const handleGetListVocab = async (req, res) => {
         const allVocab = await Vocabulary.find({});
 
         const savedVocabDocs = await UserVocabulary.find({ _idUser: userId }).select('_id _idVocabulary');
-        const savedVocabIds = savedVocabDocs.map(doc => doc._idVocabulary.toString());
 
         const savedMap = {};
         savedVocabDocs.forEach(doc => {
