@@ -92,17 +92,22 @@ const handleFindVocabulary = async (req, res) => {
     }
     word = word.toLowerCase();
     try {
-        const [existingVocabulary, userSaved] = await Promise.all([
-            Vocabulary.findOne({ word }),
-            userId ? UserVocabulary.exists({ userId, word }) : null
-        ]);
+        const existingVocabulary = await Vocabulary.findOne({ word });
 
+        let userSaved = null;
+
+        if (existingVocabulary && userId) {
+            const savedDoc = await UserVocabulary.findOne({
+                _idUser: userId,
+                _idVocabulary: existingVocabulary._id
+            }).select('_id');
+
+            userSaved = savedDoc ? savedDoc._id.toString() : null;
+        }
         if (existingVocabulary) {
-            console.log("Từ đã tồn tại trong database:", existingVocabulary);
-            console.log("userSaved", userSaved);
             return res.json({
                 newWord: existingVocabulary,
-                userSaved: userSaved ? userSaved._id.toString() : null
+                userSaved: userSaved
             });
         }
 
@@ -143,7 +148,7 @@ const handleFindVocabulary = async (req, res) => {
 
         console.log("newWord", newWord);
 
-        return res.json({ newWord: newWord, userSaved: userSaved ? userSaved._id.toString() : null });
+        return res.json({ newWord: newWord, userSaved: null });
 
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
