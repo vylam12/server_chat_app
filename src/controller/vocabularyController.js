@@ -444,7 +444,7 @@ const handleGetListVocab = async (req, res) => {
             isSaved: savedVocabIds.includes(vocab._id.toString())
         }));
 
-        return res.status(200).json(data: response);
+        return res.status(200).json({ data: response });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Internal Server Error' });
