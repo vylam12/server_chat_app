@@ -113,7 +113,10 @@ const handleFindVocabulary = async (req, res) => {
 
         const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = response.data[0];
-
+        // Kiểm tra xem API có trả về dữ liệu hợp lệ không
+        if (!data || !data.meanings || data.meanings.length === 0) {
+            return res.status(400).json({ error: "No valid data found for the word" });
+        }
         const seenTypes = new Set();
         const phoneticsList = data.phonetics
             .filter(p => (p.license?.name?.includes("BY-SA") || p.license?.name?.includes("US")) && !seenTypes.has(p.license?.name))
