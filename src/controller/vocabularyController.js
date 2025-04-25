@@ -432,17 +432,27 @@ const handleGetListVocab = async (req, res) => {
 
         const allVocab = await Vocabulary.find({});
 
-        const savedVocabDocs = await UserVocabulary.find({ _idUser: userId }).select('_idVocabulary');
+        const savedVocabDocs = await UserVocabulary.find({ _idUser: userId }).select('_id _idVocabulary');
         const savedVocabIds = savedVocabDocs.map(doc => doc._idVocabulary.toString());
 
-        const response = allVocab.map(vocab => ({
-            id: vocab._id,
-            word: vocab.word,
-            phonetic: vocab.phonetics?.[0]?.text || "",
-            audio: vocab.phonetics?.[0]?.audio || "",
-            meaning: vocab.meanings?.[0]?.definitions?.[0]?.definition || null,
-            isSaved: savedVocabIds.includes(vocab._id.toString())
-        }));
+        const savedMap = {};
+        savedVocabDocs.forEach(doc => {
+            savedMap[doc._idVocabulary.toString()] = doc._id.toString();
+        });
+        const response = allVocab.map(vocab => {
+            const vocabIdStr = vocab._id.toString();
+            const isSaved = vocabIdStr in savedMap;
+
+            return {
+                id: vocab._id,
+                word: vocab.word,
+                phonetic: vocab.phonetics?.[0]?.text || "",
+                audio: vocab.phonetics?.[0]?.audio || "",
+                meaning: vocab.meanings?.[0]?.definitions?.[0]?.definition || null,
+                isSaved,
+                _idUserVocabulary: isSaved ? savedMap[vocabIdStr] : null
+            };
+        });
 
         return res.status(200).json({ data: response });
     } catch (err) {
@@ -450,8 +460,32 @@ const handleGetListVocab = async (req, res) => {
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+const handleUserSaveVocabulary = async (req, res) => {
+    try {
+        const { userId, idVocab } = req.body;
+        const isSaved = await UserVocabulary.findOne({
+            _idUser: userId,
+            _idVocabulary: idVocab
+        });
+        if (isSaved) {
+            return res.status(400).json({ error: "User has already saved this vocabulary" });
+        }
+        const newUserVocabulary = new UserVocabulary({
+            _idUser: userId,
+            _idVocabulary: idVocab
+        });
+        await newUserVocabulary.save();
+
+        return res.status(200).json({ message: "Save vocab success" });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
     handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,
-    getFlashcardReviewQuestions, getProgress, handleGetVocabToReview, handleGetListVocab
+    getFlashcardReviewQuestions, getProgress, handleGetVocabToReview, handleGetListVocab,
+    handleUserSaveVocabulary
 };

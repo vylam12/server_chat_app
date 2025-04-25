@@ -19,6 +19,7 @@ const initWebRoutes = (app) => {
     router.get("/get-list-vocab/:userId", vocabularyController.handleGetListVocab)
     router.post("/findVocabulary", vocabularyController.handleFindVocabulary)
     router.post("/saveVocabulary", vocabularyController.handleSaveVocabulary)
+    router.post("/saveUserVocabulary", vocabularyController.handleUserSaveVocabulary)
     router.get("/get-list-saveVocab/:userId", vocabularyController.handleGetListSaveVocab)
     router.post("/deleteVocabulary", vocabularyController.handleDeleteVocabulary)
     //làm flashcard để học từ vựng
