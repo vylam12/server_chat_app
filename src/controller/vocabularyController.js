@@ -145,7 +145,7 @@ const handleFindVocabulary = async (req, res) => {
             phonetics: phoneticsList.length > 0 ? phoneticsList : ["Không có"],
             meanings: meanings
         });
-
+        await newWord.save();
         console.log("newWord", newWord);
 
         return res.json({ newWord: newWord, userSaved: null });
