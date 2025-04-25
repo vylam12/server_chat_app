@@ -426,8 +426,32 @@ const handleGetVocabToReview = async (req, res) => {
     }
 };
 
+const handleGetListVocab = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const allVocab = await Vocabulary.find({});
+
+        const savedVocabDocs = await UserVocabulary.find({ _idUser: userId }).select('_idVocabulary');
+        const savedVocabIds = savedVocabDocs.map(doc => doc._idVocabulary.toString());
+
+        const response = allVocab.map(vocab => ({
+            id: vocab._id,
+            word: vocab.word,
+            phonetic: vocab.phonetics?.[0]?.text || "",
+            audio: vocab.phonetics?.[0]?.audio || "",
+            meaning: vocab.meanings?.[0]?.definitions?.[0]?.definition || null,
+            isSaved: savedVocabIds.includes(vocab._id.toString())
+        }));
+
+        return res.status(200).json(data: response);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
 export default {
     handleFindVocabulary, handleSaveVocabulary, selectWordsForQuiz,
     handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,
-    getFlashcardReviewQuestions, getProgress, handleGetVocabToReview
+    getFlashcardReviewQuestions, getProgress, handleGetVocabToReview, handleGetListVocab
 };
