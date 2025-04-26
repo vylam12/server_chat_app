@@ -10,12 +10,16 @@ const handleGetUser = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ error: "Thiếu userId" });
         }
-        const user = await User.findOne({ id: userId })
-            .select("id email avatar fullname")
+        const user = await User.findOne({
+            $or: [
+                { id: userId },
+                { _id: userId }
+            ]
+        }).select("id email avatar fullname")
             .sort({ createdAt: 1 });
-        res.status(200).json({
-            user: user
-        });
+
+        res.status(200).json({ user: user });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
