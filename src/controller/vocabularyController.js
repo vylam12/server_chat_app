@@ -446,6 +446,11 @@ const handleGetListVocab = async (req, res) => {
         savedVocabDocs.forEach(doc => {
             savedMap[doc._idVocabulary.toString()] = doc._id.toString();
         });
+        allVocab.sort((a, b) => {
+            if (!a.word) return 1;
+            if (!b.word) return -1;
+            return a.word.localeCompare(b.word);
+        });
         const response = allVocab.map(vocab => {
             const vocabIdStr = vocab._id.toString();
             const isSaved = vocabIdStr in savedMap;
