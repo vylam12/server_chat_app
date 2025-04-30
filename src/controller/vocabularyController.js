@@ -495,11 +495,11 @@ const handleGetListVocab = async (req, res) => {
 //     }
 // };
 
-
 const handleSaveVocabulary = async (req, res) => {
     try {
         const { userId, idVocab, vocabulary } = req.body;
-        console.log("userId", userId ? userId : "", "idVocab", idVocab ? idVocab : "", "vocabulary", vocabulary ? vocabulary : "");
+        console.log("userId", userId ? userId : "", "idVocab", idVocab ? idVocab : "",
+            "vocabulary", vocabulary ? vocabulary : "");
         if (!userId || (!idVocab && !vocabulary)) {
             return res.status(400).json({ error: "Missing userId and either idVocab or vocabulary" });
         }
@@ -507,7 +507,6 @@ const handleSaveVocabulary = async (req, res) => {
         let vocabId;
         let vocabDoc;
 
-        // Nếu không có idVocab mà có object vocabulary thì xử lý tạo mới
         if (!idVocab && vocabulary) {
             const { word, phonetics, meanings } = vocabulary;
             vocabDoc = await Vocabulary.findOne({ word });
@@ -522,6 +521,19 @@ const handleSaveVocabulary = async (req, res) => {
             vocabId = idVocab;
             vocabDoc = await Vocabulary.findById(vocabId);
             console.log("vocabDoc:", vocabDoc);
+            if (vocabulary) {
+                const { meanings, phonetics } = vocabulary;
+
+                // Nếu meanings hoặc phonetics chưa có trong vocabDoc → cập nhật
+                if ((!vocabDoc.meanings || vocabDoc.meanings.length === 0) && meanings) {
+                    vocabDoc.meanings = meanings;
+                }
+
+                if ((!vocabDoc.phonetics || vocabDoc.phonetics.length === 0) && phonetics) {
+                    vocabDoc.phonetics = phonetics;
+                }
+                ư
+            }
             if (!vocabDoc) {
                 return res.status(404).json({ error: "Vocabulary not found" });
             }
@@ -542,6 +554,7 @@ const handleSaveVocabulary = async (req, res) => {
                     }
                 });
                 await newQuestion.save();
+
             }
             console.log("Generated quizQuestions:", quizQuestions);
         }
