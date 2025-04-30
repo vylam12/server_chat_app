@@ -499,7 +499,7 @@ const handleGetListVocab = async (req, res) => {
 const handleSaveVocabulary = async (req, res) => {
     try {
         const { userId, idVocab, vocabulary } = req.body;
-
+        console.log("userId", userId ? userId : "", "idVocab", idVocab ? idVocab : "", "vocabulary", vocabulary ? vocabulary : "");
         if (!userId || (!idVocab && !vocabulary)) {
             return res.status(400).json({ error: "Missing userId and either idVocab or vocabulary" });
         }
@@ -521,6 +521,7 @@ const handleSaveVocabulary = async (req, res) => {
         } else {
             vocabId = idVocab;
             vocabDoc = await Vocabulary.findById(vocabId);
+            console.log("vocabDoc:", vocabDoc);
             if (!vocabDoc) {
                 return res.status(404).json({ error: "Vocabulary not found" });
             }
