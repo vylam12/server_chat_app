@@ -519,7 +519,6 @@ const handleSaveVocabulary = async (req, res) => {
 
             vocabId = vocabDoc._id;
         } else {
-            // Nếu có idVocab thì lấy ra từ DB
             vocabId = idVocab;
             vocabDoc = await Vocabulary.findById(vocabId);
             if (!vocabDoc) {
@@ -531,6 +530,7 @@ const handleSaveVocabulary = async (req, res) => {
         if (existingQuestions.length === 0) {
             const quizQuestions = await quizController.generateQuizQuestions(vocabDoc);
             for (const q of quizQuestions) {
+                console.log("Creating question for vocab:", q.vocabulary);
                 const newQuestion = new Question({
                     content: q.content,
                     options: q.options,
@@ -542,6 +542,7 @@ const handleSaveVocabulary = async (req, res) => {
                 });
                 await newQuestion.save();
             }
+            console.log("Generated quizQuestions:", quizQuestions);
         }
 
         // Kiểm tra nếu đã lưu vocab này chưa
