@@ -2,7 +2,7 @@ import vocabularyController from "./vocabularyController.js";
 import Question from "../models/question.js";
 import UserVocabulary from "../models/userVocabulary.js";
 import Quiz from "../models/quiz.js";
-
+import Vocabulary from "../models/vocabulary.js";
 const generateQuizQuestions = async (newWord) => {
     const questions = [];
 
