@@ -504,36 +504,43 @@ const handleSaveVocabulary = async (req, res) => {
             return res.status(400).json({ error: "Missing userId and either idVocab or vocabulary" });
         }
 
-        let vocabId = idVocab;
+        let vocabId;
+        let vocabDoc;
 
         // Nếu không có idVocab mà có object vocabulary thì xử lý tạo mới
-        if (!vocabId && vocabulary) {
+        if (!idVocab && vocabulary) {
             const { word, phonetics, meanings } = vocabulary;
-            let existingVocabulary = await Vocabulary.findOne({ word });
+            vocabDoc = await Vocabulary.findOne({ word });
 
-            if (!existingVocabulary) {
-                existingVocabulary = new Vocabulary({ word, phonetics, meanings });
-                await existingVocabulary.save();
+            if (!vocabDoc) {
+                vocabDoc = new Vocabulary({ word, phonetics, meanings });
+                await vocabDoc.save();
             }
 
-            vocabId = existingVocabulary._id;
+            vocabId = vocabDoc._id;
+        } else {
+            // Nếu có idVocab thì lấy ra từ DB
+            vocabId = idVocab;
+            vocabDoc = await Vocabulary.findById(vocabId);
+            if (!vocabDoc) {
+                return res.status(404).json({ error: "Vocabulary not found" });
+            }
+        }
 
-            // Tạo quiz nếu chưa có
-            const existingQuestions = await Question.find({ "vocabulary._id": vocabId });
-            if (existingQuestions.length === 0) {
-                const quizQuestions = await quizController.generateQuizQuestions(existingVocabulary);
-                for (const q of quizQuestions) {
-                    const newQuestion = new Question({
-                        content: q.content,
-                        options: q.options,
-                        correctAnswer: q.correctAnswer,
-                        vocabulary: {
-                            _id: q.vocabulary._id,
-                            meaning: q.vocabulary.meaning
-                        }
-                    });
-                    await newQuestion.save();
-                }
+        const existingQuestions = await Question.find({ "vocabulary._id": vocabId });
+        if (existingQuestions.length === 0) {
+            const quizQuestions = await quizController.generateQuizQuestions(vocabDoc);
+            for (const q of quizQuestions) {
+                const newQuestion = new Question({
+                    content: q.content,
+                    options: q.options,
+                    correctAnswer: q.correctAnswer,
+                    vocabulary: {
+                        _id: q.vocabulary._id,
+                        meaning: q.vocabulary.meaning
+                    }
+                });
+                await newQuestion.save();
             }
         }
 
@@ -564,6 +571,7 @@ const handleSaveVocabulary = async (req, res) => {
         return res.status(500).json({ error: "Internal Server Error", details: err.message });
     }
 };
+
 
 export default {
     handleFindVocabulary, selectWordsForQuiz,
