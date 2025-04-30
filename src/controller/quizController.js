@@ -3,68 +3,163 @@ import Question from "../models/question.js";
 import UserVocabulary from "../models/userVocabulary.js";
 import Quiz from "../models/quiz.js";
 
-//Tạo câu hỏi
 const generateQuizQuestions = async (newWord) => {
     const questions = [];
 
-    const allDefinitions = newWord.meanings.flatMap(m => m.definitions.map(d => d.definition));
-    const allSynonyms = newWord.meanings.flatMap(m => m.synonyms).filter(s => s !== "Không có");
-    const allAntonyms = newWord.meanings.flatMap(m => m.antonyms).filter(a => a !== "Không có");
+    // Helper lấy đáp án nhiễu từ các từ khác
+    const getExtraItems = async (type = "definition") => {
+        const others = await Vocabulary.find({ _id: { $ne: newWord._id } }).limit(20);
+        if (type === "definition") {
+            return others.flatMap(v => v.meanings.flatMap(m => m.definitions.map(d => d.definition)));
+        } else if (type === "synonym") {
+            return others.flatMap(v => v.meanings.flatMap(m => m.synonyms)).filter(s => s !== "Không có");
+        } else if (type === "antonym") {
+            return others.flatMap(v => v.meanings.flatMap(m => m.antonyms)).filter(a => a !== "Không có");
+        }
+        return [];
+    };
 
-    if (allDefinitions.length > 0) {
-        const correctDefinition = allDefinitions[Math.floor(Math.random() * allDefinitions.length)];
-        const options = [...allDefinitions.filter(d => d !== correctDefinition).slice(0, 3), correctDefinition];
+    // Câu hỏi về nghĩa
+    const definitions = newWord.meanings.flatMap(m => m.definitions.map(d => d.definition));
+    if (definitions.length > 0) {
+        const correct = definitions[Math.floor(Math.random() * definitions.length)];
+        let distractors = definitions.filter(d => d !== correct);
 
-        if (options.length === 4) {
+        if (distractors.length < 3) {
+            const extra = await getExtraItems("definition");
+            distractors = [...distractors, ...extra.filter(e => e !== correct)];
+        }
+
+        if (distractors.length >= 3) {
+            const options = [...distractors.slice(0, 3), correct].sort(() => Math.random() - 0.5);
             questions.push({
                 content: `What does '${newWord.word}' mean?`,
                 vocabulary: {
                     _id: newWord._id,
                     meaning: newWord.word
                 },
-                options: options.sort(() => Math.random() - 0.5),
-                correctAnswer: correctDefinition
+                options,
+                correctAnswer: correct
             });
         }
     }
 
-    if (allSynonyms.length > 0) {
-        const correctSynonym = allSynonyms[Math.floor(Math.random() * allSynonyms.length)];
-        const options = [...allSynonyms.filter(s => s !== correctSynonym).slice(0, 3), correctSynonym];
+    // Câu hỏi đồng nghĩa
+    const synonyms = newWord.meanings.flatMap(m => m.synonyms).filter(s => s !== "Không có");
+    if (synonyms.length > 0) {
+        const correct = synonyms[Math.floor(Math.random() * synonyms.length)];
+        let distractors = synonyms.filter(s => s !== correct);
 
-        if (options.length === 4) {
+        if (distractors.length < 3) {
+            const extra = await getExtraItems("synonym");
+            distractors = [...distractors, ...extra.filter(e => e !== correct)];
+        }
+
+        if (distractors.length >= 3) {
+            const options = [...distractors.slice(0, 3), correct].sort(() => Math.random() - 0.5);
             questions.push({
                 content: `Which word is a synonym of '${newWord.word}'?`,
                 vocabulary: {
                     _id: newWord._id,
                     meaning: newWord.word
                 },
-                options: options.sort(() => Math.random() - 0.5),
-                correctAnswer: correctSynonym
+                options,
+                correctAnswer: correct
             });
         }
     }
 
-    if (allAntonyms.length > 0) {
-        const correctAntonym = allAntonyms[Math.floor(Math.random() * allAntonyms.length)];
-        const options = [...allAntonyms.filter(a => a !== correctAntonym).slice(0, 3), correctAntonym];
+    // Câu hỏi trái nghĩa
+    const antonyms = newWord.meanings.flatMap(m => m.antonyms).filter(a => a !== "Không có");
+    if (antonyms.length > 0) {
+        const correct = antonyms[Math.floor(Math.random() * antonyms.length)];
+        let distractors = antonyms.filter(a => a !== correct);
 
-        if (options.length === 4) {
+        if (distractors.length < 3) {
+            const extra = await getExtraItems("antonym");
+            distractors = [...distractors, ...extra.filter(e => e !== correct)];
+        }
+
+        if (distractors.length >= 3) {
+            const options = [...distractors.slice(0, 3), correct].sort(() => Math.random() - 0.5);
             questions.push({
                 content: `Which word is an antonym of '${newWord.word}'?`,
                 vocabulary: {
                     _id: newWord._id,
                     meaning: newWord.word
                 },
-                options: options.sort(() => Math.random() - 0.5),
-                correctAnswer: correctAntonym
+                options,
+                correctAnswer: correct
             });
         }
     }
 
-    const finalQuestions = questions.slice(0, 3);
-    return finalQuestions;
+    return questions.slice(0, 3); // Trả về tối đa 3 câu hỏi
 };
+
+
+//Tạo câu hỏi
+// const generateQuizQuestions = async (newWord) => {
+//     const questions = [];
+
+//     const allDefinitions = newWord.meanings.flatMap(m => m.definitions.map(d => d.definition));
+//     const allSynonyms = newWord.meanings.flatMap(m => m.synonyms).filter(s => s !== "Không có");
+//     const allAntonyms = newWord.meanings.flatMap(m => m.antonyms).filter(a => a !== "Không có");
+
+//     if (allDefinitions.length > 0) {
+//         const correctDefinition = allDefinitions[Math.floor(Math.random() * allDefinitions.length)];
+//         const options = [...allDefinitions.filter(d => d !== correctDefinition).slice(0, 3), correctDefinition];
+
+//         if (options.length >= 3 ) {
+//             questions.push({
+//                 content: `What does '${newWord.word}' mean?`,
+//                 vocabulary: {
+//                     _id: newWord._id,
+//                     meaning: newWord.word
+//                 },
+//                 options: options.sort(() => Math.random() - 0.5),
+//                 correctAnswer: correctDefinition
+//             });
+//         }
+//     }
+
+//     if (allSynonyms.length > 0) {
+//         const correctSynonym = allSynonyms[Math.floor(Math.random() * allSynonyms.length)];
+//         const options = [...allSynonyms.filter(s => s !== correctSynonym).slice(0, 3), correctSynonym];
+
+//         if (options.length === 4) {
+//             questions.push({
+//                 content: `Which word is a synonym of '${newWord.word}'?`,
+//                 vocabulary: {
+//                     _id: newWord._id,
+//                     meaning: newWord.word
+//                 },
+//                 options: options.sort(() => Math.random() - 0.5),
+//                 correctAnswer: correctSynonym
+//             });
+//         }
+//     }
+
+//     if (allAntonyms.length > 0) {
+//         const correctAntonym = allAntonyms[Math.floor(Math.random() * allAntonyms.length)];
+//         const options = [...allAntonyms.filter(a => a !== correctAntonym).slice(0, 3), correctAntonym];
+
+//         if (options.length  >= 2) {
+//             questions.push({
+//                 content: `Which word is an antonym of '${newWord.word}'?`,
+//                 vocabulary: {
+//                     _id: newWord._id,
+//                     meaning: newWord.word
+//                 },
+//                 options: options.sort(() => Math.random() - 0.5),
+//                 correctAnswer: correctAntonym
+//             });
+//         }
+//     }
+
+//     const finalQuestions = questions.slice(0, 3);
+//     return finalQuestions;
+// };
 
 //Tạo quiz
 const handleQuizCreation = async (req, res) => {
