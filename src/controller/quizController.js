@@ -98,69 +98,6 @@ const generateQuizQuestions = async (newWord) => {
 };
 
 
-//Tạo câu hỏi
-// const generateQuizQuestions = async (newWord) => {
-//     const questions = [];
-
-//     const allDefinitions = newWord.meanings.flatMap(m => m.definitions.map(d => d.definition));
-//     const allSynonyms = newWord.meanings.flatMap(m => m.synonyms).filter(s => s !== "Không có");
-//     const allAntonyms = newWord.meanings.flatMap(m => m.antonyms).filter(a => a !== "Không có");
-
-//     if (allDefinitions.length > 0) {
-//         const correctDefinition = allDefinitions[Math.floor(Math.random() * allDefinitions.length)];
-//         const options = [...allDefinitions.filter(d => d !== correctDefinition).slice(0, 3), correctDefinition];
-
-//         if (options.length >= 3 ) {
-//             questions.push({
-//                 content: `What does '${newWord.word}' mean?`,
-//                 vocabulary: {
-//                     _id: newWord._id,
-//                     meaning: newWord.word
-//                 },
-//                 options: options.sort(() => Math.random() - 0.5),
-//                 correctAnswer: correctDefinition
-//             });
-//         }
-//     }
-
-//     if (allSynonyms.length > 0) {
-//         const correctSynonym = allSynonyms[Math.floor(Math.random() * allSynonyms.length)];
-//         const options = [...allSynonyms.filter(s => s !== correctSynonym).slice(0, 3), correctSynonym];
-
-//         if (options.length === 4) {
-//             questions.push({
-//                 content: `Which word is a synonym of '${newWord.word}'?`,
-//                 vocabulary: {
-//                     _id: newWord._id,
-//                     meaning: newWord.word
-//                 },
-//                 options: options.sort(() => Math.random() - 0.5),
-//                 correctAnswer: correctSynonym
-//             });
-//         }
-//     }
-
-//     if (allAntonyms.length > 0) {
-//         const correctAntonym = allAntonyms[Math.floor(Math.random() * allAntonyms.length)];
-//         const options = [...allAntonyms.filter(a => a !== correctAntonym).slice(0, 3), correctAntonym];
-
-//         if (options.length  >= 2) {
-//             questions.push({
-//                 content: `Which word is an antonym of '${newWord.word}'?`,
-//                 vocabulary: {
-//                     _id: newWord._id,
-//                     meaning: newWord.word
-//                 },
-//                 options: options.sort(() => Math.random() - 0.5),
-//                 correctAnswer: correctAntonym
-//             });
-//         }
-//     }
-
-//     const finalQuestions = questions.slice(0, 3);
-//     return finalQuestions;
-// };
-
 //Tạo quiz
 const handleQuizCreation = async (req, res) => {
     try {

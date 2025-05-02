@@ -343,68 +343,72 @@ const getProgress = async (req, res) => {
     const { userId } = req.params;
 
     try {
-        // 1. Đếm số từ đã học
-        const learnedWordsCount = await UserVocabulary.countDocuments({
-            _idUser: userId,
-            $or: [
-                { flashcardViews: { $gt: 0 } },
-                { isKnown: true }
-            ]
-        });
+        // Chạy các truy vấn song song
+        const [
+            learnedCount,
+            latestReview,
+            allReviews,
+            completedQuizzes,
+            learnedEntries
+        ] = await Promise.all([
+            UserVocabulary.countDocuments({
+                _idUser: userId,
+                $or: [{ flashcardViews: { $gt: 0 } }, { isKnown: true }]
+            }),
 
-        // 2. Lấy ngày học gần nhất
-        const latestReview = await UserVocabulary.findOne({ _idUser: userId })
-            .sort({ lastReviewedAt: -1 })
-            .select("lastReviewedAt");
+            UserVocabulary.findOne({ _idUser: userId })
+                .sort({ lastReviewedAt: -1 })
+                .select("lastReviewedAt")
+                .lean(),
 
-        // 3. Lấy tất cả các ngày học (unique theo ngày)
-        const allReviews = await UserVocabulary.find(
-            { _idUser: userId },
-            "lastReviewedAt"
-        );
+            UserVocabulary.find({ _idUser: userId }, "lastReviewedAt").lean(),
 
-        // Lọc ra danh sách ngày dạng yyyy-MM-DD, loại trùng
-        const dateSet = new Set(
-            allReviews.map(r => moment(r.lastReviewedAt).format("YYYY-MM-DD"))
-        );
-        const sortedDates = Array.from(dateSet)
-            .map(d => moment(d, "YYYY-MM-DD"))
-            .sort((a, b) => b.diff(a)); // sắp giảm dần
+            Quiz.find({ _idUser: userId, isCompleted: true })
+                .sort({ createdAt: -1 })
+                .select("totalQuestion countCorrect timeTaken createdAt")
+                .lean(),
 
-        // 4. Tính streak
-        let streak = 0;
-        let today = moment().startOf("day");
+            UserVocabulary.find({
+                _idUser: userId,
+                $or: [{ flashcardViews: { $gt: 0 } }, { isKnown: true }]
+            })
+                .select("_idVocabulary isKnown flashcardViews correctAnswers wrongAnswers lastReviewedAt")
+                .populate({ path: "_idVocabulary", select: "word", options: { lean: true } })
+                .lean()
+        ]);
 
-        for (let i = 0; i < sortedDates.length; i++) {
-            const day = sortedDates[i];
-            if (i === 0) {
-                // Ngày gần nhất phải là hôm nay hoặc hôm qua mới tính chuỗi
-                if (day.isSame(today, "day") || day.isSame(today.clone().subtract(1, 'day'), "day")) {
-                    streak = 1;
-                } else {
-                    break;
-                }
-            } else {
-                const prevDay = sortedDates[i - 1];
-                if (day.diff(prevDay, "days") === -1) {
-                    streak++;
-                } else {
-                    break;
-                }
-            }
-        }
+        // Tổng số ngày học
+        const totalLearningDays = new Set(
+            allReviews
+                .filter(r => r.lastReviewedAt)
+                .map(r => moment(r.lastReviewedAt).format("YYYY-MM-DD"))
+        ).size;
+
+        // Danh sách từ đã học
+        const learnedWords = learnedEntries.map(entry => ({
+            word: entry._idVocabulary?.word || "(đã xóa)",
+            isKnown: entry.isKnown,
+            flashcardViews: entry.flashcardViews,
+            correctAnswers: entry.correctAnswers,
+            wrongAnswers: entry.wrongAnswers,
+            lastReviewedAt: entry.lastReviewedAt
+        }));
 
         res.status(200).json({
-            message: "Lấy tiến độ học thành công.",
+            message: "Lấy tiến độ học tập thành công.",
             data: {
-                learnedWords: learnedWordsCount,
-                lastReviewedAt: latestReview?.lastReviewedAt || null,
-                streak: streak
+                summary: {
+                    learnedWordsCount: learnedCount,
+                    lastReviewedAt: latestReview?.lastReviewedAt || null,
+                    totalLearningDays
+                },
+                completedQuizzes,
+                learnedWords
             }
         });
     } catch (error) {
-        console.error("Lỗi:", error);
-        res.status(500).json({ message: "Lỗi server khi lấy tiến độ học." });
+        console.error("Lỗi khi lấy dữ liệu học tập:", error);
+        res.status(500).json({ message: "Lỗi server khi lấy dữ liệu học tập." });
     }
 };
 
