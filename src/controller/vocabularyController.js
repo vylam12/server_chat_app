@@ -469,6 +469,8 @@ const handleGetListVocab = async (req, res) => {
                 _idUserVocabulary: isSaved ? savedMap[vocabIdStr] : null
             };
         });
+        console.log("allVocab.length:", allVocab.length);
+        console.log("savedVocabDocs.length:", savedVocabDocs.length);
 
         return res.status(200).json({ data: response });
     } catch (err) {
