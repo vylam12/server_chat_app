@@ -309,7 +309,7 @@ const handleSearchChat = async (req, res) => {
                 filteredChats.push({
                     chatId: doc.id,
                     participants,
-                    matchByMessage: matchByMessage || null
+                    matchByMessage: matchedMessages || null
                 });
             }
         }
