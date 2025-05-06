@@ -289,7 +289,6 @@ const handleSearchChat = async (req, res) => {
             const otherUserId = participants.find(p => p !== userId);
             const receiverName = usersData[otherUserId] || '';
 
-            // Kiểm tra tên người còn lại khớp keyword
             const matchByName = receiverName.toLowerCase().includes(keyword.toLowerCase());
 
             // Kiểm tra nội dung tin nhắn
@@ -302,9 +301,7 @@ const handleSearchChat = async (req, res) => {
                 filteredChats.push({
                     chatId: doc.id,
                     participants,
-                    lastMessage: Object.values(messages).sort((a, b) =>
-                        new Date(b.timestamp) - new Date(a.timestamp)
-                    )[0] || null
+                    matchByMessage: matchByMessage || null
                 });
             }
         });
