@@ -105,20 +105,15 @@ const handleQuizCreation = async (req, res) => {
         if (!userId) {
             return res.status(401).json({ error: "User ID is required" });
         }
-
         const existingQuiz = await Quiz.findOne({
             _idUser: userId,
             isCompleted: false
         });
-
         if (existingQuiz) {
             return res.status(200).json({
-                canStartQuiz: true,
-                quizId: existingQuiz._id,
-                totalQuestion: existingQuiz.totalQuestion
+                canStartQuiz: true, quizId: existingQuiz._id, totalQuestion: existingQuiz.totalQuestion
             });
         }
-
         const learnedVocabularies = await UserVocabulary.find({
             _idUser: userId,
             flashcardViews: { $gte: 2 }
@@ -207,7 +202,6 @@ const handleUpdateResultQuiz = async (req, res) => {
         }
 
         const now = new Date();
-
         if (vocabularyResults && vocabularyResults.length > 0) {
             for (const vocab of vocabularyResults) {
                 const existing = await UserVocabulary.findOne({
@@ -225,7 +219,6 @@ const handleUpdateResultQuiz = async (req, res) => {
                         lastReviewedAt: now
                     }
                 };
-
                 const totalCorrect = (existing?.correctAnswers || 0) + (vocab.correctCount || 0);
                 const totalQuiz = (existing?.quizAttempts || 0) + 1;
                 const flashcardViews = existing?.flashcardViews || 0;

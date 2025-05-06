@@ -1,9 +1,7 @@
 import { db } from "../config/firebase.js";
-// import Chat from "../models/chat.js";
 import admin from "firebase-admin";
 import translate from '@iamtraction/google-translate';
 import User from "../models/user.js";
-import Message from "../models/message.js";
 // KIỂM TRA CUỘC TRÒ CHUYỆN TỒN TẠI
 const checkExistingChat = async (req, res) => {
     try {
@@ -26,7 +24,7 @@ const checkExistingChat = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 }
-
+// tạo id chat
 const generateChatId = (id1, id2) => {
     return [id1, id2].sort().join('_');
 };
@@ -118,7 +116,6 @@ const handleSendMessage = async (req, res) => {
         const translatedContent = translatedResult.text;
         console.timeEnd("⏱ Dịch nội dung");
 
-
         console.time("⏱ Lưu Firestore");
         const messageRef = chatRef.collection("messages").doc();
         await messageRef.set({
@@ -173,152 +170,70 @@ const handleSendMessage = async (req, res) => {
     }
 };
 
-
-const handleGetMessages = async (req, res) => {
-    try {
-        const { chatId } = req.params;
-
-        if (!chatId) {
-            return res.status(400).json({ error: "Thiếu chatId" });
-        }
-
-        // Lấy tin nhắn từ MongoDB
-        const messages = await Message.find({ chatId }).sort({ createdAt: 1 });
-
-        res.status(200).json({
-            mongoMessages: messages
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Lỗi server" });
-    }
-};
-
-const getMessagesFromFirestore = async (chatId) => {
-    try {
-        if (!chatId) {
-            throw new Error("Thiếu chatId");
-        }
-
-        // Truy vấn Firestore
-        const messageRef = db.collection("chat").doc(chatId).collection("messages");
-        const snapshot = await messageRef.orderBy("timestamp", "asc").get();
-
-        // Chuyển dữ liệu thành mảng
-        const messages = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-
-        return messages;
-
-    } catch (error) {
-        console.error("Lỗi lấy tin nhắn từ Firestore:", error);
-        return [];
-    }
-};
-
-const getMessages = async (req, res) => {
-    try {
-        const { chatId } = req.params;
-
-        if (!chatId) {
-            return res.status(400).json({ error: "Thiếu chatId" });
-        }
-
-        const messages = await getMessagesFromFirestore(chatId);
-
-        res.status(200).json({ messages });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Lỗi server" });
-    }
-};
-const getListChat = async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        if (!userId) {
-            return res.status(400).json({ error: "Thiếu userId" });
-        }
-
-        const chats = await Chat.find({ participants: userId })
-            .sort({ createdAt: -1 })
-            .populate("participants", "fullname avatar"); // Lấy thông tin người tham gia
-
-        if (!chats.length) {
-            return res.status(200).json({ listChat: [] });
-        }
-
-        const listChat = await Promise.all(chats.map(async (chat) => {
-            const lastMessage = await Message.findOne({ chatId: chat._id })
-                .sort({ createdAt: -1 }) // Sửa lỗi typo `createAt` thành `createdAt`
-                .populate("id_sender", "fullname avatar")
-                .lean();
-
-            const unreadCount = await Message.countDocuments({
-                chatId: chat._id,
-                id_sender: { $ne: userId },
-                isRead: false
-            });
-
-            return {
-                chatId: chat._id,
-                participants: chat.participants.map(user => ({
-                    id: user._id,
-                    fullname: user.fullname,
-                    avatar: user.avatar
-                })), // Danh sách tất cả người tham gia
-                lastMessage: lastMessage ? lastMessage.translatedContent : null,
-                lastMessageTime: lastMessage ? lastMessage.createdAt : null,
-                unreadCount: unreadCount,
-                sender: lastMessage?.id_sender ? {
-                    id: lastMessage.id_sender._id,
-                    fullname: lastMessage.id_sender.fullname
-                } : null
-            }
-        }));
-
-        console.log("Lấy danh sách chat:", listChat);
-
-        res.status(200).json({
-            listChat: listChat
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Lỗi server" });
-    }
-};
-//XÓA TIN NHẮN
 const handleDeleteChat = async (req, res) => {
     try {
-        const { chatId } = req.body;
-        if (!chatId) {
-            return res.status(400).json({ error: "Thiếu chatId" });
+        const { chatId, userId, deleteUntil } = req.body;
+        if (!chatId || !userId) {
+            return res.status(400).json({ error: "Thiếu chatId hoặc userId" });
         }
-        await Chat.findByIdAndDelete(chatId);
-        await Message.deleteMany({ chatId });
 
-        const chatRef = db.collection("chat").doc(chatId);
-        const messagesRef = chatRef.collection("messages");
-
-        const messagesSnapshot = await messagesRef.get();
-        const batch = db.batch();
-        messagesSnapshot.forEach(doc => {
-            batch.delete(doc.ref);
-        });
-
-        batch.delete(chatRef);
-        await batch.commit();
-
-        res.status(200).json({ message: "Cuộc trò chuyện đã được xóa thành công" });
+        if (deleteUntil) {
+            const chatRef = db.collection("chats").doc(chatId);
+            const userRef = chatRef.collection("participants").doc(userId);
+            await userRef.update({
+                deleteUntil: deleteUntil
+            });
+            return res.status(200).json({ message: "Mốc xóa đã được lưu cho người dùng" });
+        }
+        DeleteMessages(chatId)
+        res.status(200).json({ message: "Không có mốc xóa nào được cung cấp" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Lỗi server" });
     }
 }
+const DeleteMessages = async (chatId) => {
+    try {
+        const chatRef = db.collection("chats").doc(chatId);
+        const participantsRef = chatRef.collection("participants");
+
+        const participantsSnapshot = await participantsRef.get();
+        const deleteUntilTimes = [];
+
+        participantsSnapshot.forEach(doc => {
+            const participantData = doc.data();
+            if (participantData.deleteUntil) {
+                deleteUntilTimes.push(new Date(participantData.deleteUntil));
+            }
+        });
+
+        if (deleteUntilTimes.length === 0) {
+            return { message: "Không có mốc xóa nào được lưu cho người tham gia." };
+        }
+
+        const earliestDeleteUntil = new Date(Math.min(...deleteUntilTimes));
+
+        const messagesRef = chatRef.collection("messages");
+        const messagesSnapshot = await messagesRef.get();
+        const batch = db.batch();
+
+        messagesSnapshot.forEach(doc => {
+            const messageData = doc.data();
+            const messageTimestamp = new Date(messageData.timestamp);
+
+            if (messageTimestamp >= earliestDeleteUntil) {
+                batch.delete(doc.ref);
+            }
+        });
+
+        await batch.commit();
+
+        return { message: "Đã xóa các tin nhắn từ mốc xóa trở đi." };
+    } catch (error) {
+        console.error(error);
+        return { error: "Lỗi server khi xóa tin nhắn." };
+    }
+};
 
 //LƯU FCM TOKEN ĐỂ GỬI THÔNG BÁO TIN NHẮN
 const saveFCMToken = async (req, res) => {
@@ -338,24 +253,70 @@ const saveFCMToken = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 }
+const handleSearchChat = async (req, res) => {
+    const { userId, keyword } = req.query;
 
-
-const markMessageAsRead = async (req, res) => {
-    try {
-        const { chatId, userId } = req.body;
-
-        const updatedMessages = await Message.updateMany(
-            { chatId, isRead: false, id_sender: { $ne: userId } }, // Chỉ cập nhật tin nhắn chưa đọc của người khác gửi
-            { isRead: true }
-        );
-
-        res.status(200).json({ message: "Tất cả tin nhắn đã được đọc", updatedCount: updatedMessages.modifiedCount });
-    } catch (error) {
-        res.status(500).json({ message: "Lỗi khi cập nhật tin nhắn", error });
+    if (!userId || !keyword) {
+        return res.status(400).json({ error: 'Missing userId or keyword' });
     }
-}
+
+    try {
+        // Lấy danh sách người dùng có tên giống keyword
+        const matchedUsers = await User.find({
+            fullname: { $regex: keyword, $options: "i" }
+        });
+
+        // Tạo object ánh xạ userId => fullname
+        const usersData = {};
+        matchedUsers.forEach(user => {
+            usersData[user.id] = user.fullname;
+        });
+
+        const chatsRef = admin.firestore().collection('chat');
+        const snapshot = await chatsRef.get();
+
+        let filteredChats = [];
+
+        snapshot.forEach(doc => {
+            const chatData = doc.data();
+            const participants = chatData.participants;
+            const messages = chatData.messages || {};
+
+            // Không phải chat của user thì bỏ qua
+            if (!participants.includes(userId)) return;
+
+            // Lấy ID người còn lại (receiver)
+            const otherUserId = participants.find(p => p !== userId);
+            const receiverName = usersData[otherUserId] || '';
+
+            // Kiểm tra tên người còn lại khớp keyword
+            const matchByName = receiverName.toLowerCase().includes(keyword.toLowerCase());
+
+            // Kiểm tra nội dung tin nhắn
+            const matchByMessage = Object.values(messages).some(msg =>
+                msg.content?.toLowerCase().includes(keyword.toLowerCase()) ||
+                msg.translatedContent?.toLowerCase().includes(keyword.toLowerCase())
+            );
+
+            if (matchByName || matchByMessage) {
+                filteredChats.push({
+                    chatId: doc.id,
+                    participants,
+                    lastMessage: Object.values(messages).sort((a, b) =>
+                        new Date(b.timestamp) - new Date(a.timestamp)
+                    )[0] || null
+                });
+            }
+        });
+
+        res.status(200).json(filteredChats);
+    } catch (error) {
+        console.error('Error searching chats:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 export default {
-    handleSendMessage, handleCreateChat, handleGetMessages, getMessages,
-    getListChat, checkExistingChat, handleDeleteChat, saveFCMToken
+    handleSendMessage, handleCreateChat,
+    checkExistingChat, handleDeleteChat, saveFCMToken, handleSearchChat
 };

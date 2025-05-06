@@ -113,13 +113,13 @@ const handleFindVocabulary = async (req, res) => {
 
         const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = response.data[0];
-        // Kiểm tra xem API có trả về dữ liệu hợp lệ không
         if (!data || !data.meanings || data.meanings.length === 0) {
             return res.status(400).json({ error: "No valid data found for the word" });
         }
         const seenTypes = new Set();
         const phoneticsList = data.phonetics
-            .filter(p => (p.license?.name?.includes("BY-SA") || p.license?.name?.includes("US")) && !seenTypes.has(p.license?.name))
+            .filter(p => (p.license?.name?.includes("BY-SA") || p.license?.name?.includes("US"))
+                && !seenTypes.has(p.license?.name))
             .map(p => {
                 seenTypes.add(p.license?.name);
                 return {
@@ -157,6 +157,7 @@ const handleFindVocabulary = async (req, res) => {
         res.status(500).json({ error: "Translate failed", details: error.message });
     }
 }
+
 const handleDeleteVocabulary = async (req, res) => {
     try {
         const { idUserVocabulary } = req.body;
@@ -241,10 +242,8 @@ const getUserVocabulary = async (req, res) => {
             isKnown: false
         }).limit(7)
             .populate({
-                path: '_idVocabulary',
-                select: 'word phonetics meanings',
+                path: '_idVocabulary', select: 'word phonetics meanings'
             });
-
         const formatted = userVocabDocs.map(doc => {
             const vocab = doc._idVocabulary;
             return {
@@ -255,18 +254,17 @@ const getUserVocabulary = async (req, res) => {
                 meaning: vocab.meanings?.[0].definitions?.[0].definition || null
             };
         });
-
         if (formatted.length < 5) {
             return res.json({ canMakeFlashcard: false, data: [] });
         }
-
         return res.json({ canMakeFlashcard: true, data: formatted });
-
     } catch (err) {
         console.error("Error get flashcards:", err);
         res.status(500).json({ message: "Lỗi khi lấy từ vựng", error: err });
     }
 };
+
+
 const updateAfterFlashcard = async (req, res) => {
     const { userId, vocabList } = req.body;
 
@@ -341,9 +339,7 @@ const getFlashcardReviewQuestions = async (req, res) => {
 
 const getProgress = async (req, res) => {
     const { userId } = req.params;
-
     try {
-        // Chạy các truy vấn song song
         const [
             learnedCount,
             latestReview,
@@ -455,6 +451,7 @@ const handleGetListVocab = async (req, res) => {
             if (!b.word) return -1;
             return a.word.localeCompare(b.word);
         });
+
         const response = allVocab.map(vocab => {
             const vocabIdStr = vocab._id.toString();
             const isSaved = vocabIdStr in savedMap;
@@ -478,28 +475,6 @@ const handleGetListVocab = async (req, res) => {
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
-// const handleUserSaveVocabulary = async (req, res) => {
-//     try {
-//         const { userId, idVocab } = req.body;
-//         const isSaved = await UserVocabulary.findOne({
-//             _idUser: userId,
-//             _idVocabulary: idVocab
-//         });
-//         if (isSaved) {
-//             return res.status(400).json({ error: "User has already saved this vocabulary" });
-//         }
-//         const newUserVocabulary = new UserVocabulary({
-//             _idUser: userId,
-//             _idVocabulary: idVocab
-//         });
-//         await newUserVocabulary.save();
-
-//         return res.status(200).json({ message: "Save vocab success" });
-//     } catch (err) {
-//         console.error(err);
-//         return res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
 
 const handleSaveVocabulary = async (req, res) => {
     try {
@@ -523,6 +498,7 @@ const handleSaveVocabulary = async (req, res) => {
             }
 
             vocabId = vocabDoc._id;
+
         } else {
             vocabId = idVocab;
             vocabDoc = await Vocabulary.findById(vocabId);

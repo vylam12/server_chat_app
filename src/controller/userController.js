@@ -190,23 +190,20 @@ const hanldeUpdateUser = async (req, res) => {
 
         let avatarUrl = null;
 
-        // Nếu có file ảnh thì upload trước
         if (req.file) {
             console.log("req.file :", req.file);
             avatarUrl = await uploadAvatarToCloudinary(req.file.path);
             console.log("url :", avatarUrl);
             fs.unlink(req.file.path, () => { });
-            updateData.avatar = avatarUrl; // Thêm avatar vào updateData luôn ở đây
+            updateData.avatar = avatarUrl;
         }
 
-        // Bây giờ mới update MongoDB (sau khi updateData đầy đủ)
         const mongoUpdatePromise = User.findOneAndUpdate(
             { id: userId },
             { $set: updateData },
             { new: true }
         );
 
-        // Đồng thời update Firestore nếu có avatar mới
         const firestoreUpdatePromise = avatarUrl
             ? db.collection('users').doc(userId).update({
                 avatar: avatarUrl
