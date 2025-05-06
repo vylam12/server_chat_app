@@ -293,13 +293,13 @@ const handleSearchChat = async (req, res) => {
 
             // Kiểm tra nội dung tin nhắn
             const matchByMessage = Object.values(messages).some(msg => {
-                const translated = msg.translatedContent;
-                return typeof translated === 'string' && translated.toLowerCase().includes(keyword.toLowerCase());
+                // Kiểm tra nếu có translatedContent và so khớp với keyword
+                const translated = msg.translatedContent ? msg.translatedContent.toLowerCase() : "";
+                return translated.includes(keyword.toLowerCase());
             });
+
             console.log("🔍 keyword:", keyword);
-            console.log("📩 messages:", messages);
-
-
+            console.log("📩 messages:", JSON.stringify(messages, null, 2));
             if (matchByName || matchByMessage) {
                 filteredChats.push({
                     chatId: doc.id,
