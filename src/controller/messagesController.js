@@ -292,10 +292,13 @@ const handleSearchChat = async (req, res) => {
             const matchByName = receiverName.toLowerCase().includes(keyword.toLowerCase());
 
             // Kiểm tra nội dung tin nhắn
-            const matchByMessage = Object.values(messages).some(msg =>
-                msg.content?.toLowerCase().includes(keyword.toLowerCase()) ||
-                msg.translatedContent?.toLowerCase().includes(keyword.toLowerCase())
-            );
+            const matchByMessage = Object.values(messages).some(msg => {
+                const translated = msg.translatedContent;
+                return typeof translated === 'string' && translated.toLowerCase().includes(keyword.toLowerCase());
+            });
+            console.log("🔍 keyword:", keyword);
+            console.log("📩 messages:", messages);
+
 
             if (matchByName || matchByMessage) {
                 filteredChats.push({
