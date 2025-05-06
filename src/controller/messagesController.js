@@ -281,7 +281,7 @@ const handleSearchChat = async (req, res) => {
             const chatData = doc.data();
             const participants = chatData.participants;
             const messages = chatData.messages || {};
-
+            console.log("Messages in this chat:", messages);
             // Không phải chat của user thì bỏ qua
             if (!participants.includes(userId)) return;
 
