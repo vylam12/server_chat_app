@@ -292,15 +292,16 @@ const handleSearchChat = async (req, res) => {
             // Truy vấn subcollection "messages" trong chat
             const messagesRef = doc.ref.collection('messages');
             const messagesSnapshot = await messagesRef.get();
-            let matchByMessage = false;
-
+            const matchedMessages = [];
             // Kiểm tra tin nhắn có nội dung khớp với keyword không
             messagesSnapshot.forEach(msgDoc => {
                 const msg = msgDoc.data();
                 const translated = msg.translatedContent || '';
-
                 if (translated.toLowerCase().includes(keyword.toLowerCase())) {
-                    matchByMessage = true;
+                    matchedMessages.push({
+                        id: msgDoc.id,
+                        translatedContent: translated
+                    });
                 }
             });
 
