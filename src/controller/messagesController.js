@@ -279,6 +279,7 @@ const handleSearchChat = async (req, res) => {
 
         snapshot.forEach(doc => {
             const chatData = doc.data();
+            console.log("chatData:", chatData);
             const participants = chatData.participants;
             const messages = chatData.messages || {};
             console.log("Messages in this chat:", messages);
