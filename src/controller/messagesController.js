@@ -277,14 +277,11 @@ const handleSearchChat = async (req, res) => {
 
         let filteredChats = [];
 
-        snapshot.forEach(doc => {
+        for (const doc of snapshot.docs) {
             const chatData = doc.data();
-            console.log("chatData:", chatData);
             const participants = chatData.participants;
-            const messages = chatData.messages || {};
-            console.log("Messages in this chat:", messages);
             // Không phải chat của user thì bỏ qua
-            if (!participants.includes(userId)) return;
+            if (!participants.includes(userId)) continue;
 
             // Lấy ID người còn lại (receiver)
             const otherUserId = participants.find(p => p !== userId);
@@ -292,17 +289,21 @@ const handleSearchChat = async (req, res) => {
 
             const matchByName = receiverName.toLowerCase().includes(keyword.toLowerCase());
 
-            // Kiểm tra nội dung tin nhắn
-            const matchByMessage = Object.values(messages).some(msg => {
+            // Truy vấn subcollection "messages" trong chat
+            const messagesRef = doc.ref.collection('messages');
+            const messagesSnapshot = await messagesRef.get();
+            let matchByMessage = false;
+
+            // Kiểm tra tin nhắn có nội dung khớp với keyword không
+            messagesSnapshot.forEach(msgDoc => {
+                const msg = msgDoc.data();
                 const translated = msg.translatedContent || '';
 
-                console.log("Checking content:", content, "translated:", translated);
-
-                return translated.toLowerCase().includes(keyword.toLowerCase());
+                if (translated.toLowerCase().includes(keyword.toLowerCase())) {
+                    matchByMessage = true;
+                }
             });
 
-            console.log("🔍 keyword:", keyword);
-            console.log("📩 messages:", JSON.stringify(messages, null, 2));
             if (matchByName || matchByMessage) {
                 filteredChats.push({
                     chatId: doc.id,
@@ -310,7 +311,8 @@ const handleSearchChat = async (req, res) => {
                     matchByMessage: matchByMessage || null
                 });
             }
-        });
+        }
+
 
         res.status(200).json(filteredChats);
     } catch (error) {
