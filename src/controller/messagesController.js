@@ -293,9 +293,11 @@ const handleSearchChat = async (req, res) => {
 
             // Kiểm tra nội dung tin nhắn
             const matchByMessage = Object.values(messages).some(msg => {
-                // Kiểm tra nếu có translatedContent và so khớp với keyword
-                const translated = msg.translatedContent ? msg.translatedContent.toLowerCase() : "";
-                return translated.includes(keyword.toLowerCase());
+                const translated = msg.translatedContent || '';
+
+                console.log("Checking content:", content, "translated:", translated);
+
+                return translated.toLowerCase().includes(keyword.toLowerCase());
             });
 
             console.log("🔍 keyword:", keyword);
