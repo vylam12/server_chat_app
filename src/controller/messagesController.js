@@ -261,12 +261,9 @@ const handleSearchChat = async (req, res) => {
     }
 
     try {
-        // Lấy danh sách người dùng có tên giống keyword
         const matchedUsers = await User.find({
             fullname: { $regex: keyword, $options: "i" }
         });
-
-        // Tạo object ánh xạ userId => fullname
         const usersData = {};
         matchedUsers.forEach(user => {
             usersData[user.id] = user.fullname;
@@ -301,7 +298,7 @@ const handleSearchChat = async (req, res) => {
                     matchedMessages.push({
                         id: msgDoc.id,
                         translatedContent: translated,
-                        timestamp: msgDoc.timestamp
+                        timestamp: msg.timestamp?.toDate?.() || null
                     });
                 }
             });
