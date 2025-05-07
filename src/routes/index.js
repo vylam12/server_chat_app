@@ -44,29 +44,28 @@ const initWebRoutes = (app) => {
     router.post("/verify-otp", authController.verifyOTP)
     router.post("/reset-password", authController.hanleResetPasswordWithOTP)
 
-    //gửi lời mời kết bạn
-    router.post("/friend-invited", friendInvitationController.handleInvited)
+
+    router.post("/friend-invited", friendInvitationController.handleInvited)  //gửi lời mời kết bạn
     router.post("/accept-friend-invited", friendInvitationController.handleAcceptInvited)
     router.post("/unfriend", friendInvitationController.handleUnfriend)
-    //lấy list bạn bè
-    router.get("/get-friend/:userId", friendInvitationController.handleGetFriend)
-    //lấy list lời mời kết bạn
-    router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)
+    router.get("/get-friend/:userId", friendInvitationController.handleGetFriend)//lấy list bạn bè
+    router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)   //lấy list lời mời kết bạn
+    router.get("/find-user", userController.handleFriendUser) //tìm người dùng để kb 
 
     router.post("/create-chat", messageController.handleCreateChat)
     router.post("/send-message", messageController.handleSendMessage)
-    router.post("/delete-chat", messageController.handleDeleteChat)
     router.get("/search-chat", messageController.handleSearchChat)
     router.post("/check-exist-chat", messageController.checkExistingChat)
     router.post("/save-fcm-token", messageController.saveFCMToken)
 
+
+    // router.post("/delete-chat", messageController.handleDeleteChat)
     router.get("/users/:userId", userController.handleGetUser)
 
 
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)
 
-    router.get("/find-user", userController.handleFriendUser)
 
     return app.use("/", router);
 }

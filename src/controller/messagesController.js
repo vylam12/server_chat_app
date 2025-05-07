@@ -300,7 +300,8 @@ const handleSearchChat = async (req, res) => {
                 if (translated.toLowerCase().includes(keyword.toLowerCase())) {
                     matchedMessages.push({
                         id: msgDoc.id,
-                        translatedContent: translated
+                        translatedContent: translated,
+                        timestamp: msgDoc.timestamp
                     });
                 }
             });
