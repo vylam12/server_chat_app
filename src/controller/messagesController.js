@@ -313,7 +313,7 @@ const handleSearchChat = async (req, res) => {
         }
 
 
-        res.status(200).json(filteredChats);
+        res.status(200).json({ filteredChats: filteredChats });
     } catch (error) {
         console.error('Error searching chats:', error);
         res.status(500).json({ error: 'Internal server error' });
