@@ -98,7 +98,14 @@ const handleFindVocabulary = async (req, res) => {
         await newWord.save();
         console.log("newWord", newWord);
 
-        return res.json({ newWord: newWord, userSaved: null });
+        return res.json({
+            result: [
+                {
+                    vocab: newWord,
+                    userSaved: false // vì vừa tạo mới, chắc chắn user chưa lưu
+                }
+            ]
+        });
 
     } catch (error) {
         res.status(500).json({ error: "Translate failed", details: error.message });
@@ -522,5 +529,4 @@ export default {
     handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,
     getFlashcardReviewQuestions, getProgress, handleGetVocabToReview, handleGetListVocab,
     handleSaveVocabulary
-    // handleUserSaveVocabulary, handleSaveVocabulary
 };
