@@ -29,9 +29,6 @@ const handleFindVocabulary = async (req, res) => {
     }
     word = word.toLowerCase().trim();;
     try {
-        const allWords = await Vocabulary.find().select('word');
-        console.log("Tất cả từ trong DB:", allWords);
-        console.log("word", word);
         const vocabularyList = await Vocabulary.find({
             word: { $regex: word, $options: 'i' }
 
@@ -60,7 +57,6 @@ const handleFindVocabulary = async (req, res) => {
             console.log("result", result)
             return res.json({ result });
         }
-
 
         const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = response.data[0];
