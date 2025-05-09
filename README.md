@@ -1,8 +1,8 @@
-<h1 align="center">ỨNG DỤNG HỖ TRỢ GHI NHỚ TỪ VỰNG TIẾNG ANH </h1>
+<h1 align="center">ỨNG DỤNG TRÒ CHUYỆN SONG NGỮ </h1>
 <p align="center">
- ỨNG DỤNG HỖ TRỢ GHI NHỚ TỪ VỰNG TIẾNG ANH HIỆU QUẢ BẰNG KOTLIN VÀ NODEJS.
+ ỨNG DỤNG TRÒ CHUYỆN SONG NGỮ BẰNG KOTLIN VÀ NODEJS.
   <br />
-  <em>Kotlin + Node.js + MongoDB | Auth | Flashcards | Quiz</em>
+  <em>Kotlin + Node.js + MongoDB + Firebase | Auth | Chat | Translate | Add Friend</em>
 </p>
 
 <p align="center">
@@ -16,11 +16,14 @@
 
 ## ✨ Giới thiệu
 
-**Talk Bilingually** là một ứng dụng học từ vựng song ngữ giúp người học tiếng Anh mở rộng vốn từ vựng một cách hiệu quả. Ứng dụng cho phép:
-- Tra cứu từ vựng và lưu từ yêu thích
-- Học và ôn luyện từ yêu thích bằng Flashcards,
-- Làm quiz để kiểm tra khả năng ghi nhớ
-- Thống kê tiến độ học tập cá nhân.
+**Talk Bilingually** là một ứng dụng trò chuyện song ngữ. Ứng dụng cho phép:
+- Đăng nhập, đăng ký, khôi phục mật khẩu
+- Tìm kiếm cuộc trò chuyện
+- Nhắn tin với bạn bè
+- Dịch tin nhắn
+- Tìm kiếm và kết bạn, hủy kết bạn
+
+
 
 ---
 
@@ -30,10 +33,17 @@
 |----------------|------------------------------------------------|
 | Android App    | Kotlin, MVVM, Retrofit, Firebase, ViewModel    |
 | Backend        | Node.js, Express, JWT, Bcrypt, Cloudinary      |
-| Database       | MongoDB, Mongoose                              |
+| Database       | MongoDB, Mongoose, Firebase                    |
 | Ảnh đại diện   | Cloudinary                                     |
 
 ---
+---
+## 🚀 Cấu trúc project
+```
+191-Trần Lê Thảo Vy-21CNTT4/
+├── MyApplication/ # Ứng dụng Android (Kotlin)
+├── server/ # Backend Node.js
+└── README.md
 
 ## 🚀 Cài đặt & chạy ứng dụng
 
@@ -60,18 +70,14 @@ const val BASE_URL = "http://your-server-ip:9000/"
 Sau khi đã cấu hình xong, bạn chỉ cần nhấn Run trong Android Studio để chạy ứng dụng trên thiết bị thật hoặc emulator.
 ### 🔹 2. Cài đặt server
 
-```bash
-cd server
+##### 1. Mở dự án trong Visual studio code
+Mở Visual studio code.
+
+Chọn File>Open foler và chọn thư mục server
+Cài đặt server:
 npm install
 npm run dev
 ```
-##### 1. Mở dự án trong Android Studio
-Mở Visual studio code.
-
-Chọn Open an existing project và chọn thư mục server
-Cài đặt dependencies:
-npm install
-npm run dev
 
 #### 2. Tạo file `.env` trong thư mục `server`
 
@@ -87,18 +93,10 @@ APP_ID=
 CLOUDINARY_URL=
 ```
 
-#### 3. Start the development server:
+#### 3. Chạy server:
+```
 npm start.
----
-
-## 🤝 Đóng góp
-
-1. Fork repo
-2. Tạo nhánh mới (`git checkout -b feature/tinh-nang-moi`)
-3. Commit thay đổi (`git commit -am 'Add tính năng mới'`)
-4. Push lên branch (`git push origin feature/tinh-nang-moi`)
-5. Tạo pull request
-
+```
 ---
 
 ## 📄 License
