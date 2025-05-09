@@ -27,13 +27,13 @@ const handleFindVocabulary = async (req, res) => {
     if (!word) {
         return res.status(400).json({ error: "Missing 'word' language" })
     }
-    word = word.toLowerCase();
+    word = word.toLowerCase().trim();;
     try {
         const allWords = await Vocabulary.find().select('word');
         console.log("Tất cả từ trong DB:", allWords);
         console.log("word", word);
         const vocabularyList = await Vocabulary.find({
-            word: { $regex: `^${word}$`, $options: 'i' } // Khớp chính xác
+            word: { $regex: word, $options: 'i' }
 
         });
 
