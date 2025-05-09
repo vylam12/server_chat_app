@@ -31,7 +31,8 @@ const handleFindVocabulary = async (req, res) => {
     try {
 
         const vocabularyList = await Vocabulary.find({
-            word: { $regex: word, $options: 'i' }
+            word: { $regex: `^${word}$`, $options: 'i' } // Khớp chính xác
+
         });
 
         console.log("vocabularyList", vocabularyList)
