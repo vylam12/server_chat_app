@@ -34,6 +34,7 @@ const handleFindVocabulary = async (req, res) => {
             word: { $regex: word, $options: 'i' }
         });
 
+        console.log("vocabularyList", vocabularyList)
         const result = [];
 
         if (vocabularyList.length > 0) {
@@ -53,7 +54,7 @@ const handleFindVocabulary = async (req, res) => {
                     userSaved: userSaved
                 });
             }
-
+            console.log("result", result)
             return res.json({ result });
         }
 
