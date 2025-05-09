@@ -34,7 +34,7 @@ const handleFindVocabulary = async (req, res) => {
 
         });
 
-        console.log("vocabularyList", vocabularyList)
+        // console.log("vocabularyList", vocabularyList)
         const result = [];
 
         if (vocabularyList.length > 0) {
@@ -96,7 +96,7 @@ const handleFindVocabulary = async (req, res) => {
             meanings: meanings
         });
         await newWord.save();
-        console.log("newWord", newWord);
+        // console.log("newWord", newWord);
 
         return res.json({
             result: [
