@@ -29,31 +29,32 @@ const handleFindVocabulary = async (req, res) => {
     }
     word = word.toLowerCase();
     try {
-        const existingVocabulary = await Vocabulary.findOne({ word });
 
-        let userSaved = null;
+        const vocabularyList = await Vocabulary.find({
+            word: { $regex: word, $options: 'i' }
+        });
 
-        if (existingVocabulary && userId) {
-            const savedDoc = await UserVocabulary.findOne({
-                _idUser: userId,
-                _idVocabulary: existingVocabulary._id
-            }).select('_id');
+        const result = [];
 
-            userSaved = savedDoc ? savedDoc._id.toString() : null;
-        }
-        if (existingVocabulary) {
-            const userVocabularyList = await UserVocabulary.find({ _idUser: userId })
-                .populate('vocabulary')
-                .select('vocabulary');
-            return res.json({
-                vocabList: userVocabularyList,
-                userSaved: userSaved,
-            });
+        if (vocabularyList.length > 0) {
+            for (let vocab of vocabularyList) {
+                let userSaved = false;
+                if (userId) {
+                    const savedDoc = await UserVocabulary.findOne({
+                        _idUser: userId,
+                        _idVocabulary: vocab._id
+                    }).select('_id');
 
-            // return res.json({
-            //     newWord: existingVocabulary,
-            //     userSaved: userSaved
-            // });
+                    userSaved = savedDoc ? true : false;
+                }
+
+                result.push({
+                    vocab: vocab,
+                    userSaved: userSaved
+                });
+            }
+
+            return res.json({ result });
         }
 
 
