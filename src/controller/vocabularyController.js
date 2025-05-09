@@ -29,7 +29,9 @@ const handleFindVocabulary = async (req, res) => {
     }
     word = word.toLowerCase();
     try {
-
+        const allWords = await Vocabulary.find().select('word');
+        console.log("Tất cả từ trong DB:", allWords);
+        console.log("word", word);
         const vocabularyList = await Vocabulary.find({
             word: { $regex: `^${word}$`, $options: 'i' } // Khớp chính xác
 
