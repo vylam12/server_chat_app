@@ -21,69 +21,6 @@ function selectWordsForQuiz(vocabList, count) {
     return sortedList.slice(0, count);
 }
 
-// const handleSaveVocabulary = async (req, res) => {
-//     try {
-//         let { userId, vocabulary } = req.body;
-
-//         if (!userId || !vocabulary) {
-//             return res.status(400).json({ error: "Missing userId or vocabulary" })
-//         }
-//         let { word, phonetics, meanings } = vocabulary
-//         let existingVocabulary = await Vocabulary.findOne({ word: word });
-//         if (!existingVocabulary) {
-//             existingVocabulary = new Vocabulary({
-//                 word,
-//                 phonetics,
-//                 meanings
-//             });
-//             await existingVocabulary.save();
-//         }
-
-//         const isSaved = await UserVocabulary.findOne({
-//             _idUser: userId,
-//             _idVocabulary: existingVocabulary._id
-//         });
-//         if (isSaved) {
-//             return res.status(400).json({ error: "User has already saved this vocabulary" });
-//         }
-//         const newUserVocabulary = new UserVocabulary({
-//             _idUser: userId,
-//             _idVocabulary: existingVocabulary._id
-//         });
-//         await newUserVocabulary.save();
-
-//         const existingQuestions = await Question.find({ "vocabulary._id": existingVocabulary._id });
-
-//         if (existingQuestions.length === 0) {
-//             const quizQuestions = await quizController.generateQuizQuestions(existingVocabulary);
-//             const savedQuestions = [];
-
-//             for (const q of quizQuestions) {
-//                 const newQuestion = new Question({
-//                     content: q.content,
-//                     options: q.options,
-//                     correctAnswer: q.correctAnswer,
-//                     vocabulary: {
-//                         _id: q.vocabulary._id,
-//                         meaning: q.vocabulary.meaning
-//                     }
-//                 });
-
-//                 await newQuestion.save();
-//                 savedQuestions.push(newQuestion);
-//             }
-//         }
-//         res.json({
-//             message: "Save vocabulary successfully",
-//             vocabulary: existingVocabulary,
-//             userVocabulary: newUserVocabulary
-//         });
-//     } catch (error) {
-//         res.status(500).json({ error: "SaveVocabulary failed", details: error.message });
-//     }
-
-// }
-
 const handleFindVocabulary = async (req, res) => {
     let { word, userId } = req.body;
 
@@ -105,11 +42,20 @@ const handleFindVocabulary = async (req, res) => {
             userSaved = savedDoc ? savedDoc._id.toString() : null;
         }
         if (existingVocabulary) {
+            const userVocabularyList = await UserVocabulary.find({ _idUser: userId })
+                .populate('vocabulary')
+                .select('vocabulary');
             return res.json({
-                newWord: existingVocabulary,
-                userSaved: userSaved
+                vocabList: userVocabularyList,
+                userSaved: userSaved,
             });
+
+            // return res.json({
+            //     newWord: existingVocabulary,
+            //     userSaved: userSaved
+            // });
         }
+
 
         const response = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const data = response.data[0];

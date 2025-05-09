@@ -303,7 +303,7 @@ const handleSearchChat = async (req, res) => {
                 }
             });
 
-            if (matchByName || matchByMessage) {
+            if (matchByName || matchedMessages) {
                 filteredChats.push({
                     chatId: doc.id,
                     participants,
