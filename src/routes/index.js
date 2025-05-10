@@ -33,6 +33,7 @@ const initWebRoutes = (app) => {
     router.get("/get-quiz/:quizId", quizController.handleGetQuiz)
     router.post("/update-result-quiz", quizController.handleUpdateResultQuiz)
     router.post("/check-user-vocabulary", quizController.handleCheckUserVocabulary);
+    router.get("/get-lenght-quiz/:userId", vocabularyController.handleGetLenghtQuiz);
 
     router.get("/users/:userId", userController.handleGetUser)
     router.get("/get-infor-user/:userId", userController.handleGetIFUser)
