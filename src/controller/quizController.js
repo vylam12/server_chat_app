@@ -293,7 +293,7 @@ const handleGetLenghtQuiz = async (req, res) => {
             return res.status(400).json({ error: "Missing userId" });
         }
 
-        const listQuiz = await Quiz.find({ _idUser: userId }).sort({ createdAt: -1 });
+        const listQuiz = await Quiz.find({ _idUser: userId, isCompleted: true }).sort({ createdAt: -1 });
 
         const totalQuiz = listQuiz.length;
         const totalPoint = listQuiz.reduce((sum, quiz) => sum + quiz.countCorrect, 0) * 10;
