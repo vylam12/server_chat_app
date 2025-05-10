@@ -9,80 +9,6 @@ import relativeTime from 'dayjs/plugin/relativeTime.js';
 import moment from "moment";
 
 dayjs.extend(relativeTime);
-function selectWordsForQuiz(vocabList, count) {
-    // Sắp xếp từ ít thành thạo đến nhiều thành thạo
-    const sortedList = vocabList.sort((a, b) => {
-        const accuracyA = a.quizAttempts > 0 ? a.correctAnswers / a.quizAttempts : 0;
-        const accuracyB = b.quizAttempts > 0 ? b.correctAnswers / b.quizAttempts : 0;
-        return accuracyA - accuracyB; // Từ ít thành thạo hơn sẽ được ưu tiên
-    });
-
-    // Chọn numWords từ đầu danh sách (ưu tiên từ chưa thành thạo)
-    return sortedList.slice(0, count);
-}
-
-// const handleSaveVocabulary = async (req, res) => {
-//     try {
-//         let { userId, vocabulary } = req.body;
-
-//         if (!userId || !vocabulary) {
-//             return res.status(400).json({ error: "Missing userId or vocabulary" })
-//         }
-//         let { word, phonetics, meanings } = vocabulary
-//         let existingVocabulary = await Vocabulary.findOne({ word: word });
-//         if (!existingVocabulary) {
-//             existingVocabulary = new Vocabulary({
-//                 word,
-//                 phonetics,
-//                 meanings
-//             });
-//             await existingVocabulary.save();
-//         }
-
-//         const isSaved = await UserVocabulary.findOne({
-//             _idUser: userId,
-//             _idVocabulary: existingVocabulary._id
-//         });
-//         if (isSaved) {
-//             return res.status(400).json({ error: "User has already saved this vocabulary" });
-//         }
-//         const newUserVocabulary = new UserVocabulary({
-//             _idUser: userId,
-//             _idVocabulary: existingVocabulary._id
-//         });
-//         await newUserVocabulary.save();
-
-//         const existingQuestions = await Question.find({ "vocabulary._id": existingVocabulary._id });
-
-//         if (existingQuestions.length === 0) {
-//             const quizQuestions = await quizController.generateQuizQuestions(existingVocabulary);
-//             const savedQuestions = [];
-
-//             for (const q of quizQuestions) {
-//                 const newQuestion = new Question({
-//                     content: q.content,
-//                     options: q.options,
-//                     correctAnswer: q.correctAnswer,
-//                     vocabulary: {
-//                         _id: q.vocabulary._id,
-//                         meaning: q.vocabulary.meaning
-//                     }
-//                 });
-
-//                 await newQuestion.save();
-//                 savedQuestions.push(newQuestion);
-//             }
-//         }
-//         res.json({
-//             message: "Save vocabulary successfully",
-//             vocabulary: existingVocabulary,
-//             userVocabulary: newUserVocabulary
-//         });
-//     } catch (error) {
-//         res.status(500).json({ error: "SaveVocabulary failed", details: error.message });
-//     }
-
-// }
 
 const handleFindVocabulary = async (req, res) => {
     let { word, userId } = req.body;
@@ -434,47 +360,6 @@ const handleGetVocabToReview = async (req, res) => {
     }
 };
 
-// const handleGetListVocab = async (req, res) => {
-//     try {
-//         const { userId } = req.params;
-
-//         const allVocab = await Vocabulary.find({});
-
-//         const savedVocabDocs = await UserVocabulary.find({ _idUser: userId }).select('_id _idVocabulary');
-
-//         const savedMap = {};
-//         savedVocabDocs.forEach(doc => {
-//             savedMap[doc._idVocabulary.toString()] = doc._id.toString();
-//         });
-//         allVocab.sort((a, b) => {
-//             if (!a.word) return 1;
-//             if (!b.word) return -1;
-//             return a.word.localeCompare(b.word);
-//         });
-
-//         const response = allVocab.map(vocab => {
-//             const vocabIdStr = vocab._id.toString();
-//             const isSaved = vocabIdStr in savedMap;
-
-//             return {
-//                 id: vocab._id,
-//                 word: vocab.word,
-//                 phonetic: vocab.phonetics?.[0]?.text || "",
-//                 audio: vocab.phonetics?.[0]?.audio || "",
-//                 meaning: vocab.meanings?.[0]?.definitions?.[0]?.definition || null,
-//                 isSaved,
-//                 _idUserVocabulary: isSaved ? savedMap[vocabIdStr] : null
-//             };
-//         });
-//         console.log("allVocab.length:", allVocab.length);
-//         console.log("savedVocabDocs.length:", savedVocabDocs.length);
-
-//         return res.status(200).json({ data: response });
-//     } catch (err) {
-//         console.error(err);
-//         return res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
 const handleGetListVocab = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -622,7 +507,7 @@ const handleSaveVocabulary = async (req, res) => {
 
 
 export default {
-    handleFindVocabulary, selectWordsForQuiz,
+    handleFindVocabulary,
     handleDeleteVocabulary, handleGetListSaveVocab, getUserVocabulary, updateAfterFlashcard,
     getFlashcardReviewQuestions, getProgress, handleGetVocabToReview, handleGetListVocab,
     handleSaveVocabulary
