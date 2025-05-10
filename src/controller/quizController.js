@@ -286,7 +286,31 @@ const handleGetHistoryQuiz = async (req, res) => {
         return res.status(500).json({ error: "Failed to check vocabulary count", details: error.message });
     }
 };
+const handleGetLenghtQuiz = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            return res.status(400).json({ error: "Missing userId" });
+        }
+
+        const listQuiz = await Quiz.find({ _idUser: userId }).sort({ createdAt: -1 });
+
+        const totalQuiz = listQuiz.length;
+        const totalPoint = listQuiz.reduce((sum, quiz) => sum + (quiz.point || 0), 0);
+
+        return res.json({
+            totalQuiz: totalQuiz,
+            totalPoint: totalPoint
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: "Failed to check vocabulary count",
+            details: error.message,
+        });
+    }
+};
+
 export default {
-    handleQuizCreation, handleUpdateResultQuiz,
+    handleQuizCreation, handleUpdateResultQuiz, handleGetLenghtQuiz,
     handleGetQuiz, handleCheckUserVocabulary, handleGetHistoryQuiz, generateQuizQuestions
 };
