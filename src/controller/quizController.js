@@ -296,7 +296,8 @@ const handleGetLenghtQuiz = async (req, res) => {
         const listQuiz = await Quiz.find({ _idUser: userId }).sort({ createdAt: -1 });
 
         const totalQuiz = listQuiz.length;
-        const totalPoint = listQuiz.reduce((sum, quiz) => sum + quiz.countCorrect, 0); // tự tính điểm
+        const totalPoint = listQuiz.reduce((sum, quiz) => sum + quiz.countCorrect, 0) * 10;
+
 
         return res.json({
             totalQuiz: totalQuiz,
