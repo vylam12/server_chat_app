@@ -13,9 +13,7 @@ const router = express.Router();
 
 const initWebRoutes = (app) => {
     router.post("/translate", translateController.handleTranslate)
-
     router.get("/get-list-vocab/:userId", vocabularyController.handleGetListVocab)
-
     router.post("/findVocabulary", vocabularyController.handleFindVocabulary)
 
     router.post("/saveVocabulary", vocabularyController.handleSaveVocabulary)
@@ -49,6 +47,7 @@ const initWebRoutes = (app) => {
     router.post("/friend-invited", friendInvitationController.handleInvited)  //gửi lời mời kết bạn
     router.post("/accept-friend-invited", friendInvitationController.handleAcceptInvited)
     router.post("/unfriend", friendInvitationController.handleUnfriend)
+    router.post("/isFriend", friendInvitationController.isFriend)
     router.get("/get-friend/:userId", friendInvitationController.handleGetFriend)//lấy list bạn bè
     router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)   //lấy list lời mời kết bạn
     router.get("/find-user", userController.handleFriendUser) //tìm người dùng để kb 
@@ -62,7 +61,6 @@ const initWebRoutes = (app) => {
 
     // router.post("/delete-chat", messageController.handleDeleteChat)
     router.get("/users/:userId", userController.handleGetUser)
-
 
     router.get("/get-idUser/:userId", userController.handleGetIDUser)
     router.get("/find-friend", userController.handleFindFriend)
