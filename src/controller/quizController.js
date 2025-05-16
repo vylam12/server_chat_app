@@ -298,7 +298,6 @@ const handleGetLenghtQuiz = async (req, res) => {
         const totalQuiz = listQuiz.length;
         const totalPoint = listQuiz.reduce((sum, quiz) => sum + quiz.countCorrect, 0) * 10;
 
-
         return res.json({
             totalQuiz: totalQuiz,
             totalPoint: totalPoint

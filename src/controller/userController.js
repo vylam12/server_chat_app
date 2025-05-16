@@ -25,7 +25,7 @@ const handleGetUser = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 }
-
+// lấy thông tin người dùng từ id user Firebase
 const handleGetIFUser = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -43,6 +43,7 @@ const handleGetIFUser = async (req, res) => {
         res.status(500).json({ error: "Lỗi server" });
     }
 }
+// lấy _id của user từ tìm kiếm id user firebase
 const handleGetIDUser = async (req, res) => {
     try {
         const { userId } = req.params;
