@@ -217,8 +217,9 @@ const isFriend = async (userId, friendId) => {
             { id_sender: friendId, id_receiver: userId, status: "accepted" }
         ]
     });
+    const isFriend = !!friendship;
 
-    return !!friendship;
+    return res.status(200).json({ friendship: isFriend.toString() });
 };
 const handleUnfriend = async (req, res) => {
     const { idUser, idFriend } = req.body;
