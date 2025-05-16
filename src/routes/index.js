@@ -47,7 +47,7 @@ const initWebRoutes = (app) => {
     router.post("/friend-invited", friendInvitationController.handleInvited)  //gửi lời mời kết bạn
     router.post("/accept-friend-invited", friendInvitationController.handleAcceptInvited)
     router.post("/unfriend", friendInvitationController.handleUnfriend)
-    router.post("/isFriend", friendInvitationController.isFriend)
+    router.post("/isFriend", friendInvitationController.checkFriend)
     router.get("/get-friend/:userId", friendInvitationController.handleGetFriend)//lấy list bạn bè
     router.get("/get-friend-invited/:userId", friendInvitationController.handleGetFriendInvited)   //lấy list lời mời kết bạn
     router.get("/find-user", userController.handleFriendUser) //tìm người dùng để kb 

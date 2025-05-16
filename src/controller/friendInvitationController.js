@@ -208,19 +208,30 @@ const handleGetFriendInvited = async (req, res) => {
     }
 }
 
-const isFriend = async (userId, friendId) => {
-    if (!userId || !friendId) return false;
+const checkFriend = async (req, res) => {
+    try {
+        const { userId, friendId } = req.body;
 
-    const friendship = await FriendInvitation.findOne({
-        $or: [
-            { id_sender: userId, id_receiver: friendId, status: "accepted" },
-            { id_sender: friendId, id_receiver: userId, status: "accepted" }
-        ]
-    });
-    const isFriend = !!friendship;
+        if (!userId || !friendId) {
+            return res.status(400).json({ friendship: "false", message: "Missing userId or friendId" });
+        }
 
-    return res.status(200).json({ friendship: isFriend.toString() });
+        const friendship = await FriendInvitation.findOne({
+            $or: [
+                { id_sender: userId, id_receiver: friendId, status: "accepted" },
+                { id_sender: friendId, id_receiver: userId, status: "accepted" }
+            ]
+        });
+
+        const result = !!friendship;
+
+        return res.status(200).json({ friendship: result.toString() }); // "true" hoặc "false"
+    } catch (error) {
+        console.error("Error in checkFriend:", error);
+        return res.status(500).json({ error: "Server error" });
+    }
 };
+
 const handleUnfriend = async (req, res) => {
     const { idUser, idFriend } = req.body;
 
@@ -243,5 +254,5 @@ const handleUnfriend = async (req, res) => {
 };
 export default {
     handleInvited, handleAcceptInvited, handleGetFriend, handleGetFriendInvited,
-    isFriend, handleUnfriend
+    checkFriend, handleUnfriend
 };
