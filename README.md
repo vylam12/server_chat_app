@@ -1,8 +1,8 @@
-<h1 align="center">ỨNG DỤNG TRÒ CHUYỆN SONG NGỮ </h1>
+<h1 align="center">🗣️ Bilingual Chat Application</h1>
 <p align="center">
- ỨNG DỤNG TRÒ CHUYỆN SONG NGỮ BẰNG KOTLIN VÀ NODEJS.
-  <br />
-  <em>Kotlin + Node.js + MongoDB + Firebase | Auth | Chat | Translate | Add Friend</em>
+ A bilingual chat app built with Kotlin and Node.js.
+ <br />
+ <em>Kotlin + Node.js + MongoDB + Firebase | Auth | Chat | Translate | Add Friend | Vocabulary Practice</em>
 </p>
 
 <p align="center">
@@ -14,72 +14,46 @@
 
 ---
 
-## ✨ Giới thiệu
+## ✨ Introduction
 
-**Talk Bilingually** là một ứng dụng trò chuyện song ngữ. Ứng dụng cho phép:
-- Đăng nhập, đăng ký, khôi phục mật khẩu
-- Tìm kiếm cuộc trò chuyện
-- Nhắn tin với bạn bè
-- Dịch tin nhắn
-- Tìm kiếm và kết bạn, hủy kết bạn
+**Talk Bilingually** is a bilingual chat app that helps users improve their vocabulary while chatting. It supports real-time conversations, message translation, vocabulary saving, and interactive learning tools like flashcards and quizzes.
+### 🌟 Main Features
 
+- User authentication (Sign up, Login, Password reset)
+- Real-time messaging with friends
+- Auto-translate messages between languages
+- Search chats and users
+- Add or remove friends
+- Save vocabulary from messages
+- Learn with flashcards
+- Review with vocabulary quizzes
 
+---
+
+## 🔧 Technologies Used
+
+| Component       | Technology Stack                               |
+|-----------------|--------------------------------------------------|
+| Android Client  | Kotlin, MVVM, Retrofit, ViewModel, Firebase      |
+| Backend API     | Node.js, Express.js, JWT, Bcrypt, Cloudinary     |
+| Database        | MongoDB (via Mongoose), Firebase Realtime DB     |
+| Image Hosting   | Cloudinary                                       |
 
 ---
 
-## 🔧 Công nghệ sử dụng
 
-| Thành phần     | Công nghệ sử dụng                              |
-|----------------|------------------------------------------------|
-| Android App    | Kotlin, MVVM, Retrofit, Firebase, ViewModel    |
-| Backend        | Node.js, Express, JWT, Bcrypt, Cloudinary      |
-| Database       | MongoDB, Mongoose, Firebase                    |
-| Ảnh đại diện   | Cloudinary                                     |
+## 🚀 Setup & Run the server App
 
----
----
-## 🚀 Cấu trúc project
-```
-191-Trần Lê Thảo Vy-21CNTT4/
-├── MyApplication/ # Ứng dụng Android (Kotlin)
-├── server/ # Backend Node.js
-└── README.md
+#### 1. Opten project in Visual studio code
+Open Visual studio code.
 
-## 🚀 Cài đặt & chạy ứng dụng
-
-
-### 🔹 1. Cài đặt client
-#### 1. Mở dự án trong Android Studio
-Mở Android Studio.
-
-Chọn Open an existing project và chọn thư mục MyApplication
-
-Android Studio sẽ tự động tải xuống các dependencies cần thiết.
-#### 2. Cấu hình Firebase:
-Để kết nối với Firebase, bạn cần thực hiện các bước sau:
-
-Tạo một project Firebase tại Firebase Console.
-
-Thêm ứng dụng Android của bạn vào Firebase (nhập thông tin package name của ứng dụng).
-
-Tải file google-services.json từ Firebase và đặt nó vào thư mục app/ trong dự án Android.
-#### 3. Cấu hình API URL
-Trong RetrofitClient.kt của ứng dụng, bạn cần cập nhật URL của server API:
-const val BASE_URL = "http://your-server-ip:9000/"
-#### 4. Chạy ứng dụng
-Sau khi đã cấu hình xong, bạn chỉ cần nhấn Run trong Android Studio để chạy ứng dụng trên thiết bị thật hoặc emulator.
-### 🔹 2. Cài đặt server
-
-##### 1. Mở dự án trong Visual studio code
-Mở Visual studio code.
-
-Chọn File>Open foler và chọn thư mục server
-Cài đặt server:
+Choose File>Open foler and select the server folder
+Setting server:
 npm install
 npm run dev
 ```
 
-#### 2. Tạo file `.env` trong thư mục `server`
+### 2. Create file `.env` file in `server` directory
 
 ```env
 MONGO_URI=mongodb+srv://root123:<db_password>@quizapp.lx5nz.mongodb.net/?retryWrites=true&w=majority&appName=quizapp
@@ -93,7 +67,7 @@ APP_ID=
 CLOUDINARY_URL=
 ```
 
-#### 3. Chạy server:
+#### 3. Run server:
 ```
 npm start.
 ```
@@ -101,12 +75,13 @@ npm start.
 
 ## 📄 License
 
-Phát hành theo giấy phép MIT. Tự do sử dụng cho học tập và phát triển.
+This project is released under the MIT License.
+Feel free to use it for learning and development purposes.
 
 ---
 
-## 📬 Liên hệ
+## 📬 Contact
 
-**Tác giả:** Trần Lê Thảo Vy
+**Author:** Trần Lê Thảo Vy
 **Email:** lethaovytran7@gmail.com  
 **GitHub:** [@vylam12](https://github.com/vylam12))
